@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
 
+  // Función para calcular el rango de páginas a mostrar
+  // Se muestra un máximo de 5 páginas, incluyendo la primera y la última
   const getPageRange = () => {
     const maxPagesToShow = 5;
 

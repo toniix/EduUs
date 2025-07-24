@@ -10,16 +10,18 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-dark text-light">
+    <footer className="bg-gradient-to-b from-dark to-dark/95 text-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo and Description */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center">
-              <GraduationCap className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-xl font-bold">EDU-US</span>
+            <div className="flex items-center group">
+              <GraduationCap className="h-10 w-10 text-primary transition-transform duration-300 group-hover:scale-110" />
+              <span className="ml-3 text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                EDU-US
+              </span>
             </div>
-            <p className="mt-4 text-gray-400">
+            <p className="mt-4 text-gray-400 leading-relaxed">
               Comprometidos con brindar educación de calidad y oportunidades
               para todos los jóvenes. Juntos construimos un futuro mejor a
               través del conocimiento.
@@ -27,62 +29,57 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/about" className="text-gray-400 hover:text-primary">
-                  Sobre Nosotros
-                </Link>
-              </li>
-              <li>
-                <Link to="/blog" className="text-gray-400 hover:text-primary">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link to="/news" className="text-gray-400 hover:text-primary">
-                  Noticias
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard"
-                  className="text-gray-400 hover:text-primary"
-                >
-                  Oportunidades
-                </Link>
-              </li>
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold mb-4 relative inline-block">
+              Enlaces Rápidos
+              <span className="absolute -bottom-2 left-0 w-12 h-1 bg-primary rounded-full"></span>
+            </h3>
+            <ul className="space-y-3">
+              {["about", "Blog", "News"].map((item, index) => (
+                <li key={index}>
+                  <Link
+                    to={`/${item.toLowerCase().replace(" ", "-")}`}
+                    className="text-gray-400 hover:text-primary transition-colors duration-300 flex items-center group"
+                  >
+                    <span className="w-0 group-hover:w-2 h-[2px] bg-primary mr-0 group-hover:mr-2 transition-all duration-300"></span>
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Contacto</h3>
-            <div className="space-y-4">
-              <div className="flex space-x-4">
-                <a href="#" className="text-gray-400 hover:text-primary">
-                  <Facebook className="h-6 w-6" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-primary">
-                  <Twitter className="h-6 w-6" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-primary">
-                  <Instagram className="h-6 w-6" />
-                </a>
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold mb-4 relative inline-block">
+              Contacto
+              <span className="absolute -bottom-2 left-0 w-12 h-1 bg-primary rounded-full"></span>
+            </h3>
+            <div className="flex gap-4">
+              {[
+                { icon: Facebook, href: "#", color: "hover:text-blue-500" },
+                { icon: Twitter, href: "#", color: "hover:text-sky-500" },
+                { icon: Instagram, href: "#", color: "hover:text-pink-500" },
+                {
+                  icon: Mail,
+                  href: "mailto:contact@edu-us.org",
+                  color: "hover:text-yellow-500",
+                },
+              ].map((social, index) => (
                 <a
-                  href="mailto:contact@edu-us.org"
-                  className="text-gray-400 hover:text-primary"
+                  key={index}
+                  href={social.href}
+                  className={`bg-dark/50 p-3 rounded-lg ${social.color} transition-all duration-300 hover:shadow-lg hover:-translate-y-1`}
                 >
-                  <Mail className="h-6 w-6" />
+                  <social.icon className="h-5 w-5" />
                 </a>
-              </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-gray-700">
-          <p className="text-center text-gray-400">
+        <div className="mt-8 pt-6 border-t border-gray-800">
+          <p className="text-center text-gray-500 text-sm">
             © {new Date().getFullYear()} EDU-US. Todos los derechos reservados.
           </p>
         </div>

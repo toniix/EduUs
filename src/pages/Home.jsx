@@ -41,33 +41,42 @@ const Home = () => {
             ¿Por qué EDU-US?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="bg-secondary bg-opacity-10 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+            <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+              <div className="bg-secondary bg-opacity-10 rounded-full p-4 w-16 h-16 mx-auto mb-6 transform hover:rotate-6 transition-transform duration-300">
                 <BookOpen className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">
+              <h3 className="text-xl font-semibold mb-4 text-center">
                 Educación de Calidad
               </h3>
-              <p className="text-gray-600">
-                Accede a oportunidades educativas verificadas y de alta calidad.
+              <p className="text-gray-600 text-center leading-relaxed">
+                Accede a oportunidades educativas verificadas y de alta calidad
+                en instituciones reconocidas mundialmente.
               </p>
             </div>
-            <div className="text-center p-6">
-              <div className="bg-primary bg-opacity-10 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+
+            <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+              <div className="bg-primary bg-opacity-10 rounded-full p-4 w-16 h-16 mx-auto mb-6 transform hover:rotate-6 transition-transform duration-300">
                 <Users className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Comunidad Activa</h3>
-              <p className="text-gray-600">
-                Únete a una red de jóvenes comprometidos con su desarrollo.
+              <h3 className="text-xl font-semibold mb-4 text-center">
+                Comunidad Activa
+              </h3>
+              <p className="text-gray-600 text-center leading-relaxed">
+                Únete a una red global de jóvenes comprometidos con su
+                desarrollo académico y profesional.
               </p>
             </div>
-            <div className="text-center p-6">
-              <div className="bg-accent bg-opacity-10 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+
+            <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+              <div className="bg-accent bg-opacity-10 rounded-full p-4 w-16 h-16 mx-auto mb-6 transform hover:rotate-6 transition-transform duration-300">
                 <Globe className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Alcance Global</h3>
-              <p className="text-gray-600">
-                Oportunidades internacionales para expandir tus horizontes.
+              <h3 className="text-xl font-semibold mb-4 text-center">
+                Alcance Global
+              </h3>
+              <p className="text-gray-600 text-center leading-relaxed">
+                Descubre oportunidades internacionales y expande tus horizontes
+                en más de 50 países.
               </p>
             </div>
           </div>

@@ -47,7 +47,7 @@ const Header = () => {
               Noticias
             </Link>
             <Link
-              to="/dashboard"
+              to="/edutracker"
               className="text-dark hover:text-primary px-3 py-2 rounded-md"
             >
               EDUTRACKER

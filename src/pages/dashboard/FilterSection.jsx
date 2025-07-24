@@ -9,13 +9,13 @@ const typeOptions = [
   { value: "internship", label: "Pasantías" },
 ];
 
-export default function FilterSection({
+const FilterSection = ({
   onTypeFilter,
   onLocationFilter,
   locations,
   selectedTypes,
   selectedLocations,
-}) {
+}) => {
   const [isOpen, setIsOpen] = useState(true);
 
   const handleTypeChange = (type) => {
@@ -132,4 +132,6 @@ export default function FilterSection({
       </div>
     </div>
   );
-}
+};
+
+export default FilterSection;

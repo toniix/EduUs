@@ -10,6 +10,10 @@ export default {
         light: "#FFFFFF",
         dark: "#222222",
       },
+      fontFamily: {
+        sans: ["Roboto", "sans-serif"],
+        heading: ["Poppins", "sans-serif"],
+      },
     },
   },
   plugins: [],

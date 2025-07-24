@@ -1,15 +1,6 @@
 import { Calendar, MapPin } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useOpportunity } from "../../contexts/OpportunityContext";
-// Función para formatear la fecha
-const formatDate = (dateString) => {
-  const options = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-  return new Date(dateString).toLocaleDateString("es-ES", options);
-};
+import { Link } from "react-router-dom";
+import { formatDate } from "../../utils/formatDate";
 
 // Mapeo de tipos a colores y etiquetas
 const typeConfig = {
@@ -21,15 +12,8 @@ const typeConfig = {
 };
 
 export default function OpportunityCard({ opportunity }) {
-  const navigate = useNavigate();
-  const { setSelectedOpportunity } = useOpportunity();
-
-  const handleClick = () => {
-    setSelectedOpportunity(opportunity);
-    navigate("/dashboard/details");
-  };
-
   const {
+    id,
     title,
     organization,
     description,
@@ -87,12 +71,12 @@ export default function OpportunityCard({ opportunity }) {
           ))}
         </div>
 
-        <button
-          onClick={handleClick}
-          className="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-opacity-90 transition-colors"
+        <Link
+          to={`/edutracker/opportunity/${id}`}
+          className="block w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-opacity-80 transition-colors text-center"
         >
           Ver detalles
-        </button>
+        </Link>
       </div>
     </div>
   );
