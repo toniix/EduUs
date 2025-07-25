@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { GraduationCap, Menu, X } from "lucide-react";
 import UserMenu from "./UserMenu";
 import { useAuth } from "../contexts/AuthContext";
+import Button from "./ui/Buttom";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,11 +56,10 @@ const Header = () => {
             {isAuthenticated ? (
               <UserMenu />
             ) : (
-              <Link
-                to="/login"
-                className="bg-primary text-light px-4 py-2 rounded-md hover:bg-opacity-90"
-              >
-                Iniciar Sesión
+              <Link to="/login">
+                <Button variant="primary" fullWidth={false}>
+                  Iniciar Sesión
+                </Button>
               </Link>
             )}
           </div>
@@ -118,11 +118,8 @@ const Header = () => {
                   <UserMenu />
                 </div>
               ) : (
-                <Link
-                  to="/login"
-                  className="block bg-primary text-light px-4 py-2 rounded-md hover:bg-opacity-90"
-                >
-                  Iniciar Sesión
+                <Link to="/login">
+                  <Button variant="primary">Iniciar Sesión</Button>
                 </Link>
               )}
             </div>

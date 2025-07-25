@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 const AuthContext = createContext({
@@ -6,6 +6,7 @@ const AuthContext = createContext({
   loading: true,
   isAuthenticated: false,
   signOut: async () => {},
+  signInWithGoogle: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -16,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check active sessions and sets the user
+    // Verifica la sesión activa al cargar
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setIsAuthenticated(!!session?.user);
@@ -41,11 +42,27 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // Sign in with Google
+  const signInWithGoogle = async () => {
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        // options: {
+        //   redirectTo: "http://localhost:3000/admin", // o el path que desees después del login
+        // },
+      });
+    } catch (error) {
+      console.error("Error al iniciar sesión con Google", error.message);
+      throw error;
+    }
+  };
+
   const value = {
     user,
     loading,
     isAuthenticated,
     signOut,
+    signInWithGoogle,
   };
 
   return (

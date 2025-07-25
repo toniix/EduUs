@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, AlertCircle } from "lucide-react";
+import { Mail, Lock, User } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import { z } from "zod";
+import { useAuth } from "../contexts/AuthContext";
+import Button from "../components/ui/Buttom";
+import Input from "../components/ui/Input";
+import AuthError from "../components/AuthError";
 
 const registerSchema = z
   .object({
@@ -21,6 +25,7 @@ const registerSchema = z
 
 const Register = () => {
   const navigate = useNavigate();
+  const { signInWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -38,6 +43,7 @@ const Register = () => {
     setError(null);
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -74,6 +80,19 @@ const Register = () => {
     }
   };
 
+  // Handle Google Sign-In
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await signInWithGoogle(); // solo llamas, sin esperar data/error
+      // No necesitas manejar redirección aquí
+    } catch (error) {
+      setError(error.message);
+      toast.error("Error al iniciar sesión con Google");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-light py-12 px-4 sm:px-6 lg:px-8 pt-16">
       <div className="max-w-md mx-auto">
@@ -88,111 +107,60 @@ const Register = () => {
         </div>
 
         <div className="bg-white p-8 rounded-lg shadow-md">
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-              <div className="flex items-center">
-                <AlertCircle className="h-5 w-5 mr-2" />
-                <p>{error}</p>
-              </div>
-            </div>
-          )}
+          {error && <AuthError error={error} />}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Nombre Completo
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="Juan Pérez"
-                />
-              </div>
-            </div>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              label="Nombre Completo"
+              icon={User}
+              required
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Juan Pérez"
+              error={error}
+            />
 
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Correo Electrónico
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="tu@email.com"
-                />
-              </div>
-            </div>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              label="Correo Electrónico"
+              icon={Mail}
+              required
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="tu@email.com"
+              error={error}
+            />
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Contraseña
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              label="Contraseña"
+              icon={Lock}
+              required
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              error={error}
+            />
 
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Confirmar Contraseña
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              label="Confirmar Contraseña"
+              icon={Lock}
+              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="••••••••"
+              error={error}
+            />
 
             <div className="flex items-center">
               <input
@@ -213,13 +181,37 @@ const Register = () => {
               </label>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            {/* Boton de enviar */}
+            <Button type="submit" disabled={loading} variante="primary">
               {loading ? "Creando cuenta..." : "Crear Cuenta"}
-            </button>
+            </Button>
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">
+                    O continuar con
+                  </span>
+                </div>
+              </div>
+
+              {/* Boton de iniciar sesión con Google */}
+              <Button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={loading}
+                variant="secondary"
+              >
+                <img
+                  src="https://www.google.com/favicon.ico"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
+                {loading ? "Registrando..." : "Registrarse con Google"}
+              </Button>
+            </div>
           </form>
         </div>
       </div>

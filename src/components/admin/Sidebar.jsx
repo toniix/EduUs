@@ -112,16 +112,16 @@ export default function Sidebar({ activeTab, setActiveTab }) {
                 )}
               </div>
               {!isCollapsed && item.subItems && (
-                <button
+                <div
                   onClick={(e) => handleExpandClick(e, item.value)}
-                  className="p-1 hover:bg-white/20 rounded-full"
+                  className="p-1 hover:bg-white/20 rounded-full cursor-pointer"
                 >
                   <ChevronDown
                     className={`h-4 w-4 transition-transform ${
                       expandedItem === item.value ? "rotate-180" : ""
                     }`}
                   />
-                </button>
+                </div>
               )}
             </button>
 

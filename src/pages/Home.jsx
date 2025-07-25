@@ -1,5 +1,4 @@
-import React from "react";
-import { ArrowRight, BookOpen, Users, Globe, Award } from "lucide-react";
+import { ArrowRight, BookOpen, Users, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -24,7 +23,7 @@ const Home = () => {
               Becas, talleres, intercambios y más te esperan.
             </p>
             <Link
-              to="/dashboard"
+              to="/edutracker"
               className="inline-flex items-center bg-primary text-light px-6 py-3 rounded-md hover:bg-opacity-90"
             >
               Explorar Oportunidades

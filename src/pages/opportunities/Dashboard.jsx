@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import OpportunityCard from "./OpportunityCard";
-import FilterSection from "./FilterSection";
+import OpportunityCard from "../../components/opportunities/OpportunityCard";
+import FilterSection from "../../components/opportunities/FilterSection";
 import Pagination from "../../components/Pagination";
 import { Search } from "lucide-react";
 import { opportunitiesData } from "../../utils/opportunities";
@@ -70,6 +70,7 @@ export default function OpportunitiesDashboard() {
   );
 
   return (
+    // ENVOLVER EN EL ADMIN LAYOUT
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 pt-20">
         {/* Header Section */}
