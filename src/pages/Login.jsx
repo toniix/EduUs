@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
-import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/ui/Buttom";
 import Input from "../components/ui/Input";
 import AuthError from "../components/AuthError";
+import { signInWithEmail } from "../services/AuthService";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -45,14 +45,9 @@ const Login = () => {
     setError(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
+      const { user } = await signInWithEmail(formData.email, formData.password);
+      console.log(user);
+      if (user) {
         toast.success("¡Inicio de sesión exitoso!");
         navigate("/admin");
       }

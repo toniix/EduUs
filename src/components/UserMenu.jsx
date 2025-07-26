@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const UserMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { signOut, user } = useAuth();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef(null);
 

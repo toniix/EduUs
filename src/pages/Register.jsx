@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, User } from "lucide-react";
-import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/ui/Buttom";
 import Input from "../components/ui/Input";
 import AuthError from "../components/AuthError";
+import { signUp } from "../services/AuthService";
 
 const registerSchema = z
   .object({
@@ -52,19 +52,13 @@ const Register = () => {
     try {
       const validatedData = registerSchema.parse(formData);
 
-      const { data, error } = await supabase.auth.signUp({
+      const { user } = await signUp({
         email: validatedData.email,
         password: validatedData.password,
-        options: {
-          data: {
-            name: validatedData.name,
-          },
-        },
+        name: validatedData.name,
       });
 
-      if (error) throw error;
-
-      if (data.user) {
+      if (user) {
         toast.success("¡Registro exitoso! Por favor, inicia sesión.");
         navigate("/login");
       }
@@ -85,7 +79,6 @@ const Register = () => {
     setLoading(true);
     try {
       await signInWithGoogle(); // solo llamas, sin esperar data/error
-      // No necesitas manejar redirección aquí
     } catch (error) {
       setError(error.message);
       toast.error("Error al iniciar sesión con Google");

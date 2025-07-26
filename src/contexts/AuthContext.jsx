@@ -1,5 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import {
+  getSession,
+  signOut as authSignOut,
+  signInWithGoogle as authSignInWithGoogle,
+  onAuthStateChange,
+} from "../services/AuthService";
 
 const AuthContext = createContext({
   user: null,
@@ -16,19 +21,21 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Verificar sesión al cargar
   useEffect(() => {
-    // Verifica la sesión activa al cargar
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Verificar sesión al cargar
+    getSession().then((session) => {
       setUser(session?.user ?? null);
       setIsAuthenticated(!!session?.user);
       setLoading(false);
     });
 
-    // Listen for changes on auth state (sign in, sign out, etc.)
+    // Escuchar cambios en el estado de autenticación
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = onAuthStateChange((session) => {
       setUser(session?.user ?? null);
+      // console.log(session.user);
       setIsAuthenticated(!!session?.user);
       setLoading(false);
     });
@@ -36,25 +43,16 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Función para cerrar sesión
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await authSignOut();
     setIsAuthenticated(false);
     setUser(null);
   };
 
-  // Sign in with Google
+  // Función para iniciar sesión con Google
   const signInWithGoogle = async () => {
-    try {
-      await supabase.auth.signInWithOAuth({
-        provider: "google",
-        // options: {
-        //   redirectTo: "http://localhost:3000/admin", // o el path que desees después del login
-        // },
-      });
-    } catch (error) {
-      console.error("Error al iniciar sesión con Google", error.message);
-      throw error;
-    }
+    return await authSignInWithGoogle();
   };
 
   const value = {
