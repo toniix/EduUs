@@ -7,27 +7,24 @@ import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/ui/Buttom";
 import Input from "../components/ui/Input";
 import AuthError from "../components/AuthError";
-import { signUp } from "../services/AuthService";
-
-const registerSchema = z
-  .object({
-    name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-    email: z.string().email("Correo electrónico inválido"),
-    password: z
-      .string()
-      .min(6, "La contraseña debe tener al menos 6 caracteres"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Las contraseñas no coinciden",
-    path: ["confirmPassword"],
-  });
+import {
+  registerUser,
+  createProfile,
+  checkEmailExists,
+} from "../services/AuthService";
+import { registerSchema } from "../utils/validationSchemas";
 
 const Register = () => {
   const navigate = useNavigate();
   const { signInWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -35,10 +32,16 @@ const Register = () => {
     confirmPassword: "",
   });
 
+  // Handle form input change
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
+    });
+    setFieldErrors({
+      ...fieldErrors,
+      [name]: "",
     });
     setError(null);
   };
@@ -48,27 +51,61 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setFieldErrors({});
 
     try {
+      // 1. Validar datos del formulario
       const validatedData = registerSchema.parse(formData);
 
-      const { user } = await signUp({
+      // 2. Verificar si el email ya existe (validación temprana)
+      const emailExists = await checkEmailExists(validatedData.email);
+      if (emailExists) {
+        setFieldErrors({ email: "Este email ya está registrado" });
+        toast.error("El email ya está en uso");
+        return;
+      }
+
+      // 3. Registrar usuario
+      const { user } = await registerUser({
         email: validatedData.email,
         password: validatedData.password,
         name: validatedData.name,
       });
 
-      if (user) {
-        toast.success("¡Registro exitoso! Por favor, inicia sesión.");
-        navigate("/login");
+      if (!user) {
+        throw new Error("Error al crear el usuario");
       }
+
+      // 4. Crear perfil de usuario
+      const profile = await createProfile(user.id, {
+        name: validatedData.name,
+        email: validatedData.email,
+      });
+
+      if (!profile) {
+        throw new Error("Error al crear el perfil de usuario");
+      }
+
+      toast.success(
+        "¡Registro exitoso! Revisa tu email para confirmar tu cuenta."
+      );
+      navigate("/login");
     } catch (error) {
+      console.error("Error en registro:", error);
+
       if (error instanceof z.ZodError) {
-        setError(error.errors[0].message);
+        const newFieldErrors = {};
+        error.errors.forEach((err) => {
+          newFieldErrors[err.path[0]] = err.message;
+        });
+        setFieldErrors(newFieldErrors);
+        toast.error("Por favor, corrige los errores en el formulario");
       } else {
-        setError(error.message);
+        const errorMessage =
+          error.message || "Error inesperado durante el registro";
+        setError(errorMessage);
+        toast.error(errorMessage);
       }
-      toast.error("Error en el registro");
     } finally {
       setLoading(false);
     }
@@ -113,7 +150,7 @@ const Register = () => {
               value={formData.name}
               onChange={handleChange}
               placeholder="Juan Pérez"
-              error={error}
+              error={fieldErrors.name}
             />
 
             <Input
@@ -126,7 +163,7 @@ const Register = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="tu@email.com"
-              error={error}
+              error={fieldErrors.email}
             />
 
             <Input
@@ -139,7 +176,7 @@ const Register = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="••••••••"
-              error={error}
+              error={fieldErrors.password}
             />
 
             <Input
@@ -152,7 +189,7 @@ const Register = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="••••••••"
-              error={error}
+              error={fieldErrors.confirmPassword}
             />
 
             <div className="flex items-center">
