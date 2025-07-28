@@ -5,6 +5,8 @@ import {
   signInWithGoogle as authSignInWithGoogle,
   onAuthStateChange,
 } from "../services/AuthService";
+import { getCurrentUserRole } from "../services/rolesService";
+import { checkOrCreateProfile } from "../services/userService";
 
 const AuthContext = createContext({
   user: null,
@@ -20,24 +22,64 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
-  // Verificar sesión al cargar
+  // Cargar sesión y rol actual al inicio
   useEffect(() => {
-    // Verificar sesión al cargar
-    getSession().then((session) => {
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session?.user);
-      setLoading(false);
-    });
+    const fetchSessionAndRole = async () => {
+      const session = await getSession();
+      console.log(session);
+      const currentUser = session?.user ?? null;
 
-    // Escuchar cambios en el estado de autenticación
+      if (!currentUser || !currentUser.email_confirmed_at) {
+        setLoading(false);
+        return;
+      }
+
+      setUser(currentUser);
+      setIsAuthenticated(true);
+      setLoading(false);
+
+      try {
+        // Crear perfil si no existe
+        console.log("Creando perfil...");
+        await checkOrCreateProfile(currentUser);
+
+        // Obtener y setear rol
+        console.log("Obteniendo rol...");
+        const role = await getCurrentUserRole();
+        setUserRole(role);
+      } catch (error) {
+        console.error("Error creando perfil o obteniendo rol:", error.message);
+      }
+    };
+
+    fetchSessionAndRole();
+
     const {
       data: { subscription },
-    } = onAuthStateChange((session) => {
-      setUser(session?.user ?? null);
-      // console.log(session.user);
-      setIsAuthenticated(!!session?.user);
+    } = onAuthStateChange(async (session) => {
+      const currentUser = session?.user ?? null;
+
+      if (!currentUser || !currentUser.email_confirmed_at) {
+        setUser(null);
+        setIsAuthenticated(false);
+        setUserRole(null);
+        setLoading(false);
+        return;
+      }
+
+      setUser(currentUser);
+      setIsAuthenticated(true);
       setLoading(false);
+
+      try {
+        await checkOrCreateProfile(currentUser);
+        const role = await getCurrentUserRole();
+        setUserRole(role);
+      } catch (error) {
+        console.error("Error creando perfil o obteniendo rol:", error.message);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -61,6 +103,9 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     signOut,
     signInWithGoogle,
+    userRole,
+    isAdmin: userRole === "admin",
+    isEditor: userRole === "editor",
   };
 
   return (

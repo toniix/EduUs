@@ -9,7 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminPanel from "./pages/admin/AdminPanel";
 import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { OpportunityProvider } from "./contexts/OpportunityContext";
 import OpportunityDetail from "./components/opportunities/OpportunityDetail";
 import ScrollToTop from "./components/ScrollToTop";

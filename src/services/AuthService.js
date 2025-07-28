@@ -49,10 +49,10 @@ export const createProfile = async (userId, { name, email }) => {
         email: email,
       },
     ])
-    .select(); // ← ESTO es lo que faltaba
+    .select();
 
   if (error) throw error;
-  return data[0]; // Retorna el primer (y único) registro insertado
+  return data[0];
 };
 
 // Inicio de sesión con email y contraseña

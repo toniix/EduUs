@@ -7,11 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/ui/Buttom";
 import Input from "../components/ui/Input";
 import AuthError from "../components/AuthError";
-import {
-  registerUser,
-  createProfile,
-  checkEmailExists,
-} from "../services/AuthService";
+import { registerUser, checkEmailExists } from "../services/AuthService";
 import { registerSchema } from "../utils/validationSchemas";
 
 const Register = () => {
@@ -76,16 +72,6 @@ const Register = () => {
         throw new Error("Error al crear el usuario");
       }
 
-      // 4. Crear perfil de usuario
-      const profile = await createProfile(user.id, {
-        name: validatedData.name,
-        email: validatedData.email,
-      });
-
-      if (!profile) {
-        throw new Error("Error al crear el perfil de usuario");
-      }
-
       toast.success(
         "¡Registro exitoso! Revisa tu email para confirmar tu cuenta."
       );
@@ -115,7 +101,7 @@ const Register = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await signInWithGoogle(); // solo llamas, sin esperar data/error
+      await signInWithGoogle();
     } catch (error) {
       setError(error.message);
       toast.error("Error al iniciar sesión con Google");
