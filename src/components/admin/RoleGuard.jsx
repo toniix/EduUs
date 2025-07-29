@@ -1,4 +1,4 @@
-import { usePermissions } from "../hooks/usePermissions";
+import { useRole } from "../../hooks/RoleProvider";
 
 export const RoleGuard = ({
   children,
@@ -7,24 +7,16 @@ export const RoleGuard = ({
   fallback = null,
   inverse = false,
 }) => {
-  const { hasRole, hasAnyRole } = usePermissions();
+  const { hasRole, hasAnyRole } = useRole();
 
   let hasAccess = false;
-
   if (requiredRole) {
     hasAccess = hasRole(requiredRole);
   } else if (requiredRoles && requiredRoles.length > 0) {
     hasAccess = hasAnyRole(requiredRoles);
   }
-
-  // Si inverse es true, invertir la lógica
-  if (inverse) {
-    hasAccess = !hasAccess;
-  }
-
-  if (!hasAccess) {
-    return fallback;
-  }
-
+  if (inverse) hasAccess = !hasAccess;
+  if (!hasAccess) return fallback;
   return children;
 };
+

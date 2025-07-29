@@ -17,29 +17,21 @@ import { useAuth } from "../../contexts/AuthContext";
 const menuItems = [
   { icon: <Home />, label: "Dashboard", value: "dashboard" },
   { icon: <Users />, label: "Usuarios", value: "users" },
-  {
-    icon: <FileText />,
-    label: "Contenido",
-    value: "content",
-    subItems: [
-      { label: "Oportunidades", value: "content-opportunities" },
-      { label: "Noticias", value: "content-news" },
-      { label: "Blog", value: "content-blog" },
-    ],
-  },
+  { icon: <FileText />, label: "Contenido", value: "content" },
   { icon: <BarChart2 />, label: "Analíticas", value: "analytics" },
   { icon: <Settings />, label: "Configuración", value: "settings" },
 ];
 
 export default function Sidebar({ activeTab, setActiveTab }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedItem, setExpandedItem] = useState(null);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      console.log("Cerrando sesión...");
+      await signOut();
+      console.log("Sesión cerrada");
       navigate("/");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
@@ -47,11 +39,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   };
 
   const handleItemClick = (item) => {
-    if (item.subItems) {
-      setActiveTab(item.value); // Establece el tab principal
-    } else {
-      setActiveTab(item.value);
-    }
+    setActiveTab(item.value);
   };
 
   const handleExpandClick = (e, itemValue) => {
@@ -111,38 +99,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
                   <span className="ml-3 font-medium">{item.label}</span>
                 )}
               </div>
-              {!isCollapsed && item.subItems && (
-                <div
-                  onClick={(e) => handleExpandClick(e, item.value)}
-                  className="p-1 hover:bg-white/20 rounded-full cursor-pointer"
-                >
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${
-                      expandedItem === item.value ? "rotate-180" : ""
-                    }`}
-                  />
-                </div>
-              )}
             </button>
-
-            {!isCollapsed && item.subItems && expandedItem === item.value && (
-              <div className="ml-4 mt-2 space-y-1">
-                {item.subItems.map((subItem) => (
-                  <button
-                    key={subItem.value}
-                    onClick={() => setActiveTab(subItem.value)}
-                    className={`w-full flex items-center px-4 py-2 rounded-lg text-sm ${
-                      activeTab === subItem.value
-                        ? "bg-primary/10 text-primary font-medium"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    <ChevronRightIcon className="h-4 w-4 mr-2" />
-                    {subItem.label}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         ))}
       </nav>

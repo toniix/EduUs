@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import {
   Users,
-  FileText,
-  Calendar,
-  Eye,
   Award,
-  Globe,
   Mail,
   TrendingUp,
   Activity,

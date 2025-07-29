@@ -5,7 +5,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
     <div className="fixed top-0 right-0 z-10 ml-64 w-[calc(100%-16rem)] bg-gray-100 p-2">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between bg-white p-3 rounded-xl shadow-lg">
         <h1 className="text-xl font-bold text-gray-900 mb-2 md:mb-0">
-          Panel de Administración
+          Bienvenido al Panel de Administración
         </h1>
         <div className="flex space-x-2">
           <div className="relative flex-1 md:flex-initial">

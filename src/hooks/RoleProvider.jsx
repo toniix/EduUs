@@ -5,6 +5,8 @@ import {
   createContext,
   useContext,
 } from "react";
+import { ROLES } from "../utils/constants";
+import { getCurrentUserRole } from "../services/rolesService";
 
 // Context para roles
 const RoleContext = createContext();
@@ -39,13 +41,8 @@ export const RoleProvider = ({ children }) => {
     isAdmin: userRole === ROLES.ADMIN,
     isEditor: userRole === ROLES.EDITOR,
     isUser: userRole === ROLES.USER,
-    hasRole: (role) => userRole === role,
-    hasAnyRole: (roles) => roles.includes(userRole),
-    hasMinimumRole: (minimumRole) => {
-      const userLevel = ROLE_HIERARCHY[userRole] || 0;
-      const requiredLevel = ROLE_HIERARCHY[minimumRole] || 0;
-      return userLevel >= requiredLevel;
-    },
+    hasRole: useCallback((role) => userRole === role, [userRole]),
+    hasAnyRole: useCallback((roles) => roles.includes(userRole), [userRole]),
   };
 
   return <RoleContext.Provider value={value}>{children}</RoleContext.Provider>;

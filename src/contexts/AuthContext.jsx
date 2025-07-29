@@ -6,7 +6,7 @@ import {
   onAuthStateChange,
 } from "../services/AuthService";
 import { getCurrentUserRole } from "../services/rolesService";
-import { checkOrCreateProfile } from "../services/userService";
+import { checkOrCreateProfile, updateLastLogin } from "../services/userService";
 
 const AuthContext = createContext({
   user: null,
@@ -22,13 +22,11 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
 
   // Cargar sesión y rol actual al inicio
   useEffect(() => {
     const fetchSessionAndRole = async () => {
       const session = await getSession();
-      console.log(session);
       const currentUser = session?.user ?? null;
 
       if (!currentUser || !currentUser.email_confirmed_at) {
@@ -42,13 +40,10 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // Crear perfil si no existe
-        console.log("Creando perfil...");
         await checkOrCreateProfile(currentUser);
 
-        // Obtener y setear rol
-        console.log("Obteniendo rol...");
-        const role = await getCurrentUserRole();
-        setUserRole(role);
+        // Actualizar last_login
+        await updateLastLogin(currentUser);
       } catch (error) {
         console.error("Error creando perfil o obteniendo rol:", error.message);
       }
@@ -64,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       if (!currentUser || !currentUser.email_confirmed_at) {
         setUser(null);
         setIsAuthenticated(false);
-        setUserRole(null);
+
         setLoading(false);
         return;
       }
@@ -75,8 +70,9 @@ export const AuthProvider = ({ children }) => {
 
       try {
         await checkOrCreateProfile(currentUser);
-        const role = await getCurrentUserRole();
-        setUserRole(role);
+        await updateLastLogin(currentUser);
+        // const role = await getCurrentUserRole();
+        // setUserRole(role);
       } catch (error) {
         console.error("Error creando perfil o obteniendo rol:", error.message);
       }
@@ -103,9 +99,6 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     signOut,
     signInWithGoogle,
-    userRole,
-    isAdmin: userRole === "admin",
-    isEditor: userRole === "editor",
   };
 
   return (

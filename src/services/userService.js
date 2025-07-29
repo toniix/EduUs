@@ -29,3 +29,34 @@ export const checkOrCreateProfile = async (user) => {
   if (profileError) throw profileError;
   return { created: false };
 };
+
+// Obtener todos los perfiles
+export const getAllProfiles = async () => {
+  const { data, error } = await supabase.from("profiles").select("*");
+  if (error) throw error;
+  return data;
+};
+
+// Eliminar un usuario por id
+export const deleteUser = async (userId) => {
+  const { error } = await supabase.from("profiles").delete().eq("id", userId);
+  if (error) throw error;
+  return true;
+};
+
+export const updateLastLogin = async (user) => {
+  if (!user || !user.id || !user.last_sign_in_at) return;
+
+  try {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ last_login: user.last_sign_in_at })
+      .eq("id", user.id);
+
+    if (error) throw error;
+
+    console.log("✅ last_login actualizado correctamente");
+  } catch (err) {
+    console.error("❌ Error al actualizar last_login:", err.message);
+  }
+};

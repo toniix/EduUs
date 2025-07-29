@@ -2,13 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronDown, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { useRole } from "../hooks/RoleProvider";
 
 const UserMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef(null);
-
+  const { userRole } = useRole();
+  console.log(userRole);
+  const userName = user?.user_metadata?.full_name || user?.user_metadata?.name;
+  // console.log(user);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -21,6 +25,7 @@ const UserMenu = () => {
   }, []);
 
   const handleNavigation = () => {
+    console.log("Ingresando al panel de administración");
     setIsMenuOpen(false);
   };
 
@@ -41,7 +46,7 @@ const UserMenu = () => {
           alt="Profile"
           className="w-8 h-8 rounded-full"
         />
-        <span className="text-gray-700">Juan Pérez</span>
+        <span className="text-gray-700">{userName}</span>
         <ChevronDown className="h-4 w-4 text-gray-500" />
       </button>
 
@@ -55,14 +60,16 @@ const UserMenu = () => {
             <User className="h-4 w-4 mr-2" />
             Mi Perfil
           </Link>
-          <Link
-            to="/admin"
-            onClick={handleNavigation}
-            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            Panel Admin
-          </Link>
+          {["admin", "editor"].includes(userRole) && (
+            <Link
+              to="/admin"
+              onClick={handleNavigation}
+              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Panel Admin
+            </Link>
+          )}
           <button
             onClick={handleLogout}
             className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
