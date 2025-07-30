@@ -1,4 +1,4 @@
-import { useRole } from "../../hooks/RoleProvider";
+import { useRole } from "../../contexts/RoleContext";
 
 export const RoleGuard = ({
   children,
@@ -19,4 +19,3 @@ export const RoleGuard = ({
   if (!hasAccess) return fallback;
   return children;
 };
-

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
@@ -12,7 +12,6 @@ import {
 } from "../services/AuthService";
 
 const Login = () => {
-  const navigate = useNavigate();
   const { signInWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -23,12 +22,10 @@ const Login = () => {
   const [showResendButton, setShowResendButton] = useState(false);
   const [pendingEmail, setPendingEmail] = useState("");
 
-  // Login con Google
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
       await signInWithGoogle();
-      // No necesitas manejar redirección aquí
     } catch (error) {
       setError(error.message);
       toast.error("Error al iniciar sesión con Google");
@@ -45,7 +42,6 @@ const Login = () => {
     setError(null);
   };
 
-  // Login con email y contraseña
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -57,12 +53,10 @@ const Login = () => {
 
       if (user) {
         toast.success("¡Inicio de sesión exitoso!");
-        navigate("/admin");
       }
     } catch (error) {
       console.error("Error login:", error);
 
-      // Detectar diferentes tipos de errores
       if (
         error.message?.includes("Email not confirmed") ||
         error.message?.includes("email_not_confirmed")
@@ -95,7 +89,6 @@ const Login = () => {
     }
   };
 
-  // Función para reenviar email de confirmación
   const handleResendConfirmation = async () => {
     setLoading(true);
 

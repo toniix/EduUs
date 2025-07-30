@@ -1,8 +1,4 @@
 const AdminLayout = ({ children }) => {
-  return (
-    <div>
-      <main className="p-4">{children}</main>
-    </div>
-  );
+  return <>{children}</>;
 };
 export default AdminLayout;

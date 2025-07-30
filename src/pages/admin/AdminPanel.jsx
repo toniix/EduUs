@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/Sidebar";
-import Header from "../../components/admin/AdminPanelHeader";
+import AdminPanelHeader from "../../components/admin/AdminPanelHeader";
 import UsersTab from "../../components/admin/tabs/UsersTab";
 import ContentTab from "../../components/admin/tabs/ContentTab";
 import AnalyticsTab from "../../components/admin/tabs/AnalyticsTab";
 import SettingsTab from "../../components/admin/tabs/SettingsTab";
 import Dashboard from "../../components/admin/tabs/Dashboard";
+import DesktopOnlyWrapper from "../../components/layouts/wrappers/DesktopOnlyWrapper";
 import { paginate } from "../../utils/pagination";
 import { mockContent } from "../../utils/mockData";
 import { getAllProfiles } from "../../services/userService";
@@ -20,7 +21,6 @@ export default function AdminPanel() {
   const [currentPageUsers, setCurrentPageUsers] = useState(1);
   const itemsPerPage = 10;
 
-  // --- NUEVO: Actualización reactiva de usuarios ---
   const handleUserRoleUpdate = (userId, newRole) => {
     setUsers((prevUsers) =>
       prevUsers.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
@@ -31,9 +31,6 @@ export default function AdminPanel() {
     setUsers((prevUsers) => prevUsers.filter((u) => u.id !== userId));
   };
 
-  // --- FIN: Actualización reactiva de usuarios ---
-
-  // --- NUEVO: Cargar usuarios ---
   useEffect(() => {
     const fetchUsers = async () => {
       setLoadingUsers(true);
@@ -50,7 +47,6 @@ export default function AdminPanel() {
     fetchUsers();
   }, []);
 
-  // Paginación para usuarios
   const [roleFilter, setRoleFilter] = useState("all");
   const filteredUsers =
     roleFilter === "all"
@@ -111,19 +107,38 @@ export default function AdminPanel() {
     }
   };
 
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <div className="flex-1 ml-64 p-8">
-          <div className="mb-6">
-            <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          </div>
-          <div className="transition-all duration-300 transform hover:translate-y-[-2px]">
-            {renderTabContent()}
-          </div>
+    <DesktopOnlyWrapper>
+      <div className="min-h-screen flex bg-gray-50">
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          isCollapsed={isSidebarCollapsed}
+          setIsCollapsed={setIsSidebarCollapsed}
+        />
+
+        <div
+          className={`flex-1 flex flex-col transition-all duration-300 ${
+            isSidebarCollapsed ? "ml-20" : "ml-64"
+          }`}
+        >
+          <AdminPanelHeader
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            isSidebarCollapsed={isSidebarCollapsed}
+          />
+
+          <main className="flex-1 p-4 pt-16 overflow-y-auto transition-all duration-300">
+            <div className="w-full max-w-full mx-auto">
+              <div className="transform hover:translate-y-[-2px] transition-all duration-300">
+                {renderTabContent()}
+              </div>
+            </div>
+          </main>
         </div>
       </div>
-    </div>
+    </DesktopOnlyWrapper>
   );
 }

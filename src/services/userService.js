@@ -23,7 +23,6 @@ export const checkOrCreateProfile = async (user) => {
       { onConflict: "id" }
     );
     if (upsertError) throw upsertError;
-    console.log(upsertError);
     return { created: true };
   }
   if (profileError) throw profileError;
@@ -54,8 +53,6 @@ export const updateLastLogin = async (user) => {
       .eq("id", user.id);
 
     if (error) throw error;
-
-    console.log("✅ last_login actualizado correctamente");
   } catch (err) {
     console.error("❌ Error al actualizar last_login:", err.message);
   }

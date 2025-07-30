@@ -7,7 +7,7 @@ import Input from "../components/ui/Input";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
-import { useRole } from "../hooks/RoleProvider";
+import { useRole } from "../contexts/RoleContext";
 
 const Profile = () => {
   const { user, signOut: signOutContext } = useAuth();
@@ -52,6 +52,7 @@ const Profile = () => {
     toast.success("Perfil actualizado");
   };
 
+  // Cerrar sesión
   const handleSignOut = async () => {
     await signOut();
     if (signOutContext) signOutContext();
@@ -60,6 +61,9 @@ const Profile = () => {
   if (loading) {
     return <LoadingSpinner />;
   }
+  console.log(userRole);
+
+  console.log(profile);
 
   return (
     <div className="min-h-screen bg-light pt-16">

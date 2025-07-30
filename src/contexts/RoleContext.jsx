@@ -7,6 +7,7 @@ import {
 } from "react";
 import { ROLES } from "../utils/constants";
 import { getCurrentUserRole } from "../services/rolesService";
+import { useAuth } from "../contexts/AuthContext";
 
 // Context para roles
 const RoleContext = createContext();
@@ -16,23 +17,33 @@ export const RoleProvider = ({ children }) => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
 
   const fetchUserRole = useCallback(async () => {
     try {
       setLoading(true);
+      // si no hay usuario, no hay rol
+      if (!user) {
+        setUserRole(null);
+        setLoading(false);
+        return;
+      }
+      // si hay usuario, obtener el rol
       const role = await getCurrentUserRole();
       setUserRole(role);
     } catch (err) {
       setError(err.message);
+      setUserRole(null);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchUserRole();
-  }, [fetchUserRole]);
+  }, [fetchUserRole, user]);
 
+  // console.log(userRole);
   const value = {
     userRole,
     loading,

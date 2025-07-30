@@ -112,3 +112,29 @@ export const ERROR_MESSAGES = {
   NAME_TOO_SHORT: `El nombre debe tener al menos ${VALIDATION_CONSTANTS.MIN_NAME_LENGTH} caracteres`,
   INVALID_PHONE: "Número de teléfono inválido",
 };
+
+// Esquema de validación con Zod
+export const opportunitySchema = z.object({
+  title: z.string().min(5, "El título es obligatorio."),
+  description: z.string().min(5, "La descripción es obligatoria."),
+  type: z.string().min(1, "El tipo es obligatorio."),
+  modality: z.string().min(1, "La modalidad es obligatoria."),
+  status: z.string().min(1, "El estado es obligatorio."),
+  organization: z.string().min(1, "La organización es obligatoria."),
+  country: z.string().min(1, "El país es obligatorio."),
+  location: z.string().min(1, "La ubicación es obligatoria."),
+  deadline: z.string().min(1, "La fecha límite es obligatoria."),
+  image_url: z
+    .any()
+    .refine((val) => val && (typeof val === "string" || val instanceof File), {
+      message: "La imagen es obligatoria.",
+    }),
+  category: z.string().min(1, "La categoría es obligatoria."),
+  category_id: z.any().optional(),
+  benefits: z.array(z.string()).min(1, "Al menos un beneficio es obligatorio."),
+  requirements: z
+    .array(z.string())
+    .min(1, "Al menos una requisito es obligatorio."),
+  tags: z.array(z.string()).min(1, "Al menos una etiqueta es obligatoria."),
+  contact: z.object({ website: z.string().optional() }).optional(),
+});

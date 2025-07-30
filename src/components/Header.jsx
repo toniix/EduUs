@@ -4,6 +4,7 @@ import { GraduationCap, Menu, X } from "lucide-react";
 import UserMenu from "./UserMenu";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "./ui/Buttom";
+import logo from "../assets/logo_2.png";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,8 +17,11 @@ const Header = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link to="/" className="flex items-center">
-              <GraduationCap className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-xl font-bold text-dark">EDU-US</span>
+              <img
+                src={logo}
+                alt="EDU-US"
+                className="h-auto w-auto max-w-[150px] object-cover"
+              />
             </Link>
           </div>
 

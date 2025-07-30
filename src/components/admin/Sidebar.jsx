@@ -7,12 +7,10 @@ import {
   Home,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
-  ChevronRight as ChevronRightIcon,
 } from "lucide-react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import logo from "../../assets/logo_1.png";
 
 const menuItems = [
   { icon: <Home />, label: "Dashboard", value: "dashboard" },
@@ -22,10 +20,14 @@ const menuItems = [
   { icon: <Settings />, label: "Configuración", value: "settings" },
 ];
 
-export default function Sidebar({ activeTab, setActiveTab }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+export default function Sidebar({
+  activeTab,
+  setActiveTab,
+  isCollapsed,
+  setIsCollapsed,
+}) {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -42,27 +44,39 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     setActiveTab(item.value);
   };
 
-  const handleExpandClick = (e, itemValue) => {
-    e.stopPropagation(); // Previene que se active el handleItemClick del padre
-    setExpandedItem(expandedItem === itemValue ? null : itemValue);
-  };
-
   return (
-    <div
+    <aside
       className={`fixed left-0 h-screen bg-white shadow-xl transition-all duration-300 ${
         isCollapsed ? "w-20" : "w-64"
       }`}
     >
       {/* Logo y botón de colapsar */}
-      <div className="flex items-center justify-between p-4 border-b">
-        {!isCollapsed && (
-          <div className="flex items-center">
-            <img src="/logo.svg" alt="EDU-US" className="h-8 w-8" />
-            <span className="ml-2 font-bold text-xl text-primary">EDU-US</span>
-          </div>
-        )}
+      {/* Header mejorado */}
+      <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-white">
+        <div className="flex items-center space-x-2">
+          <img
+            src={logo}
+            alt="EDU-US"
+            className="h-10 w-10 rounded-full shadow"
+          />
+          {!isCollapsed && (
+            <div className="flex flex-col">
+              <span className="font-bold text-lg text-primary">EDU-US</span>
+              {user && (
+                <span className="text-xs text-gray-600">
+                  Bienvenido,{" "}
+                  <span className="font-semibold">
+                    {user.user_metadata.full_name ||
+                      user.user_metadata.name ||
+                      user.email}
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
+        </div>
         <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={() => setIsCollapsed((prev) => !prev)}
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
           {isCollapsed ? (
@@ -131,6 +145,6 @@ export default function Sidebar({ activeTab, setActiveTab }) {
           </button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

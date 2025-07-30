@@ -1,5 +1,5 @@
 import UserActionsMenu from "./UserActionsMenu";
-import { useRole } from "../../../hooks/RoleProvider";
+import { useRole } from "../../../contexts/RoleContext";
 
 export default function UsersTab({
   users,

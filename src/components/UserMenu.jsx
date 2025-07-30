@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronDown, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { useRole } from "../hooks/RoleProvider";
+import { useRole } from "../contexts/RoleContext";
 
 const UserMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,9 +10,9 @@ const UserMenu = () => {
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const { userRole } = useRole();
-  console.log(userRole);
   const userName = user?.user_metadata?.full_name || user?.user_metadata?.name;
-  // console.log(user);
+  const userImage = user?.user_metadata?.avatar_url;
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -25,14 +25,18 @@ const UserMenu = () => {
   }, []);
 
   const handleNavigation = () => {
-    console.log("Ingresando al panel de administración");
     setIsMenuOpen(false);
   };
 
-  const handleLogout = () => {
-    setIsMenuOpen(false);
-    signOut();
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      console.log("Cerrando sesión...");
+      await signOut();
+      console.log("Sesión cerrada");
+      navigate("/");
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
   };
 
   return (
@@ -41,11 +45,11 @@ const UserMenu = () => {
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="flex items-center space-x-2 hover:opacity-80"
       >
-        <img
-          src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&auto=format&fit=crop&w=32&h=32&q=80"
-          alt="Profile"
-          className="w-8 h-8 rounded-full"
-        />
+        {userImage ? (
+          <img src={userImage} alt="Profile" className="w-8 h-8 rounded-full" />
+        ) : (
+          <User className="h-8 w-8 text-gray-500" />
+        )}
         <span className="text-gray-700">{userName}</span>
         <ChevronDown className="h-4 w-4 text-gray-500" />
       </button>

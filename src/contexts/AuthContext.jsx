@@ -5,8 +5,8 @@ import {
   signInWithGoogle as authSignInWithGoogle,
   onAuthStateChange,
 } from "../services/AuthService";
-import { getCurrentUserRole } from "../services/rolesService";
 import { checkOrCreateProfile, updateLastLogin } from "../services/userService";
+import { getCurrentUserRole } from "../services/rolesService";
 
 const AuthContext = createContext({
   user: null,
@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [role, setRole] = useState(null);
 
   // Cargar sesión y rol actual al inicio
   useEffect(() => {
@@ -41,6 +42,8 @@ export const AuthProvider = ({ children }) => {
       try {
         // Crear perfil si no existe
         await checkOrCreateProfile(currentUser);
+        const role = await getCurrentUserRole();
+        console.log(role);
 
         // Actualizar last_login
         await updateLastLogin(currentUser);
@@ -71,8 +74,8 @@ export const AuthProvider = ({ children }) => {
       try {
         await checkOrCreateProfile(currentUser);
         await updateLastLogin(currentUser);
-        // const role = await getCurrentUserRole();
-        // setUserRole(role);
+        const role = await getCurrentUserRole();
+        setRole(role);
       } catch (error) {
         console.error("Error creando perfil o obteniendo rol:", error.message);
       }
@@ -80,6 +83,26 @@ export const AuthProvider = ({ children }) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchRole = async () => {
+  //     setRoleLoading(true);
+  //     if (!user) {
+  //       setRole(null);
+  //       setRoleLoading(false);
+  //       return;
+  //     }
+  //     try {
+  //       const role = await getCurrentUserRole();
+  //       setRole(role);
+  //     } catch (e) {
+  //       setRole(null);
+  //     } finally {
+  //       setRoleLoading(false);
+  //     }
+  //   };
+  //   fetchRole();
+  // }, [user]);
 
   // Función para cerrar sesión
   const signOut = async () => {
@@ -99,6 +122,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     signOut,
     signInWithGoogle,
+    role,
   };
 
   return (

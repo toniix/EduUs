@@ -17,8 +17,9 @@ import PublicLayout from "./components/layouts/PublicLayout";
 import AdminLayout from "./components/layouts/AdminLayout";
 import Profile from "./pages/Profile";
 import { RoleGuard } from "./components/admin/RoleGuard";
-import { RoleProvider } from "./hooks/RoleProvider";
+import { RoleProvider } from "./contexts/RoleContext";
 import NoAccessFallback from "./components/ui/NoAccessFallback";
+import PublicRoute from "./routes/PublicRoute";
 
 function App() {
   return (
@@ -41,9 +42,24 @@ function App() {
                       path="/edutracker/opportunity/:id"
                       element={<OpportunityDetail />}
                     />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
                     <Route path="/edutracker" element={<Dashboard />} />
+
+                    <Route
+                      path="/login"
+                      element={
+                        <PublicRoute>
+                          <Login />
+                        </PublicRoute>
+                      }
+                    />
+                    <Route
+                      path="/register"
+                      element={
+                        <PublicRoute>
+                          <Register />
+                        </PublicRoute>
+                      }
+                    />
                   </Route>
 
                   {/* 🔒 RUTAS PRIVADAS */}
