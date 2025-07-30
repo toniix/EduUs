@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
 import { useRole } from "../contexts/RoleContext";
+import SectionLoader from "../components/ui/LoadingSpinner";
 
 const Profile = () => {
   const { user, signOut: signOutContext } = useAuth();
@@ -59,7 +60,7 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <SectionLoader message="Cargando datos de tu perfil..." />;
   }
   console.log(userRole);
 

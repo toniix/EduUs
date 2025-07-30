@@ -27,18 +27,7 @@ export default function Sidebar({
   setIsCollapsed,
 }) {
   const navigate = useNavigate();
-  const { signOut, user } = useAuth();
-
-  const handleLogout = async () => {
-    try {
-      console.log("Cerrando sesión...");
-      await signOut();
-      console.log("Sesión cerrada");
-      navigate("/");
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
-    }
-  };
+  const { user } = useAuth();
 
   const handleItemClick = (item) => {
     setActiveTab(item.value);
@@ -129,18 +118,7 @@ export default function Sidebar({
           >
             <Home className="h-5 w-5" />
             {!isCollapsed && (
-              <span className="ml-3 font-medium">Ir al Inicio</span>
-            )}
-          </button>
-          <button
-            onClick={handleLogout}
-            className={`w-full flex items-center ${
-              isCollapsed ? "justify-center" : "justify-start"
-            } px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-300`}
-          >
-            <LogOut className="h-5 w-5" />
-            {!isCollapsed && (
-              <span className="ml-3 font-medium">Cerrar Sesión</span>
+              <span className="ml-3 font-medium">Salir al Inicio</span>
             )}
           </button>
         </div>

@@ -1,6 +1,8 @@
 import { Search, Bell, User, ChevronDown, Sun, Moon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useRole } from "../../contexts/RoleContext";
+import { useAuth } from "../../contexts/AuthContext";
 // import { useTheme } from "../../contexts/ThemeContext"; // Si tienes un contexto de tema
 
 const AdminPanelHeader = ({
@@ -10,6 +12,18 @@ const AdminPanelHeader = ({
 }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   // const { theme, toggleTheme } = useTheme(); // Descomenta si tienes tema oscuro
+  const { userRole } = useRole();
+  const { signOut } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      console.log("Cerrando sesión...");
+      await signOut();
+      console.log("Sesión cerrada");
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
 
   return (
     <header
@@ -56,7 +70,9 @@ const AdminPanelHeader = ({
               <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-medium">
                 <User className="h-4 w-4" />
               </div>
-              <span className="text-sm font-medium text-gray-700">Admin</span>
+              <span className="text-sm font-medium text-gray-700">
+                {userRole}
+              </span>
               <ChevronDown
                 className={`h-4 w-4 text-gray-500 transition-transform ${
                   isProfileOpen ? "transform rotate-180" : ""
@@ -82,12 +98,12 @@ const AdminPanelHeader = ({
                   Configuración
                 </a>
                 <div className="border-t border-gray-100 my-1"></div>
-                <a
-                  href="#"
+                <button
+                  onClick={handleLogout}
                   className="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                 >
                   Cerrar sesión
-                </a>
+                </button>
               </div>
             )}
           </div>

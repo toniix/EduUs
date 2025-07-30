@@ -4,6 +4,7 @@ import {
   useCallback,
   createContext,
   useContext,
+  useMemo,
 } from "react";
 import { ROLES } from "../utils/constants";
 import { getCurrentUserRole } from "../services/rolesService";
@@ -22,13 +23,15 @@ export const RoleProvider = ({ children }) => {
   const fetchUserRole = useCallback(async () => {
     try {
       setLoading(true);
-      // si no hay usuario, no hay rol
+      setError(null); // Reset error al empezar
+
+      // Si no hay usuario, limpiar rol
       if (!user) {
         setUserRole(null);
-        setLoading(false);
         return;
       }
-      // si hay usuario, obtener el rol
+
+      // Si hay usuario, obtener el rol
       const role = await getCurrentUserRole();
       setUserRole(role);
     } catch (err) {
@@ -41,20 +44,49 @@ export const RoleProvider = ({ children }) => {
 
   useEffect(() => {
     fetchUserRole();
-  }, [fetchUserRole, user]);
+  }, [fetchUserRole]);
 
-  // console.log(userRole);
-  const value = {
-    userRole,
-    loading,
-    error,
-    refetch: fetchUserRole,
-    isAdmin: userRole === ROLES.ADMIN,
-    isEditor: userRole === ROLES.EDITOR,
-    isUser: userRole === ROLES.USER,
-    hasRole: useCallback((role) => userRole === role, [userRole]),
-    hasAnyRole: useCallback((roles) => roles.includes(userRole), [userRole]),
-  };
+  // Funciones memoizadas para evitar re-renders innecesarios
+  const hasRole = useCallback((role) => userRole === role, [userRole]);
+
+  const hasAnyRole = useCallback(
+    (roles) => {
+      if (!Array.isArray(roles)) return false;
+      return roles.includes(userRole);
+    },
+    [userRole]
+  );
+
+  // Valores derivados memoizados
+  const derivedValues = useMemo(
+    () => ({
+      isAdmin: userRole === ROLES.ADMIN,
+      isEditor: userRole === ROLES.EDITOR,
+      isUser: userRole === ROLES.USER,
+    }),
+    [userRole]
+  );
+
+  const value = useMemo(
+    () => ({
+      userRole,
+      loading,
+      error,
+      refetch: fetchUserRole,
+      hasRole,
+      hasAnyRole,
+      ...derivedValues,
+    }),
+    [
+      userRole,
+      loading,
+      error,
+      fetchUserRole,
+      hasRole,
+      hasAnyRole,
+      derivedValues,
+    ]
+  );
 
   return <RoleContext.Provider value={value}>{children}</RoleContext.Provider>;
 };

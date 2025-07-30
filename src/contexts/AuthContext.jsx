@@ -84,26 +84,6 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchRole = async () => {
-  //     setRoleLoading(true);
-  //     if (!user) {
-  //       setRole(null);
-  //       setRoleLoading(false);
-  //       return;
-  //     }
-  //     try {
-  //       const role = await getCurrentUserRole();
-  //       setRole(role);
-  //     } catch (e) {
-  //       setRole(null);
-  //     } finally {
-  //       setRoleLoading(false);
-  //     }
-  //   };
-  //   fetchRole();
-  // }, [user]);
-
   // Función para cerrar sesión
   const signOut = async () => {
     await authSignOut();
