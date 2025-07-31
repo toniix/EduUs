@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createOpportunity } from "../services/opportunityService";
 import { opportunitySchema } from "../utils/validationSchemas";
+import toast from "react-hot-toast";
 
 const initialState = {
   title: "",
@@ -100,6 +101,7 @@ export function useOpportunityForm(initial = {}) {
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
+      toast.error(validationError);
       return false;
     }
     setLoading(true);

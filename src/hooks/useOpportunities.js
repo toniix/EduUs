@@ -74,3 +74,67 @@ export function useOpportunity(id) {
 
   return { opportunity, loading, error };
 }
+
+export function useAllOpportunities() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOpportunities = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const result = await opportunitiesService.getAllOpportunities();
+        setData(result);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOpportunities();
+  }, []);
+
+  return { opportunities: data || [], loading, error };
+}
+
+export function useInactiveOpportunities(pagination = {}) {
+  const [data, setData] = useState({ data: [], count: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchInactiveOpportunities = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await opportunitiesService.getInactiveOpportunities(
+        pagination
+      );
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [pagination]);
+
+  useEffect(() => {
+    fetchInactiveOpportunities();
+  }, [fetchInactiveOpportunities]);
+
+  const refetch = useCallback(() => {
+    return fetchInactiveOpportunities();
+  }, [fetchInactiveOpportunities]);
+
+  return {
+    opportunities: data.data || [],
+    totalCount: data.count || 0,
+    totalPages: data.totalPages || 1,
+    currentPage: data.currentPage || 1,
+    loading,
+    error,
+    refetch,
+  };
+}

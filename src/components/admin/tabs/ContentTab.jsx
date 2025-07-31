@@ -9,6 +9,7 @@ export default function ContentTab({
   currentPage,
   setCurrentPage,
 }) {
+  console.log(paginatedContent);
   const [showOpportunityForm, setShowOpportunityForm] = useState(false);
 
   return (

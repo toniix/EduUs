@@ -7,12 +7,12 @@ class OpportunitiesService {
    * @param {Object} pagination - Parámetros de paginación
    * @returns {Promise<Object>} Respuesta con datos, count, totalPages, currentPage
    */
-  async getOpportunities(filters = {}, pagination = {}) {
+  async getOpportunities(filters = {}, pagination = { page: 1, limit: 6 }) {
     try {
-      const { page = 1, limit = 10 } = pagination;
+      const { page, limit } = pagination;
       const from = (page - 1) * limit;
       const to = from + limit - 1;
-
+      
       let query = supabase
         .from("opportunities")
         .select(
@@ -58,6 +58,50 @@ class OpportunitiesService {
       };
     } catch (error) {
       console.error("Error in getOpportunities:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene una oportunidad específica por ID
+   * @param {string} id - ID de la oportunidad
+   * @returns {Promise<Object|null>} Oportunidad o null si no se encuentra
+   */
+  /**
+   * Obtiene todas las oportunidades sin paginación ni filtros
+   * @returns {Promise<Array>} Lista de oportunidades con sus relaciones
+   */
+  async getAllOpportunities() {
+    try {
+      const { data, error } = await supabase
+        .from("opportunities")
+        .select(`
+          *,
+          category:categories(
+            id,
+            name
+          ),
+          creator:profiles!opportunities_created_by_fkey(
+            id,
+            full_name
+          ),
+          opportunity_tags(
+            tag:tags(
+              id,
+              name
+            )
+          )
+        `)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw new Error(`Error fetching all opportunities: ${error.message}`);
+      }
+
+      // Transformar los datos para aplanar las relaciones many-to-many
+      return this.transformOpportunityData(data || []);
+    } catch (error) {
+      console.error("Error in getAllOpportunities:", error);
       throw error;
     }
   }
@@ -180,6 +224,20 @@ class OpportunitiesService {
       console.error("Error in getOpportunityStats:", error);
       throw error;
     }
+  }
+
+  /**
+   * Obtiene oportunidades recientes
+   * @param {number} limit - Número de oportunidades a obtener
+   * @returns {Promise<Array>} Lista de oportunidades recientes
+   */
+  /**
+   * Obtiene oportunidades inactivas
+   * @param {Object} pagination - Parámetros de paginación
+   * @returns {Promise<Object>} Respuesta con datos de oportunidades inactivas
+   */
+  async getInactiveOpportunities(pagination = {}) {
+    return this.getOpportunities({ status: "inactive" }, pagination);
   }
 
   /**

@@ -1,20 +1,28 @@
-import React from "react";
-function PaginationComponent({
-  currentPage,
-  totalPages,
-  totalCount,
-  itemsPerPage,
+import React, { useMemo } from "react";
+import PropTypes from "prop-types";
+
+function Pagination({
+  currentPage = 1,
+  totalPages = 1,
+  totalCount = 0,
+  itemsPerPage = 6,
   onPageChange,
 }) {
   // Calcular rango de elementos mostrados
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, totalCount);
+  const { startItem, endItem } = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage + 1;
+    const end = Math.min(currentPage * itemsPerPage, totalCount);
+    return { startItem: start, endItem: end };
+  }, [currentPage, itemsPerPage, totalCount]);
 
   // Generar números de página para mostrar
-  const getPageNumbers = () => {
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 1) return [];
+
     const delta = 2; // Cuántas páginas mostrar a cada lado de la actual
     const range = [];
     const rangeWithDots = [];
+    let l;
 
     // Calcular el rango de páginas a mostrar
     for (
@@ -39,42 +47,59 @@ function PaginationComponent({
     if (currentPage + delta < totalPages - 1) {
       rangeWithDots.push("...", totalPages);
     } else if (totalPages > 1) {
-      rangeWithDots.push(totalPages);
+      if (range[range.length - 1] !== totalPages) {
+        rangeWithDots.push(totalPages);
+      }
     }
 
-    return rangeWithDots;
-  };
+    // Eliminar duplicados y ordenar
+    return [...new Set(rangeWithDots)].sort((a, b) => {
+      if (a === "...") return 1;
+      if (b === "...") return -1;
+      return a - b;
+    });
+  }, [currentPage, totalPages]);
+
+  // Si no hay páginas o solo hay una página, no mostrar la paginación
+  if (totalPages <= 1) return null;
 
   return (
-    <div className="pagination-container">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-6 space-y-4 md:space-y-0">
       {/* Información de elementos */}
-      <div className="pagination-info">
-        Mostrando {startItem}-{endItem} de {totalCount} resultados
+      <div className="text-sm text-gray-600">
+        Mostrando <span className="font-medium">{startItem}</span> a{" "}
+        <span className="font-medium">{endItem}</span> de{" "}
+        <span className="font-medium">{totalCount}</span> resultados
       </div>
 
       {/* Controles de paginación */}
-      <div className="pagination-controls">
+      <div className="flex items-center space-x-2">
         {/* Botón anterior */}
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="pagination-btn pagination-prev"
+          className="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          aria-label="Página anterior"
         >
-          ← Anterior
+          &larr; Anterior
         </button>
 
         {/* Números de página */}
-        <div className="pagination-numbers">
-          {getPageNumbers().map((pageNum, index) => (
+        <div className="hidden sm:flex items-center space-x-1">
+          {pageNumbers.map((pageNum, index) => (
             <React.Fragment key={index}>
               {pageNum === "..." ? (
-                <span className="pagination-dots">...</span>
+                <span className="px-3 py-1">...</span>
               ) : (
                 <button
-                  onClick={() => onPageChange(pageNum)}
-                  className={`pagination-number ${
-                    pageNum === currentPage ? "active" : ""
+                  onClick={() => onPageChange(Number(pageNum))}
+                  className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${
+                    pageNum === currentPage
+                      ? "bg-blue-600 text-white"
+                      : "border hover:bg-gray-50"
                   }`}
+                  aria-current={pageNum === currentPage ? "page" : undefined}
+                  aria-label={`Ir a la página ${pageNum}`}
                 >
                   {pageNum}
                 </button>
@@ -86,33 +111,25 @@ function PaginationComponent({
         {/* Botón siguiente */}
         <button
           onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="pagination-btn pagination-next"
+          disabled={currentPage >= totalPages}
+          className="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          aria-label="Página siguiente"
         >
-          Siguiente →
+          Siguiente &rarr;
         </button>
-      </div>
-
-      {/* Selector de elementos por página */}
-      <div className="pagination-size-selector">
-        <label>
-          Mostrar:
-          <select
-            value={itemsPerPage}
-            onChange={(e) => {
-              // Aquí necesitarías actualizar el itemsPerPage en el componente padre
-              // O manejarlo como prop
-              console.log("Cambiar a:", e.target.value);
-            }}
-          >
-            <option value={6}>6 por página</option>
-            <option value={12}>12 por página</option>
-            <option value={24}>24 por página</option>
-            <option value={48}>48 por página</option>
-          </select>
-        </label>
       </div>
     </div>
   );
 }
-export default PaginationComponent;
+
+Pagination.propTypes = {
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  totalCount: PropTypes.number.isRequired,
+  itemsPerPage: PropTypes.number,
+  onPageChange: PropTypes.func.isRequired,
+  showPageSizeSelector: PropTypes.bool,
+  onPageSizeChange: PropTypes.func,
+};
+
+export default React.memo(Pagination);
