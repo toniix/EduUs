@@ -4,19 +4,19 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Blog from "./pages/Blog";
 import News from "./pages/News";
-import Dashboard from "./pages/opportunities/Dashboard";
+import Opportunities from "./pages/opportunities/Opportunities";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminPanel from "./pages/admin/AdminPanel";
 import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
+import ProtectedRoute from "./routes/ProtectedRoute";
 import { OpportunityProvider } from "./contexts/OpportunityContext";
 import OpportunityDetail from "./components/opportunities/OpportunityDetail";
 import ScrollToTop from "./components/ScrollToTop";
 import PublicLayout from "./components/layouts/PublicLayout";
-import AdminLayout from "./components/layouts/AdminLayout";
+import PrivateLayout from "./components/layouts/PrivateLayout";
 import Profile from "./pages/Profile";
-import { RoleGuard } from "./components/admin/RoleGuard";
+import RoleGuard from "./components/admin/RoleGuard";
 import { RoleProvider } from "./contexts/RoleContext";
 import NoAccessFallback from "./components/ui/NoAccessFallback";
 import PublicRoute from "./routes/PublicRoute";
@@ -42,7 +42,7 @@ function App() {
                       path="/edutracker/opportunity/:id"
                       element={<OpportunityDetail />}
                     />
-                    <Route path="/edutracker" element={<Dashboard />} />
+                    <Route path="/edutracker" element={<Opportunities />} />
 
                     <Route
                       path="/login"
@@ -80,9 +80,9 @@ function App() {
                           requiredRoles={["admin", "editor"]}
                           fallback={<NoAccessFallback />}
                         >
-                          <AdminLayout>
+                          <PrivateLayout>
                             <AdminPanel />
-                          </AdminLayout>
+                          </PrivateLayout>
                         </RoleGuard>
                       </ProtectedRoute>
                     }

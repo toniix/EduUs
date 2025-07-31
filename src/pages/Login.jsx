@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/ui/Buttom";
 import Input from "../components/ui/Input";
-import AuthError from "../components/AuthError";
+import AuthError from "../components/auth/AuthError";
 import {
   signInWithEmail,
   resendConfirmationEmail,

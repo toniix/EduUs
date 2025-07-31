@@ -1,43 +1,46 @@
-import { useRole } from "../../contexts/RoleContext";
+import React, { useMemo } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import LoadingSpinner from "../ui/LoadingSpinner";
 
-export const RoleGuard = ({
+// Nueva implementación simplificada
+const RoleGuard = ({
   children,
-  requiredRole,
-  requiredRoles,
+  requiredRoles = [],
   fallback = null,
   inverse = false,
 }) => {
-  const { hasRole, hasAnyRole, loading: roleLoading, userRole } = useRole();
-  const { role, loading: authLoading } = useAuth();
+  const { role, loading } = useAuth();
 
-  const effectiveRole = userRole || role;
-  const isLoading = roleLoading || authLoading;
+  // Verificar si el usuario tiene acceso basado en el rol
+  console.log("verificando permisos...");
 
-  if (isLoading || !effectiveRole) {
-    return (
-      <LoadingSpinner
-        message="Verificando permisos de administrador..."
-        size="lg"
-        className="min-h-[400px]"
-      />
-    );
+  const hasAccess = useMemo(() => {
+    // Si no hay roles requeridos, se otorga acceso según la condición inverse
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return !inverse;
+    }
+
+    // Verificar si el rol actual está en los roles requeridos
+    const hasRequiredRole = role && requiredRoles.includes(role.toLowerCase());
+    console.log("hasRequiredRole:", hasRequiredRole);
+    // Aplicar la condición inverse si es necesario
+    return inverse ? !hasRequiredRole : hasRequiredRole;
+  }, [role, requiredRoles, inverse]);
+
+  console.log("hasAccess:", hasAccess);
+
+  // Mostrar spinner mientras se carga la autenticación
+  if (loading) {
+    return <LoadingSpinner message="Verificando permisos..." size="lg" />;
   }
 
-  let hasAccess = false;
-
-  if (requiredRole) {
-    hasAccess = hasRole
-      ? hasRole(requiredRole)
-      : effectiveRole === requiredRole;
-  } else if (requiredRoles && requiredRoles.length > 0) {
-    hasAccess = hasAnyRole
-      ? hasAnyRole(requiredRoles)
-      : requiredRoles.includes(effectiveRole);
+  // Si no tiene acceso, mostrar el fallback o null
+  if (!hasAccess) {
+    return fallback || null;
   }
 
-  if (inverse) hasAccess = !hasAccess;
-  if (!hasAccess) return fallback;
+  // Si tiene acceso, mostrar el contenido
   return children;
 };
+
+export default React.memo(RoleGuard);

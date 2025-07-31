@@ -1,6 +1,8 @@
 import UserActionsMenu from "./UserActionsMenu";
 import { useRole } from "../../../contexts/RoleContext";
 
+import InlineLoader from "../../ui/LoadingSpinner";
+
 export default function UsersTab({
   users,
   totalPages,
@@ -10,6 +12,7 @@ export default function UsersTab({
   setRoleFilter,
   onUserRoleUpdate,
   onUserDelete,
+  loading = false,
 }) {
   const { userRole } = useRole();
   if (userRole !== "admin") {
@@ -26,6 +29,10 @@ export default function UsersTab({
     { label: "Editor", value: "editor" },
     { label: "User", value: "user" },
   ];
+
+  if (loading) {
+    return <InlineLoader message="Cargando usuarios..." size="md" />;
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 pt-8">

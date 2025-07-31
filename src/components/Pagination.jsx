@@ -1,105 +1,118 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import React from "react";
+function PaginationComponent({
+  currentPage,
+  totalPages,
+  totalCount,
+  itemsPerPage,
+  onPageChange,
+}) {
+  // Calcular rango de elementos mostrados
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalCount);
 
-export default function Pagination({ currentPage, totalPages, onPageChange }) {
-  if (totalPages <= 1) return null;
+  // Generar números de página para mostrar
+  const getPageNumbers = () => {
+    const delta = 2; // Cuántas páginas mostrar a cada lado de la actual
+    const range = [];
+    const rangeWithDots = [];
 
-  // Función para calcular el rango de páginas a mostrar
-  // Se muestra un máximo de 5 páginas, incluyendo la primera y la última
-  const getPageRange = () => {
-    const maxPagesToShow = 5;
-
-    if (totalPages <= maxPagesToShow) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    // Calcular el rango de páginas a mostrar
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
     }
 
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    let endPage = startPage + maxPagesToShow - 1;
-
-    if (endPage > totalPages) {
-      endPage = totalPages;
-      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    // Agregar primera página
+    if (currentPage - delta > 2) {
+      rangeWithDots.push(1, "...");
+    } else {
+      rangeWithDots.push(1);
     }
 
-    return Array.from(
-      { length: endPage - startPage + 1 },
-      (_, i) => startPage + i
-    );
+    // Agregar páginas del rango
+    rangeWithDots.push(...range);
+
+    // Agregar última página
+    if (currentPage + delta < totalPages - 1) {
+      rangeWithDots.push("...", totalPages);
+    } else if (totalPages > 1) {
+      rangeWithDots.push(totalPages);
+    }
+
+    return rangeWithDots;
   };
 
-  const pageRange = getPageRange();
-
   return (
-    <nav className="flex justify-center items-center space-x-1">
-      {/* Botón anterior */}
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="h-8 w-8 flex items-center justify-center rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        <span className="sr-only">Página anterior</span>
-      </button>
+    <div className="pagination-container">
+      {/* Información de elementos */}
+      <div className="pagination-info">
+        Mostrando {startItem}-{endItem} de {totalCount} resultados
+      </div>
 
-      {/* Primera página y puntos suspensivos si es necesario */}
-      {pageRange[0] > 1 && (
-        <>
-          <button
-            onClick={() => onPageChange(1)}
-            className={`h-8 w-8 rounded-md ${
-              currentPage === 1
-                ? "bg-primary text-white"
-                : "border border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            1
-          </button>
-          {pageRange[0] > 2 && <span className="px-2 text-gray-500">...</span>}
-        </>
-      )}
-
-      {/* Páginas numeradas */}
-      {pageRange.map((page) => (
+      {/* Controles de paginación */}
+      <div className="pagination-controls">
+        {/* Botón anterior */}
         <button
-          key={page}
-          onClick={() => onPageChange(page)}
-          className={`h-8 w-8 rounded-md ${
-            currentPage === page
-              ? "bg-primary text-white"
-              : "border border-gray-300 hover:bg-gray-50"
-          }`}
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="pagination-btn pagination-prev"
         >
-          {page}
+          ← Anterior
         </button>
-      ))}
 
-      {/* Última página y puntos suspensivos si es necesario */}
-      {pageRange[pageRange.length - 1] < totalPages && (
-        <>
-          {pageRange[pageRange.length - 1] < totalPages - 1 && (
-            <span className="px-2 text-gray-500">...</span>
-          )}
-          <button
-            onClick={() => onPageChange(totalPages)}
-            className={`h-8 w-8 rounded-md ${
-              currentPage === totalPages
-                ? "bg-primary text-white"
-                : "border border-gray-300 hover:bg-gray-50"
-            }`}
+        {/* Números de página */}
+        <div className="pagination-numbers">
+          {getPageNumbers().map((pageNum, index) => (
+            <React.Fragment key={index}>
+              {pageNum === "..." ? (
+                <span className="pagination-dots">...</span>
+              ) : (
+                <button
+                  onClick={() => onPageChange(pageNum)}
+                  className={`pagination-number ${
+                    pageNum === currentPage ? "active" : ""
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Botón siguiente */}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="pagination-btn pagination-next"
+        >
+          Siguiente →
+        </button>
+      </div>
+
+      {/* Selector de elementos por página */}
+      <div className="pagination-size-selector">
+        <label>
+          Mostrar:
+          <select
+            value={itemsPerPage}
+            onChange={(e) => {
+              // Aquí necesitarías actualizar el itemsPerPage en el componente padre
+              // O manejarlo como prop
+              console.log("Cambiar a:", e.target.value);
+            }}
           >
-            {totalPages}
-          </button>
-        </>
-      )}
-
-      {/* Botón siguiente */}
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="h-8 w-8 flex items-center justify-center rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-      >
-        <ChevronRight className="h-4 w-4" />
-        <span className="sr-only">Página siguiente</span>
-      </button>
-    </nav>
+            <option value={6}>6 por página</option>
+            <option value={12}>12 por página</option>
+            <option value={24}>24 por página</option>
+            <option value={48}>48 por página</option>
+          </select>
+        </label>
+      </div>
+    </div>
   );
 }
+export default PaginationComponent;

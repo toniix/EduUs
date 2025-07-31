@@ -1,5 +1,5 @@
 import { Plus, Eye, Edit, Trash2 } from "lucide-react";
-import Pagination from "../../Pagination";
+import Pagination from "../../Pagination2";
 import OpportunityForm from "../OpportunityForm";
 import { useState } from "react";
 

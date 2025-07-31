@@ -4,9 +4,9 @@ import { formatDate } from "../../utils/formatDate";
 
 // Mapeo de tipos a colores y etiquetas
 const typeConfig = {
-  scholarship: { label: "Beca", color: "bg-blue-100 text-blue-800" },
+  beca: { label: "Beca", color: "bg-blue-100 text-blue-800" },
   workshop: { label: "Taller", color: "bg-green-100 text-green-800" },
-  exchange: { label: "Intercambio", color: "bg-purple-100 text-purple-800" },
+  intercambio: { label: "Interno", color: "bg-purple-100 text-purple-800" },
   volunteer: { label: "Voluntariado", color: "bg-orange-100 text-orange-800" },
   internship: { label: "Pasantía", color: "bg-pink-100 text-pink-800" },
 };
@@ -20,17 +20,18 @@ export default function OpportunityCard({ opportunity }) {
     type,
     location,
     deadline,
-    imageUrl,
+    image_url,
     tags,
   } = opportunity;
 
+  // console.log(opportunity);
   const typeInfo = typeConfig[type];
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
       <div className="relative h-40 w-full">
         <img
-          src={imageUrl || "/placeholder.svg"}
+          src={image_url || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-cover"
         />
@@ -66,7 +67,7 @@ export default function OpportunityCard({ opportunity }) {
               key={index}
               className="px-2 py-1 text-xs rounded-full border border-gray-200 text-gray-600"
             >
-              {tag}
+              {tag.name}
             </span>
           ))}
         </div>

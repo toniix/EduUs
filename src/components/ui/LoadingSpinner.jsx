@@ -136,7 +136,7 @@ export const InlineLoader = ({ message = "Cargando..." }) => (
     message={message}
     size="sm"
     showMessage={true}
-    className="py-4"
+    className="py-4 mt-4"
   />
 );
 
