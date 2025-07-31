@@ -2,18 +2,91 @@ import { supabase } from "../lib/supabase";
 
 class OpportunitiesService {
   /**
-   * Obtiene todas las oportunidades con sus relaciones
-   * @param {Object} filters - Filtros para aplicar
-   * @param {Object} pagination - Parámetros de paginación
-   * @returns {Promise<Object>} Respuesta con datos, count, totalPages, currentPage
+   * Aplica filtros a las oportunidades
+   * @param {Object} filters - Objeto con los filtros a aplicar
+   * @param {Object} pagination - Configuración de paginación
+   * @returns {Promise<Object>} Objeto con las oportunidades y metadatos de paginación
    */
-  async getOpportunities(filters = {}, pagination = { page: 1, limit: 6 }) {
+  async getOpportunitiesWithFilters(filters = {}, pagination = {}) {
+    const {
+      page = 1,
+      limit = 6,
+      sortBy = "created_at",
+      sortOrder = "desc",
+    } = pagination;
+
+    const {
+      search,
+      type,
+      modality,
+      country,
+      organization,
+      category_id,
+      status = "active",
+    } = filters;
+
     try {
-      const { page, limit } = pagination;
+      let query = supabase.from("opportunities").select(
+        `*,
+        category:categories(id, name),
+        creator:profiles!opportunities_created_by_fkey(id, full_name),
+        opportunity_tags(tag:tags(id, name))`,
+        { count: "exact" }
+      );
+
+      const exactFilters = {
+        type,
+        modality,
+        country,
+        organization,
+        category_id,
+        status,
+      };
+
+      Object.entries(exactFilters).forEach(([key, value]) => {
+        if (value) {
+          query = query.eq(key, value);
+        }
+      });
+
+      query = query.order(sortBy, { ascending: sortOrder === "asc" });
+
       const from = (page - 1) * limit;
       const to = from + limit - 1;
-      
-      let query = supabase
+      query = query.range(from, to);
+
+      const { data, error, count } = await query;
+
+      if (error) throw error;
+
+      const transformedData = this.transformOpportunityData(data || []);
+
+      return {
+        data: transformedData,
+        total: count || 0,
+        page,
+        totalPages: Math.ceil((count || 0) / limit),
+        limit,
+      };
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching opportunities with filters:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene una oportunidad específica por ID
+   * @param {string} id - ID de la oportunidad
+   * @returns {Promise<Object|null>} Oportunidad o null si no se encuentra
+   */
+  /**
+   * Obtiene todas las oportunidades sin paginación ni filtros
+   * @returns {Promise<Array>} Lista de oportunidades con sus relaciones
+   */
+  async getAllOpportunities() {
+    try {
+      const { data, error } = await supabase
         .from("opportunities")
         .select(
           `
@@ -32,66 +105,8 @@ class OpportunitiesService {
               name
             )
           )
-        `,
-          { count: "exact" }
+        `
         )
-        .range(from, to)
-        .order("created_at", { ascending: false });
-
-      // Aplicar filtros
-      query = this.applyFilters(query, filters);
-
-      const { data, error, count } = await query;
-
-      if (error) {
-        throw new Error(`Error fetching opportunities: ${error.message}`);
-      }
-
-      // Transformar los datos para aplanar las relaciones many-to-many
-      const transformedData = this.transformOpportunityData(data || []);
-
-      return {
-        data: transformedData,
-        count: count || 0,
-        totalPages: Math.ceil((count || 0) / limit),
-        currentPage: page,
-      };
-    } catch (error) {
-      console.error("Error in getOpportunities:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Obtiene una oportunidad específica por ID
-   * @param {string} id - ID de la oportunidad
-   * @returns {Promise<Object|null>} Oportunidad o null si no se encuentra
-   */
-  /**
-   * Obtiene todas las oportunidades sin paginación ni filtros
-   * @returns {Promise<Array>} Lista de oportunidades con sus relaciones
-   */
-  async getAllOpportunities() {
-    try {
-      const { data, error } = await supabase
-        .from("opportunities")
-        .select(`
-          *,
-          category:categories(
-            id,
-            name
-          ),
-          creator:profiles!opportunities_created_by_fkey(
-            id,
-            full_name
-          ),
-          opportunity_tags(
-            tag:tags(
-              id,
-              name
-            )
-          )
-        `)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -289,54 +304,72 @@ class OpportunitiesService {
   }
 
   /**
-   * Aplica filtros a la consulta
-   * @param {Object} query - Query de Supabase
-   * @param {Object} filters - Filtros a aplicar
-   * @returns {Object} Query con filtros aplicados
+   * Obtiene las opciones de filtro disponibles
+   * @returns {Promise<Object>} Objeto con arrays de opciones para cada filtro
    */
-  applyFilters(query, filters) {
-    const { category_id, tag_ids, type, status, location, search, created_by } =
-      filters;
+  async getFilterOptions() {
+    try {
+      // Obtener tipos únicos
+      const { data: types } = await supabase
+        .from("opportunities")
+        .select("type")
+        .not("type", "is", null)
+        .order("type", { ascending: true });
 
-    if (category_id) {
-      query = query.eq("category_id", category_id);
+      // Obtener modalidades únicas
+      const { data: modalities } = await supabase
+        .from("opportunities")
+        .select("modality")
+        .not("modality", "is", null)
+        .order("modality", { ascending: true });
+
+      // Obtener países únicos
+      const { data: countries } = await supabase
+        .from("opportunities")
+        .select("country")
+        .not("country", "is", null)
+        .order("country", { ascending: true });
+
+      // Obtener organizaciones únicas
+      const { data: organizations } = await supabase
+        .from("opportunities")
+        .select("organization")
+        .not("organization", "is", null)
+        .order("organization", { ascending: true });
+
+      return {
+        types: [...new Set(types.map((item) => item.type))],
+        modalities: [...new Set(modalities.map((item) => item.modality))],
+        countries: [...new Set(countries.map((item) => item.country))],
+        organizations: [
+          ...new Set(organizations.map((item) => item.organization)),
+        ],
+      };
+    } catch (error) {
+      console.error("Error fetching filter options:", error);
+      throw error;
     }
+  }
 
-    if (type) {
-      query = query.eq("type", type);
-    }
+  /**
+   * Transforma los datos de las oportunidades para aplanar las relaciones many-to-many
+   * @param {Array} opportunities - Lista de oportunidades con relaciones anidadas
+   * @returns {Array} Datos transformados
+   */
+  transformOpportunityData(opportunities) {
+    return opportunities.map((opportunity) => {
+      // Extraer tags de la relación many-to-many
+      const tags = (opportunity.opportunity_tags || [])
+        .map((ot) => ot.tag)
+        .filter(Boolean);
 
-    if (status) {
-      query = query.eq("status", status);
-    } else {
-      // Por defecto, solo mostrar oportunidades activas
-      query = query.eq("status", "active");
-    }
-
-    if (location) {
-      query = query.ilike("location", `%${location}%`);
-    }
-
-    if (created_by) {
-      query = query.eq("created_by", created_by);
-    }
-
-    if (search) {
-      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
-    }
-
-    if (tag_ids && tag_ids.length > 0) {
-      // Para filtrar por tags, necesitamos una subconsulta
-      query = query.in(
-        "id",
-        supabase
-          .from("opportunity_tags")
-          .select("opportunity_id")
-          .in("tag_id", tag_ids)
-      );
-    }
-
-    return query;
+      return {
+        ...opportunity,
+        tags, // Añadir tags como array plano
+        // Eliminar la relación original que ya no necesitamos
+        opportunity_tags: undefined,
+      };
+    });
   }
 
   /**
@@ -365,41 +398,3 @@ class OpportunitiesService {
 
 // Exportar una instancia singleton
 export const opportunitiesService = new OpportunitiesService();
-
-// Ejemplo de uso en un componente
-/*
-// components/OpportunitiesList.jsx
-import React from 'react';
-import { useOpportunities } from '../hooks/useOpportunities';
-
-export default function OpportunitiesList() {
-  const { opportunities, loading, error, totalCount } = useOpportunities(
-    { status: 'active' }, // filtros
-    { page: 1, limit: 12 } // paginación
-  );
-
-  if (loading) return <div>Cargando oportunidades...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
-  return (
-    <div>
-      <h2>Oportunidades ({totalCount})</h2>
-      <div className="opportunities-grid">
-        {opportunities.map(opportunity => (
-          <div key={opportunity.id} className="opportunity-card">
-            <h3>{opportunity.title}</h3>
-            <p>{opportunity.description}</p>
-            <div>Categoría: {opportunity.category.name}</div>
-            <div>Creado por: {opportunity.creator.full_name}</div>
-            <div>
-              Tags: {opportunity.tags.map(tag => (
-                <span key={tag.id} className="tag">{tag.name}</span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-*/

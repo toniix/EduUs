@@ -21,7 +21,7 @@ const initialState = {
   tags: [],
 };
 
-export function useOpportunityForm(initial = {}) {
+export function useOpportunityForm(initial = {}, categories = []) {
   const [formData, setFormData] = useState({ ...initialState, ...initial });
   const [currentBenefit, setCurrentBenefit] = useState("");
   const [currentTag, setCurrentTag] = useState("");
@@ -37,7 +37,17 @@ export function useOpportunityForm(initial = {}) {
     if (type === "file" && files && files[0]) {
       setFormData((prev) => ({ ...prev, [name]: files[0] }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      // Si es el campo category_id, también actualizamos el category con el nombre correspondiente
+      if (name === 'category_id') {
+        const selectedCategory = categories.find(cat => cat.id === value);
+        setFormData(prev => ({
+          ...prev,
+          category_id: value,
+          category: selectedCategory ? selectedCategory.name : ''
+        }));
+      } else {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+      }
     }
     // Limpiar error del campo al modificarlo
     setErrors((prev) => ({ ...prev, [name]: undefined }));

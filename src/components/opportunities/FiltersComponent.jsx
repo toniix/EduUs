@@ -1,15 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Check, X } from "lucide-react";
 
-const FiltersComponent = ({ onFilterChange }) => {
+const FiltersComponent = ({ onFilterChange, filterOptions = {} }) => {
   const [localFilters, setLocalFilters] = useState({
-    search: "",
-    category_id: "",
     type: "",
-    location: "",
+    modality: "",
+    country: "",
+    organization: "",
+    category_id: "",
   });
+
+  // Initialize filter options with empty arrays if not provided
+  const {
+    types = [],
+    modalities = [],
+    countries = [],
+    organizations = [],
+  } = filterOptions;
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setLocalFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleFilterSubmit = (e) => {
     e.preventDefault();
+    // Remove empty values from filters
     const cleanFilters = Object.fromEntries(
       Object.entries(localFilters).filter(([_, value]) => value !== "")
     );
@@ -18,74 +37,117 @@ const FiltersComponent = ({ onFilterChange }) => {
 
   const handleFilterReset = () => {
     setLocalFilters({
-      search: "",
-      category_id: "",
       type: "",
-      location: "",
+      modality: "",
+      country: "",
+      organization: "",
+      category_id: "",
     });
     onFilterChange({});
   };
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900">Filtros</h3>
+        <button
+          type="button"
+          onClick={handleFilterReset}
+          className="text-sm text-primary hover:text-primary/80 transition-colors"
+        >
+          Limpiar filtros
+        </button>
+      </div>
 
       <form onSubmit={handleFilterSubmit} className="space-y-4">
-        {/* Filtro por tipo */}
+        {/* Filtro por tipo de oportunidad */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
             Tipo de oportunidad
           </label>
           <select
+            name="type"
             value={localFilters.type}
-            onChange={(e) =>
-              setLocalFilters({
-                ...localFilters,
-                type: e.target.value,
-              })
-            }
+            onChange={handleFilterChange}
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="">Todos los tipos</option>
-            <option value="remote">Remoto</option>
-            <option value="onsite">Presencial</option>
-            <option value="hybrid">Híbrido</option>
+            {types.map((type) => (
+              <option key={type} value={type}>
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </option>
+            ))}
           </select>
         </div>
 
-        {/* Filtro por ubicación */}
+        {/* Filtro por modalidad */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            Ubicación
+            Modalidad
           </label>
-          <input
-            type="text"
-            placeholder="Escribe una ubicación..."
-            value={localFilters.location}
-            onChange={(e) =>
-              setLocalFilters({
-                ...localFilters,
-                location: e.target.value,
-              })
-            }
+          <select
+            name="modality"
+            value={localFilters.modality}
+            onChange={handleFilterChange}
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          />
+          >
+            <option value="">Todas las modalidades</option>
+            {modalities.map((modality) => (
+              <option key={modality} value={modality}>
+                {modality.charAt(0).toUpperCase() + modality.slice(1)}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Botones de acción */}
-        <div className="flex gap-2 pt-4">
+        {/* Filtro por país */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            País
+          </label>
+          <select
+            name="country"
+            value={localFilters.country}
+            onChange={handleFilterChange}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          >
+            <option value="">Todos los países</option>
+            {countries.map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Filtro por organización */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Organización
+          </label>
+          <select
+            name="organization"
+            value={localFilters.organization}
+            onChange={handleFilterChange}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          >
+            <option value="">Todas las organizaciones</option>
+            {organizations.map((org) => (
+              <option key={org} value={org}>
+                {org}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Botón de aplicar filtros */}
+        <div className="pt-2">
           <button
             type="submit"
-            className="flex-1 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors duration-300"
+            className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50"
           >
+            <Check className="h-4 w-4 mr-2" />
             Aplicar filtros
-          </button>
-          <button
-            type="button"
-            onClick={handleFilterReset}
-            className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors duration-300"
-          >
-            Limpiar
           </button>
         </div>
       </form>

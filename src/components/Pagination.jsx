@@ -64,15 +64,7 @@ function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-6 space-y-4 md:space-y-0">
-      {/* Información de elementos */}
-      <div className="text-sm text-gray-600">
-        Mostrando <span className="font-medium">{startItem}</span> a{" "}
-        <span className="font-medium">{endItem}</span> de{" "}
-        <span className="font-medium">{totalCount}</span> resultados
-      </div>
-
-      {/* Controles de paginación */}
+    <div className="flex flex-col md:flex-row md:items-center md:justify-center mt-6 space-y-4 md:space-y-0">
       <div className="flex items-center space-x-2">
         {/* Botón anterior */}
         <button

@@ -1,15 +1,7 @@
 import { Calendar, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../utils/formatDate";
-
-// Mapeo de tipos a colores y etiquetas
-const typeConfig = {
-  beca: { label: "Beca", color: "bg-blue-100 text-blue-800" },
-  workshop: { label: "Taller", color: "bg-green-100 text-green-800" },
-  intercambio: { label: "Interno", color: "bg-purple-100 text-purple-800" },
-  volunteer: { label: "Voluntariado", color: "bg-orange-100 text-orange-800" },
-  internship: { label: "Pasantía", color: "bg-pink-100 text-pink-800" },
-};
+import { typeConfig, modalityConfig } from "../../utils/opportunity";
 
 export default function OpportunityCard({ opportunity }) {
   const {
@@ -22,9 +14,9 @@ export default function OpportunityCard({ opportunity }) {
     deadline,
     image_url,
     tags,
+    modality,
   } = opportunity;
 
-  // console.log(opportunity);
   const typeInfo = typeConfig[type];
 
   return (
@@ -59,6 +51,12 @@ export default function OpportunityCard({ opportunity }) {
             <Calendar className="h-4 w-4 mr-1" />
             <span>Fecha límite: {formatDate(deadline)}</span>
           </div>
+          {modality && modalityConfig[modality] && (
+            <div className="flex items-center text-sm text-gray-600">
+              <span className="mr-1">{modalityConfig[modality].icon}</span>
+              <span>{modalityConfig[modality].label}</span>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-1 mb-4">

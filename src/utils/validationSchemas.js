@@ -129,8 +129,8 @@ export const opportunitySchema = z.object({
     .refine((val) => val && (typeof val === "string" || val instanceof File), {
       message: "La imagen es obligatoria.",
     }),
-  category: z.string().min(1, "La categoría es obligatoria."),
-  category_id: z.any().optional(),
+  category: z.string().optional(),
+  category_id: z.string().min(1, "La categoría es obligatoria"),
   benefits: z.array(z.string()).min(1, "Al menos un beneficio es obligatorio."),
   requirements: z
     .array(z.string())

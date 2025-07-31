@@ -4,26 +4,27 @@ import { useOpportunity } from "../../hooks/useOpportunities";
 import {
   Calendar,
   MapPin,
-  BookOpen,
-  Users,
-  Award,
-  Briefcase,
   ChevronLeft,
-  Clock,
   Building,
   User,
   Tag,
   CheckCircle,
-  AlertCircle,
   Mail,
   Phone,
   Globe,
   Share2,
   Bookmark,
-  Eye,
   ArrowRight,
   Star,
+  Award,
+  BookOpen,
+  Users,
+  Briefcase,
 } from "lucide-react";
+import { statusColors, modalityStyles } from "../../utils/opportunity";
+import OpportunityLoading from "./OpportunityLoading";
+import OpportunityError from "./OpportunityError";
+import OpportunityNotFound from "./OpportunityNotFound";
 
 const typeIcons = {
   beca: <Award className="h-5 w-5" />,
@@ -31,15 +32,11 @@ const typeIcons = {
   intercambio: <Users className="h-5 w-5" />,
   charla: <Briefcase className="h-5 w-5" />,
   conferencia: <Users className="h-5 w-5" />,
-  remote: <Globe className="h-5 w-5" />,
-  onsite: <Building className="h-5 w-5" />,
-  hybrid: <Users className="h-5 w-5" />,
 };
-
-const statusColors = {
-  active: { bg: "bg-green-100", text: "text-green-800", icon: CheckCircle },
-  closed: { bg: "bg-red-100", text: "text-red-800", icon: AlertCircle },
-  draft: { bg: "bg-yellow-100", text: "text-yellow-800", icon: Clock },
+const modalityIcons = {
+  virtual: <Globe className="h-5 w-5" />,
+  presencial: <Building className="h-5 w-5" />,
+  hibrido: <Users className="h-5 w-5" />,
 };
 
 const OpportunityDetail = () => {
@@ -80,65 +77,15 @@ const OpportunityDetail = () => {
   };
 
   if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-20">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="h-64 bg-gray-200"></div>
-            <div className="p-8 space-y-4">
-              <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              <div className="h-20 bg-gray-200 rounded"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <OpportunityLoading />;
   }
 
   if (error) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-20">
-        <div className="text-center py-12">
-          <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Error al cargar
-          </h2>
-          <p className="text-gray-600 mb-4">
-            {error.message || "No se pudo cargar la oportunidad"}
-          </p>
-          <Link
-            to="/edutracker"
-            className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
-          >
-            Volver a oportunidades
-          </Link>
-        </div>
-      </div>
-    );
+    return <OpportunityError />;
   }
 
   if (!opportunity) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-20">
-        <div className="text-center py-12">
-          <Eye className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Oportunidad no encontrada
-          </h2>
-          <p className="text-gray-600 mb-4">
-            La oportunidad que buscas no existe o ha sido eliminada.
-          </p>
-          <Link
-            to="/edutracker"
-            className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
-          >
-            Explorar oportunidades
-          </Link>
-        </div>
-      </div>
-    );
+    return <OpportunityNotFound />;
   }
 
   const {
@@ -157,6 +104,7 @@ const OpportunityDetail = () => {
     benefits,
     status,
     contact,
+    modality,
     created_at,
   } = opportunity;
 
@@ -167,9 +115,9 @@ const OpportunityDetail = () => {
   const parsedBenefits =
     typeof benefits === "string" ? JSON.parse(benefits) : benefits;
 
-  console.log("requirements:", requirements);
-  console.log("type:", typeof requirements);
-  console.log("is array:", Array.isArray(requirements));
+  // console.log("requirements:", requirements);
+  // console.log("type:", typeof requirements);
+  // console.log("is array:", Array.isArray(requirements));
 
   const statusConfig = statusColors[status] || statusColors.active;
   const StatusIcon = statusConfig.icon;
@@ -228,6 +176,21 @@ const OpportunityDetail = () => {
                       <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                         {typeIcons[type]}
                         <span className="ml-1 capitalize">{type}</span>
+                      </div>
+                    )}
+                    {modality && (
+                      <div
+                        className={`
+                          inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border
+                          ${
+                            modalityStyles[modality] ||
+                            modalityStyles.presencial
+                          }
+                          transition-colors duration-200 hover:shadow-sm
+                        `}
+                      >
+                        {modalityIcons[modality]}
+                        <span className="ml-1 capitalize">{modality}</span>
                       </div>
                     )}
                   </div>

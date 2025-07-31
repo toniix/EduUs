@@ -1,8 +1,14 @@
 import { X } from "lucide-react";
 import { useOpportunityForm } from "../../hooks/useOpportunityForm";
+import { categoryService } from "../../services/categoryService";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const OpportunityForm = ({ showOpportunityForm, setShowOpportunityForm }) => {
+  const [categories, setCategories] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  const [categoriesError, setCategoriesError] = useState(null);
+
   const {
     formData,
     currentBenefit,
@@ -20,7 +26,27 @@ const OpportunityForm = ({ showOpportunityForm, setShowOpportunityForm }) => {
     removeArrayItem,
     submitForm,
     errors,
-  } = useOpportunityForm();
+  } = useOpportunityForm({}, categories);
+
+  // Cargar categorías al montar el componente
+  useEffect(() => {
+    const loadCategories = async () => {
+      setIsLoadingCategories(true);
+      setCategoriesError(null);
+      try {
+        const categoriesData = await categoryService.getCategories();
+        setCategories(categoriesData);
+      } catch (err) {
+        console.error("Error loading categories:", err);
+        setCategoriesError("Error al cargar las categorías");
+        toast.error("Error al cargar las categorías");
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -174,6 +200,9 @@ const OpportunityForm = ({ showOpportunityForm, setShowOpportunityForm }) => {
                   <option value="practica">Práctica</option>
                   <option value="voluntariado">Voluntariado</option>
                   <option value="curso">Curso</option>
+                  <option value="pasantia">Pasantía</option>
+                  <option value="taller">Taller</option>
+                  <option value="charla">Charla</option>
                 </select>
               </div>
 
@@ -181,17 +210,33 @@ const OpportunityForm = ({ showOpportunityForm, setShowOpportunityForm }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Categoría
                 </label>
-                <input
-                  type="text"
-                  name="category"
-                  // required
+                <select
+                  name="category_id"
                   className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.category || ""}
+                  value={formData.category_id || ""}
                   onChange={handleChange}
-                />
-                {errors?.category && (
+                  disabled={isLoadingCategories}
+                >
+                  <option value="">Selecciona una categoría</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                {isLoadingCategories && (
+                  <div className="text-xs text-gray-500 mt-1">
+                    Cargando categorías...
+                  </div>
+                )}
+                {categoriesError && (
                   <div className="text-xs text-red-600 mt-1 font-semibold">
-                    {errors.category}
+                    {categoriesError}
+                  </div>
+                )}
+                {errors?.category_id && (
+                  <div className="text-xs text-red-600 mt-1 font-semibold">
+                    {errors.category_id}
                   </div>
                 )}
               </div>
