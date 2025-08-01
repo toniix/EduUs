@@ -1,16 +1,58 @@
-import { Plus, Eye, Edit, Trash2 } from "lucide-react";
-import Pagination from "../../Pagination2";
-import OpportunityForm from "../OpportunityForm";
+import { Plus } from "lucide-react";
+import OpportunityForm from "../../opportunities/OpportunityForm";
 import { useState } from "react";
+import {
+  updateOpportunity,
+  createOpportunity,
+} from "../../../services/opportunityService";
+import InlineLoader from "../../ui/LoadingSpinner";
+import { toast } from "react-hot-toast";
+import OpportunityActionsMenu from "../../admin/tabs/OpportunityActionsMenu";
+import Pagination from "../../Pagination2";
 
 export default function ContentTab({
-  paginatedContent,
-  totalPages,
+  opportunities,
   currentPage,
   setCurrentPage,
+  totalPages,
+  loading,
+  error,
+  fetchOpportunities,
 }) {
-  console.log(paginatedContent);
   const [showOpportunityForm, setShowOpportunityForm] = useState(false);
+  const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  console.log(opportunities);
+
+  const handleFormSubmit = async (formData) => {
+    try {
+      if (selectedOpportunity?.id) {
+        const { success, error } = await updateOpportunity(
+          selectedOpportunity.id,
+          formData
+        );
+        if (!success) throw new Error(error);
+        toast.success("Oportunidad actualizada correctamente");
+      } else {
+        const { success, error } = await createOpportunity(formData);
+        if (!success) throw new Error(error);
+        toast.success("Oportunidad creada correctamente");
+      }
+
+      setShowOpportunityForm(false);
+      setSelectedOpportunity(null);
+      await fetchOpportunities();
+      return true;
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(error.message || "Error al procesar la solicitud");
+      throw error; // Let the form handle it if needed
+    }
+  };
+
+  const handleFormClose = () => {
+    setShowOpportunityForm(false);
+    setSelectedOpportunity(null);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 pt-8 max-w-full overflow-x-auto">
@@ -18,18 +60,42 @@ export default function ContentTab({
         <OpportunityForm
           showOpportunityForm={showOpportunityForm}
           setShowOpportunityForm={setShowOpportunityForm}
+          onSuccess={handleFormSubmit}
+          onClose={handleFormClose}
+          initialData={selectedOpportunity}
         />
       )}
+
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Gestión de Contenido</h2>
+        <h2 className="text-xl font-semibold">Gestión de Oportunidades</h2>
         <button
           className="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 flex items-center"
           onClick={() => setShowOpportunityForm(true)}
         >
           <Plus className="h-4 w-4 mr-2" />
-          Nuevo Contenido
+          Nueva Oportunidad
         </button>
       </div>
+
+      {loading && (
+        <InlineLoader message="Cargando oportunidades..." size="md" />
+      )}
+
+      {error && (
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+          role="alert"
+        >
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
+      {!loading && !error && opportunities.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No se encontraron oportunidades.</p>
+        </div>
+      )}
       <div className="w-full overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -55,50 +121,48 @@ export default function ContentTab({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedContent.map((content) => (
-              <tr
-                key={content.id}
-                className="hover:bg-gray-50 transition-colors duration-200"
-              >
+            {opportunities.map((opportunity) => (
+              <tr key={opportunity.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
-                    {content.title}
+                    {opportunity.title}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                    {content.type}
-                  </span>
+                  <div className="text-sm text-gray-500">
+                    {opportunity.type}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      content.status === "published"
+                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      opportunity.status === "active"
                         ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
+                        : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {content.status}
+                    {opportunity.status === "active" ? "Activo" : "Inactivo"}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {content.author}
+                  {opportunity.creator?.full_name || "N/A"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {content.createdAt}
+                  {/* {opportunity.created_at
+                    ? format(new Date(opportunity.created_at), "PP", {
+                        locale: es,
+                      })
+                    : "N/A"} */}
+                  {opportunity.created_at
+                    ? new Date(opportunity.created_at).toLocaleString()
+                    : "-"}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-2">
-                    <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                      <Eye className="h-4 w-4 text-blue-600 hover:text-blue-900" />
-                    </button>
-                    <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                      <Edit className="h-4 w-4 text-indigo-600 hover:text-indigo-900" />
-                    </button>
-                    <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                      <Trash2 className="h-4 w-4 text-red-600 hover:text-red-900" />
-                    </button>
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <OpportunityActionsMenu
+                    opportunity={opportunity}
+                    setShowOpportunityForm={setShowOpportunityForm}
+                    setSelectedOpportunity={setSelectedOpportunity}
+                  />
                 </td>
               </tr>
             ))}

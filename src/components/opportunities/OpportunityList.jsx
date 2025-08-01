@@ -1,4 +1,4 @@
-import OpportunityCard from "../../../components/opportunities/OpportunityCard";
+import OpportunityCard from "./OpportunityCard";
 export default function OpportunityList({ opportunities }) {
   // Lista de oportunidades
   return (

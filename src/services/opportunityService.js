@@ -22,40 +22,14 @@ async function getOrCreateCategory(name) {
   return newCat.id;
 }
 
-// Busca o crea un tag y retorna su id
-async function getOrCreateTag(name) {
-  if (!name) return null;
-  let { data: tag, error } = await supabase
-    .from("tags")
-    .select("id")
-    .eq("name", name)
-    .single();
-  if (tag) return tag.id;
-  const { data: newTag, error: insertError } = await supabase
-    .from("tags")
-    .insert([{ name }])
-    .select()
-    .single();
-  if (insertError) throw new Error("Error creando tag: " + insertError.message);
-  return newTag.id;
-}
-
-// Relaciona tags con la oportunidad
-async function relateTagsToOpportunity(opportunityId, tags) {
-  if (!opportunityId || !tags?.length) return;
-  const relations = tags.map((tagId) => ({
-    opportunity_id: opportunityId,
-    tag_id: tagId,
-  }));
-  const { error } = await supabase.from("opportunity_tags").insert(relations);
-  if (error) throw new Error("Error relacionando tags: " + error.message);
-}
-
 export async function createOpportunity(data) {
   // Obtener usuario autenticado
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData?.user) {
-    return { success: false, error: "No se pudo obtener el usuario autenticado." };
+    return {
+      success: false,
+      error: "No se pudo obtener el usuario autenticado.",
+    };
   }
   const userId = userData.user.id; // este será el created_by
 
@@ -111,5 +85,283 @@ export async function createOpportunity(data) {
     return { success: true, data: result };
   } catch (err) {
     return { success: false, error: err.message || "Error desconocido" };
+  }
+}
+// Busca o crea un tag y retorna su id
+async function getOrCreateTag(name) {
+  if (!name) return null;
+  let { data: tag, error } = await supabase
+    .from("tags")
+    .select("id")
+    .eq("name", name)
+    .single();
+  if (tag) return tag.id;
+  const { data: newTag, error: insertError } = await supabase
+    .from("tags")
+    .insert([{ name }])
+    .select()
+    .single();
+  if (insertError) throw new Error("Error creando tag: " + insertError.message);
+  return newTag.id;
+}
+
+// Relaciona tags con la oportunidad
+async function relateTagsToOpportunity(opportunityId, tags) {
+  if (!opportunityId || !tags?.length) return;
+  const relations = tags.map((tagId) => ({
+    opportunity_id: opportunityId,
+    tag_id: tagId,
+  }));
+  const { error } = await supabase.from("opportunity_tags").insert(relations);
+  if (error) throw new Error("Error relacionando tags: " + error.message);
+}
+
+/**
+ * Actualiza una oportunidad existente
+ * @param {string} id - ID de la oportunidad a actualizar
+ * @param {Object} data - Datos actualizados de la oportunidad
+ * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
+ */
+export async function updateOpportunity(id, data) {
+  console.log(data);
+  try {
+    // Verificar autenticación
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
+      return {
+        success: false,
+        data: null,
+        error: "No se pudo autenticar al usuario",
+      };
+    }
+
+    // Obtener la oportunidad existente
+    console.log("Fetching opportunity with ID:", id);
+    const { data: existingOpportunity, error: fetchError } = await supabase
+      .from("opportunities")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !existingOpportunity) {
+      return {
+        success: false,
+        error: "No se encontró la oportunidad",
+      };
+    }
+
+    // Verificar que el usuario autenticado sea el creador de la oportunidad
+    if (existingOpportunity.created_by !== userData.user.id) {
+      return {
+        success: false,
+        error:
+          "No tienes permiso para editar esta oportunidad. Solo el creador puede modificarla.",
+      };
+    }
+
+    console.log("Opportunity fetched successfully");
+
+    // Procesar categoría si se proporciona
+    let categoryId = existingOpportunity.category_id;
+    console.log("categoryId:", categoryId);
+    if (data.category) {
+      categoryId = await getOrCreateCategory(data.category);
+    }
+
+    // Procesar imagen si se proporciona una nueva
+    let imageUrl = existingOpportunity.image_url;
+    if (data.image_url && data.image_url !== existingOpportunity.image_url) {
+      if (typeof data.image_url !== "string") {
+        // Es un archivo nuevo, subirlo a Cloudinary
+        imageUrl = await uploadImageToCloudinary(data.image_url);
+      } else {
+        // Es una URL existente
+        imageUrl = data.image_url;
+      }
+    }
+
+    // Preparar datos para actualizar
+    const updateData = {
+      ...data,
+      category_id: categoryId,
+      image_url: imageUrl,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Eliminar campos que no deben actualizarse directamente
+    delete updateData.id;
+    delete updateData.created_at;
+    delete updateData.created_by;
+    delete updateData.category;
+    delete updateData.creator;
+    delete updateData.tags;
+
+    console.log("Updating opportunity...");
+    // Actualizar la oportunidad
+    console.log("Updating opportunity with data:", updateData);
+    const { data: updatedOpportunity, error: updateError } = await supabase
+      .from("opportunities")
+      .update(updateData)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (updateError) {
+      throw new Error(updateError.message);
+    }
+
+    console.log("Opportunity updated successfully");
+    
+    // Actualizar tags si se proporcionaron
+    if (data.tags && Array.isArray(data.tags) && data.tags.length > 0) {
+      console.log("Processing tags:", data.tags);
+      
+      // Obtener o crear los tags y obtener sus IDs
+      const tagPromises = data.tags.map(tag => getOrCreateTag(tag));
+      const tagIds = await Promise.all(tagPromises);
+      
+      console.log("Tag IDs to relate:", tagIds);
+      
+      if (tagIds.length > 0) {
+        // Eliminar relaciones de tags existentes
+        await supabase
+          .from("opportunity_tags")
+          .delete()
+          .eq("opportunity_id", id);
+        
+        // Crear nuevas relaciones con los tags
+        await relateTagsToOpportunity(id, tagIds);
+      }
+    }
+
+    // Obtener la oportunidad actualizada con sus relaciones
+    const { data: fullOpportunity, error: fetchUpdatedError } = await supabase
+      .from("opportunities")
+      .select(
+        `
+        *,
+        category:categories(*),
+        opportunity_tags(tag:tags(*))
+      `
+      )
+      .eq("id", id)
+      .single();
+
+    if (fetchUpdatedError) {
+      console.error("Error fetching updated opportunity:", fetchUpdatedError);
+      return {
+        success: true,
+        data: updatedOpportunity,
+        error:
+          "Oportunidad actualizada, pero no se pudieron cargar los detalles completos",
+      };
+    }
+
+    return {
+      success: true,
+      data: fullOpportunity,
+      error: null,
+    };
+  } catch (error) {
+    console.error("Error updating opportunity:", error);
+    return {
+      success: false,
+      data: null,
+      error: error.message || "Error al actualizar la oportunidad",
+    };
+  }
+}
+
+/**
+ * Elimina una oportunidad por su ID
+ * @param {string} id - ID de la oportunidad a eliminar
+ * @returns {Promise<{success: boolean, error: string|null}>}
+ */
+export async function deleteOpportunity(id) {
+  console.log("Deleting opportunity with ID:", id);
+
+  try {
+    // Verificar autenticación
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
+      console.error("Authentication error:", userError);
+      return {
+        success: false,
+        error: "No se pudo autenticar al usuario",
+      };
+    }
+
+    // Obtener la oportunidad existente para verificar permisos
+    const { data: existingOpportunity, error: fetchError } = await supabase
+      .from("opportunities")
+      .select("created_by")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !existingOpportunity) {
+      console.error("Error fetching opportunity:", fetchError);
+      return {
+        success: false,
+        error: "No se encontró la oportunidad",
+      };
+    }
+
+    // Verificar que el usuario autenticado sea el creador de la oportunidad
+    if (existingOpportunity.created_by !== userData.user.id) {
+      console.error(
+        "Unauthorized: User is not the creator of this opportunity"
+      );
+      return {
+        success: false,
+        error:
+          "No tienes permiso para eliminar esta oportunidad. Solo el creador puede eliminarla.",
+      };
+    }
+
+    console.log("User authenticated and authorized, deleting tag relations...");
+
+    // Primero eliminamos las relaciones con tags
+    const { error: deleteTagsError } = await supabase
+      .from("opportunity_tags")
+      .delete()
+      .eq("opportunity_id", id);
+
+    if (deleteTagsError) {
+      console.warn("Warning deleting tag relations:", deleteTagsError);
+      // Continuamos con la eliminación de la oportunidad aunque falle la eliminación de tags
+    } else {
+      console.log("Tag relations deleted successfully");
+    }
+
+    console.log("Deleting opportunity from database...");
+
+    // Luego eliminamos la oportunidad
+    const { data, error: deleteError } = await supabase
+      .from("opportunities")
+      .delete()
+      .eq("id", id)
+      .select();
+
+    console.log("Delete operation result:", { data, error: deleteError });
+
+    if (deleteError) {
+      throw new Error(deleteError.message);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error("No se encontró la oportunidad para eliminar");
+    }
+
+    console.log("Opportunity deleted successfully");
+    return {
+      success: true,
+      error: null,
+    };
+  } catch (error) {
+    console.error("Error in deleteOpportunity:", error);
+    return {
+      success: false,
+      error: error.message || "Error al eliminar la oportunidad",
+    };
   }
 }

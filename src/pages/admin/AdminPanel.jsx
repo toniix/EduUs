@@ -8,9 +8,8 @@ import SettingsTab from "../../components/admin/tabs/SettingsTab";
 import Dashboard from "../../components/admin/tabs/Dashboard";
 import DesktopOnlyWrapper from "../../components/layouts/wrappers/DesktopOnlyWrapper";
 import { paginate } from "../../utils/pagination";
-import { mockContent } from "../../utils/mockData";
 import { getAllProfiles } from "../../services/userService";
-import InlineLoader from "../../components/ui/LoadingSpinner";
+import { opportunitiesService } from "../../services/fetchOpportunityService";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -28,6 +27,9 @@ const AdminPanel = () => {
   const [usersError, setUsersError] = useState(null);
   const [currentPageUsers, setCurrentPageUsers] = useState(1);
   const [roleFilter, setRoleFilter] = useState("all");
+  const [opportunities, setOpportunities] = useState([]);
+  const [loadingOpportunities, setLoadingOpportunities] = useState(false);
+  const [opportunitiesError, setOpportunitiesError] = useState(null);
 
   // Guardar la pestaña activa en localStorage cuando cambie
   useEffect(() => {
@@ -86,27 +88,50 @@ const AdminPanel = () => {
     [filteredUsers, currentPageUsers]
   );
 
+  const fetchOpportunities = async () => {
+    try {
+      setLoadingOpportunities(true);
+      const data = await opportunitiesService.getAllOpportunities();
+      setOpportunities(data);
+    } catch (err) {
+      console.error("Error fetching opportunities:", err);
+      setOpportunitiesError(
+        "Error al cargar las oportunidades. Por favor, intente de nuevo."
+      );
+      toast.error("Error al cargar las oportunidades");
+    } finally {
+      setLoadingOpportunities(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab !== "content" || opportunities.length > 0) return;
+    fetchOpportunities();
+  }, [activeTab, opportunities.length]);
+
   // Memoizar el contenido filtrado
   const filteredContent = useMemo(
     () =>
       searchTerm
-        ? mockContent.filter(
+        ? opportunities.filter(
             (content) =>
               content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
               content.author.toLowerCase().includes(searchTerm.toLowerCase())
           )
-        : mockContent,
+        : opportunities,
     [searchTerm]
   );
 
   // Memoizar la paginación del contenido
-  const { items: paginatedContent, totalPages } = useMemo(
+  const { items: paginatedOpportunities, totalPages } = useMemo(
     () => ({
-      items: paginate(filteredContent, currentPage, ITEMS_PER_PAGE),
-      totalPages: Math.ceil(filteredContent.length / ITEMS_PER_PAGE),
+      items: paginate(opportunities, currentPage, ITEMS_PER_PAGE),
+      totalPages: Math.ceil(opportunities.length / ITEMS_PER_PAGE),
     }),
-    [filteredContent, currentPage]
+    [opportunities, currentPage]
   );
+
+  console.log("paginatedOpportunities:", paginatedOpportunities);
 
   // Memoizar el contenido de la pestaña actual
   const tabContent = useMemo(() => {
@@ -129,13 +154,19 @@ const AdminPanel = () => {
           />
         );
       case "content":
+        if (opportunitiesError)
+          return <div className="text-red-600">{opportunitiesError}</div>;
         return (
           <ContentTab
+            opportunities={opportunities}
             filteredContent={filteredContent}
-            paginatedContent={paginatedContent}
+            paginatedContent={paginatedOpportunities}
             totalPages={totalPages}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            loading={loadingOpportunities}
+            error={opportunitiesError}
+            fetchOpportunities={fetchOpportunities}
           />
         );
       case "analytics":
@@ -156,7 +187,7 @@ const AdminPanel = () => {
     handleUserDelete,
     loadingUsers,
     filteredContent,
-    paginatedContent,
+    paginatedOpportunities,
     totalPages,
     currentPage,
   ]);

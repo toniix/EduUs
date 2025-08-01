@@ -89,23 +89,10 @@ class OpportunitiesService {
       const { data, error } = await supabase
         .from("opportunities")
         .select(
-          `
-          *,
-          category:categories(
-            id,
-            name
-          ),
-          creator:profiles!opportunities_created_by_fkey(
-            id,
-            full_name
-          ),
-          opportunity_tags(
-            tag:tags(
-              id,
-              name
-            )
-          )
-        `
+          `*,
+        category:categories(id, name),
+        creator:profiles!opportunities_created_by_fkey(id, full_name),
+        opportunity_tags(tag:tags(id, name))`
         )
         .order("created_at", { ascending: false });
 

@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { createOpportunity } from "../services/opportunityService";
+import {
+  createOpportunity,
+  updateOpportunity,
+} from "../services/opportunityService";
 import { opportunitySchema } from "../utils/validationSchemas";
 import toast from "react-hot-toast";
 
@@ -31,6 +34,8 @@ export function useOpportunityForm(initial = {}, categories = []) {
   const [success, setSuccess] = useState("");
   const [errors, setErrors] = useState({}); // errores por campo
 
+  console.log(initial);
+  console.log(formData);
   // Change handlers
   const handleChange = (e) => {
     const { name, type, files, value } = e.target;
@@ -38,12 +43,12 @@ export function useOpportunityForm(initial = {}, categories = []) {
       setFormData((prev) => ({ ...prev, [name]: files[0] }));
     } else {
       // Si es el campo category_id, también actualizamos el category con el nombre correspondiente
-      if (name === 'category_id') {
-        const selectedCategory = categories.find(cat => cat.id === value);
-        setFormData(prev => ({
+      if (name === "category_id") {
+        const selectedCategory = categories.find((cat) => cat.id === value);
+        setFormData((prev) => ({
           ...prev,
           category_id: value,
-          category: selectedCategory ? selectedCategory.name : ''
+          category: selectedCategory ? selectedCategory.name : "",
         }));
       } else {
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -104,34 +109,83 @@ export function useOpportunityForm(initial = {}, categories = []) {
   };
 
   // Submit logic
+  // const submitForm = async (onSuccess) => {
+  //   setError("");
+  //   setSuccess("");
+
+  //   const validationError = validateForm();
+  //   if (validationError) {
+  //     setError(validationError);
+  //     toast.error(validationError);
+  //     return false;
+  //   }
+
+  //   setLoading(true);
+  //   console.log("Form data:", formData);
+  //   try {
+  //     let result;
+
+  //     if (formData.id) {
+  //       // Update existing opportunity
+  //       result = await updateOpportunity(formData.id, formData);
+  //     } else {
+  //       // Create new opportunity
+  //       result = await createOpportunity(formData);
+  //     }
+
+  //     const { success: ok, error: serviceError } = result;
+
+  //     if (ok) {
+  //       const successMessage = formData.id
+  //         ? "Oportunidad actualizada correctamente."
+  //         : "Oportunidad creada correctamente.";
+
+  //       setSuccess(successMessage);
+  //       toast.success(successMessage);
+
+  //       if (onSuccess) {
+  //         await onSuccess(formData);
+  //       }
+
+  //       return true;
+  //     } else {
+  //       const errorMessage =
+  //         serviceError || "Ocurrió un error al procesar la solicitud.";
+  //       setError(errorMessage);
+  //       toast.error(errorMessage);
+  //       return false;
+  //     }
+  //   } catch (err) {
+  //     console.error("Error in submitForm:", err);
+  //     const errorMessage = `Error inesperado: ${err.message || err}`;
+  //     setError(errorMessage);
+  //     toast.error(errorMessage);
+  //     return false;
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const submitForm = async (onSuccess) => {
     setError("");
     setSuccess("");
-    console.log(formData);
+
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
-      toast.error(validationError);
       return false;
     }
+
     setLoading(true);
-    console.log("submitForm");
     try {
-      const { success: ok, error: serviceError } = await createOpportunity(
-        formData
-      );
-      if (ok) {
-        setSuccess("Oportunidad guardada correctamente.");
-        if (onSuccess) onSuccess();
-        return true;
-      } else {
-        console.log(serviceError);
-        setError(serviceError || "Ocurrió un error al guardar.");
-        return false;
+      // Just pass the form data to the parent's onSubmit
+      if (onSuccess) {
+        await onSuccess(formData);
       }
+      return true;
     } catch (err) {
-      console.log(err);
-      setError("Error inesperado: " + (err.message || err));
+      console.error("Error in form submission:", err);
+      setError(err.message || "Error al procesar el formulario");
       return false;
     } finally {
       setLoading(false);

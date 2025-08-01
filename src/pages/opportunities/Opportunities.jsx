@@ -2,13 +2,13 @@ import { useState, useCallback, useMemo } from "react";
 import { useOpportunities } from "../../hooks/useOpportunities";
 import FiltersComponent from "../../components/opportunities/FiltersComponent";
 import Pagination from "../../components/Pagination";
-import OpportunityList from "./components/OpportunityList";
-import SearchHeader from "./components/SearchHeader";
-import ResultsSummary from "./components/ResultsSummary";
+import OpportunityList from "../../components/opportunities/OpportunityList";
+import SearchHeader from "../../components/opportunities/SearchHeader";
+import ResultsSummary from "../../components/opportunities/ResultsSummary";
 import InlineLoading from "../../components/ui/LoadingSpinner";
-import NotFoundOpportunities from "./components/NotFoundOpportunities";
+import NotFoundOpportunities from "../../components/opportunities/NotFoundOpportunities";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 9;
 
 const Opportunities = () => {
   // Estados para filtros, búsqueda y paginación

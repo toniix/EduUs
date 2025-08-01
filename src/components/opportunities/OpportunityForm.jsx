@@ -4,11 +4,17 @@ import { categoryService } from "../../services/categoryService";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const OpportunityForm = ({ showOpportunityForm, setShowOpportunityForm }) => {
+const OpportunityForm = ({
+  showOpportunityForm,
+  setShowOpportunityForm,
+  initialData,
+  onSuccess,
+  onClose,
+}) => {
   const [categories, setCategories] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const [categoriesError, setCategoriesError] = useState(null);
-
+  console.log(initialData);
   const {
     formData,
     currentBenefit,
@@ -26,8 +32,20 @@ const OpportunityForm = ({ showOpportunityForm, setShowOpportunityForm }) => {
     removeArrayItem,
     submitForm,
     errors,
-  } = useOpportunityForm({}, categories);
+  } = useOpportunityForm(initialData || {}, categories);
 
+  // console.log("requirements:", formData.requirements);
+  // console.log("type:", typeof formData.requirements);
+  // console.log("is array:", Array.isArray(formData.requirements));
+
+  // console.log("benefits:", formData.benefits);
+  // console.log("type:", typeof formData.benefits);
+  // console.log("is array:", Array.isArray(formData.benefits));
+
+  // const parsedBenefits =
+  //   typeof formData.benefits === "string"
+  //     ? JSON.parse(formData.benefits)
+  //     : formData.benefits;
   // Cargar categorías al montar el componente
   useEffect(() => {
     const loadCategories = async () => {
@@ -50,10 +68,15 @@ const OpportunityForm = ({ showOpportunityForm, setShowOpportunityForm }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const ok = await submitForm(() => {
-      setShowOpportunityForm(false);
-      toast.success("Oportunidad creada exitosamente");
+    const ok = await submitForm(async (formData) => {
+      if (onSuccess) {
+        await onSuccess(formData);
+      }
     });
+
+    if (ok && onClose) {
+      onClose();
+    }
   };
 
   if (!showOpportunityForm) return null;
