@@ -30,65 +30,65 @@ function App() {
             <Router>
               <ScrollToTop />
               {/* <HeaderWrapper /> */}
-              <main className="flex-grow">
-                <Routes>
-                  {/* 🌐 RUTAS PÚBLICAS */}
-                  <Route element={<PublicLayout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/news" element={<News />} />
-                    <Route
-                      path="/edutracker/opportunity/:id"
-                      element={<OpportunityDetail />}
-                    />
-                    <Route path="/edutracker" element={<Opportunities />} />
-
-                    <Route
-                      path="/login"
-                      element={
-                        <PublicRoute>
-                          <Login />
-                        </PublicRoute>
-                      }
-                    />
-                    <Route
-                      path="/register"
-                      element={
-                        <PublicRoute>
-                          <Register />
-                        </PublicRoute>
-                      }
-                    />
-                  </Route>
-
-                  {/* 🔒 RUTAS PRIVADAS */}
+              {/* <main className="flex-grow"> */}
+              <Routes>
+                {/* 🌐 RUTAS PÚBLICAS */}
+                <Route element={<PublicLayout />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/news" element={<News />} />
                   <Route
-                    path="/profile"
-                    element={
-                      <ProtectedRoute>
-                        <Profile />
-                      </ProtectedRoute>
-                    }
+                    path="/edutracker/opportunity/:id"
+                    element={<OpportunityDetail />}
                   />
+                  <Route path="/edutracker" element={<Opportunities />} />
 
                   <Route
-                    path="/admin"
+                    path="/login"
                     element={
-                      <ProtectedRoute>
-                        <RoleGuard
-                          requiredRoles={["admin", "editor"]}
-                          fallback={<NoAccessFallback />}
-                        >
-                          <PrivateLayout>
-                            <AdminPanel />
-                          </PrivateLayout>
-                        </RoleGuard>
-                      </ProtectedRoute>
+                      <PublicRoute>
+                        <Login />
+                      </PublicRoute>
                     }
                   />
-                </Routes>
-              </main>
+                  <Route
+                    path="/register"
+                    element={
+                      <PublicRoute>
+                        <Register />
+                      </PublicRoute>
+                    }
+                  />
+                </Route>
+
+                {/* 🔒 RUTAS PRIVADAS */}
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute>
+                      <RoleGuard
+                        requiredRoles={["admin", "editor"]}
+                        fallback={<NoAccessFallback />}
+                      >
+                        <PrivateLayout>
+                          <AdminPanel />
+                        </PrivateLayout>
+                      </RoleGuard>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+              {/* </main> */}
 
               <Toaster position="top-right" />
             </Router>
