@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  createOpportunity,
-  updateOpportunity,
-} from "../services/opportunityService";
 import { opportunitySchema } from "../utils/validationSchemas";
-import toast from "react-hot-toast";
 
 const initialState = {
   title: "",
@@ -30,13 +25,10 @@ export function useOpportunityForm(initial = {}, categories = []) {
   const [currentTag, setCurrentTag] = useState("");
   const [currentRequirement, setCurrentRequirement] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(""); // error general
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [errors, setErrors] = useState({}); // errores por campo
+  const [errors, setErrors] = useState({});
 
-  console.log(initial);
-  console.log(formData);
-  // Change handlers
   const handleChange = (e) => {
     const { name, type, files, value } = e.target;
     if (type === "file" && files && files[0]) {
@@ -108,64 +100,6 @@ export function useOpportunityForm(initial = {}, categories = []) {
     return "";
   };
 
-  // Submit logic
-  // const submitForm = async (onSuccess) => {
-  //   setError("");
-  //   setSuccess("");
-
-  //   const validationError = validateForm();
-  //   if (validationError) {
-  //     setError(validationError);
-  //     toast.error(validationError);
-  //     return false;
-  //   }
-
-  //   setLoading(true);
-  //   console.log("Form data:", formData);
-  //   try {
-  //     let result;
-
-  //     if (formData.id) {
-  //       // Update existing opportunity
-  //       result = await updateOpportunity(formData.id, formData);
-  //     } else {
-  //       // Create new opportunity
-  //       result = await createOpportunity(formData);
-  //     }
-
-  //     const { success: ok, error: serviceError } = result;
-
-  //     if (ok) {
-  //       const successMessage = formData.id
-  //         ? "Oportunidad actualizada correctamente."
-  //         : "Oportunidad creada correctamente.";
-
-  //       setSuccess(successMessage);
-  //       toast.success(successMessage);
-
-  //       if (onSuccess) {
-  //         await onSuccess(formData);
-  //       }
-
-  //       return true;
-  //     } else {
-  //       const errorMessage =
-  //         serviceError || "Ocurrió un error al procesar la solicitud.";
-  //       setError(errorMessage);
-  //       toast.error(errorMessage);
-  //       return false;
-  //     }
-  //   } catch (err) {
-  //     console.error("Error in submitForm:", err);
-  //     const errorMessage = `Error inesperado: ${err.message || err}`;
-  //     setError(errorMessage);
-  //     toast.error(errorMessage);
-  //     return false;
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const submitForm = async (onSuccess) => {
     setError("");
     setSuccess("");
@@ -191,6 +125,14 @@ export function useOpportunityForm(initial = {}, categories = []) {
       setLoading(false);
     }
   };
+  const resetForm = () => {
+    setFormData(initialState);
+    setCurrentBenefit("");
+    setCurrentTag("");
+    setCurrentRequirement("");
+    setError("");
+    setErrors({});
+  };
 
   return {
     formData,
@@ -210,5 +152,6 @@ export function useOpportunityForm(initial = {}, categories = []) {
     handleArrayInput,
     removeArrayItem,
     submitForm,
+    resetForm,
   };
 }

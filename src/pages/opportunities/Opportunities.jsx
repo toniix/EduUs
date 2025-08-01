@@ -42,7 +42,6 @@ const Opportunities = () => {
     );
   }, []);
 
-  // Aplicar búsqueda del lado del cliente
   const filteredOpportunities = useMemo(
     () => searchOpportunities(searchTerm, allOpportunities),
     [searchTerm, allOpportunities, searchOpportunities]
@@ -54,10 +53,8 @@ const Opportunities = () => {
   // Oportunidades a mostrar según el modo
   const displayOpportunities = useMemo(() => {
     if (isSearching) {
-      // En búsqueda: mostrar todos los resultados filtrados
       return filteredOpportunities;
     } else {
-      // Vista normal: aplicar paginación
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       return allOpportunities.slice(startIndex, startIndex + ITEMS_PER_PAGE);
     }
@@ -72,17 +69,16 @@ const Opportunities = () => {
   // Handlers
   const handleSearch = useCallback((term) => {
     setSearchTerm(term);
-    // No necesitamos resetear página porque en búsqueda no hay paginación
-  }, []);
-
-  const handleFilterChange = useCallback((newFilters) => {
-    setFilters(newFilters);
-    setCurrentPage(1);
   }, []);
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const handleFilterChange = useCallback((newFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
   }, []);
 
   const handleClearFilters = useCallback(() => {

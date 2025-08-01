@@ -50,7 +50,7 @@ export default function Sidebar({
           />
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className="font-bold text-lg text-primary">EDU-US</span>
+              {/* <span className="font-bold text-lg text-primary">EDU-US</span> */}
               {user && (
                 <span className="text-xs text-gray-600">
                   Bienvenido,{" "}

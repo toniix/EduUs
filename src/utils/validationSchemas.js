@@ -134,7 +134,11 @@ export const opportunitySchema = z.object({
   benefits: z.array(z.string()).min(1, "Al menos un beneficio es obligatorio."),
   requirements: z
     .array(z.string())
-    .min(1, "Al menos una requisito es obligatorio."),
-  tags: z.array(z.string()).min(1, "Al menos una etiqueta es obligatoria."),
+    .min(1, "Al menos una requisito es obligatorio.")
+    .max(10, "Solo se permiten 10 requisitos."),
+  tags: z
+    .array(z.string())
+    .min(1, "Al menos una etiqueta es obligatoria.")
+    .max(5, "Solo se permiten 5 etiquetas."),
   contact: z.object({ website: z.string().optional() }).optional(),
 });

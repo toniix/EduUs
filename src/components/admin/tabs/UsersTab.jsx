@@ -30,16 +30,12 @@ export default function UsersTab({
     { label: "User", value: "user" },
   ];
 
-  if (loading) {
-    return <InlineLoader message="Cargando usuarios..." size="md" />;
-  }
-
   return (
     <div className="bg-white rounded-lg shadow-md p-6 pt-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
         <h2 className="text-xl font-semibold flex items-center gap-2">
           Gestión de Usuarios
-          <span className="ml-2 px-3 py-1 rounded-full bg-primary text-white text-xs font-semibold">
+          <span className="ml-2 px-3 py-1 rounded-full bg-secondary text-white text-xs font-semibold">
             {users.length} usuario{users.length === 1 ? "" : "s"}
           </span>
         </h2>
@@ -62,6 +58,7 @@ export default function UsersTab({
           ))}
         </div>
       </div>
+      {loading && <InlineLoader message="Cargando usuarios..." size="md" />}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">

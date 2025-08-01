@@ -16,12 +16,10 @@ export default function ContentTab({
   setCurrentPage,
   totalPages,
   loading,
-  error,
   fetchOpportunities,
 }) {
   const [showOpportunityForm, setShowOpportunityForm] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
-  console.log(opportunities);
 
   const handleFormSubmit = async (formData) => {
     try {
@@ -67,7 +65,13 @@ export default function ContentTab({
       )}
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Gestión de Oportunidades</h2>
+        <h2 className="text-xl font-semibold flex items-center gap-2">
+          Gestión de Oportunidades
+          <span className="ml-2 px-3 py-1 rounded-full bg-secondary text-white text-xs font-semibold">
+            {opportunities.length} oportunidad
+            {opportunities.length === 1 ? "" : "s"}
+          </span>
+        </h2>
         <button
           className="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 flex items-center"
           onClick={() => setShowOpportunityForm(true)}
@@ -79,22 +83,6 @@ export default function ContentTab({
 
       {loading && (
         <InlineLoader message="Cargando oportunidades..." size="md" />
-      )}
-
-      {error && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <strong className="font-bold">Error: </strong>
-          <span className="block sm:inline">{error}</span>
-        </div>
-      )}
-
-      {!loading && !error && opportunities.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No se encontraron oportunidades.</p>
-        </div>
       )}
       <div className="w-full overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
@@ -162,6 +150,7 @@ export default function ContentTab({
                     opportunity={opportunity}
                     setShowOpportunityForm={setShowOpportunityForm}
                     setSelectedOpportunity={setSelectedOpportunity}
+                    fetchOpportunities={fetchOpportunities}
                   />
                 </td>
               </tr>

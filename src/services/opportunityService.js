@@ -211,24 +211,24 @@ export async function updateOpportunity(id, data) {
     }
 
     console.log("Opportunity updated successfully");
-    
+
     // Actualizar tags si se proporcionaron
     if (data.tags && Array.isArray(data.tags) && data.tags.length > 0) {
       console.log("Processing tags:", data.tags);
-      
+
       // Obtener o crear los tags y obtener sus IDs
-      const tagPromises = data.tags.map(tag => getOrCreateTag(tag));
+      const tagPromises = data.tags.map((tag) => getOrCreateTag(tag));
       const tagIds = await Promise.all(tagPromises);
-      
+
       console.log("Tag IDs to relate:", tagIds);
-      
+
       if (tagIds.length > 0) {
         // Eliminar relaciones de tags existentes
         await supabase
           .from("opportunity_tags")
           .delete()
           .eq("opportunity_id", id);
-        
+
         // Crear nuevas relaciones con los tags
         await relateTagsToOpportunity(id, tagIds);
       }
@@ -277,21 +277,16 @@ export async function updateOpportunity(id, data) {
  * @param {string} id - ID de la oportunidad a eliminar
  * @returns {Promise<{success: boolean, error: string|null}>}
  */
-export async function deleteOpportunity(id) {
-  console.log("Deleting opportunity with ID:", id);
-
+export async function deleteOpportunity(id, userRole = null) {
   try {
-    // Verificar autenticación
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData?.user) {
-      console.error("Authentication error:", userError);
       return {
         success: false,
         error: "No se pudo autenticar al usuario",
       };
     }
 
-    // Obtener la oportunidad existente para verificar permisos
     const { data: existingOpportunity, error: fetchError } = await supabase
       .from("opportunities")
       .select("created_by")
@@ -299,28 +294,21 @@ export async function deleteOpportunity(id) {
       .single();
 
     if (fetchError || !existingOpportunity) {
-      console.error("Error fetching opportunity:", fetchError);
       return {
         success: false,
         error: "No se encontró la oportunidad",
       };
     }
 
-    // Verificar que el usuario autenticado sea el creador de la oportunidad
-    if (existingOpportunity.created_by !== userData.user.id) {
-      console.error(
-        "Unauthorized: User is not the creator of this opportunity"
-      );
+    const isAdmin = userRole === "admin";
+    if (existingOpportunity.created_by !== userData.user.id && !isAdmin) {
       return {
         success: false,
         error:
-          "No tienes permiso para eliminar esta oportunidad. Solo el creador puede eliminarla.",
+          "No tienes permiso para eliminar esta oportunidad. Solo el creador o un administrador pueden eliminarla.",
       };
     }
 
-    console.log("User authenticated and authorized, deleting tag relations...");
-
-    // Primero eliminamos las relaciones con tags
     const { error: deleteTagsError } = await supabase
       .from("opportunity_tags")
       .delete()
@@ -333,16 +321,11 @@ export async function deleteOpportunity(id) {
       console.log("Tag relations deleted successfully");
     }
 
-    console.log("Deleting opportunity from database...");
-
-    // Luego eliminamos la oportunidad
     const { data, error: deleteError } = await supabase
       .from("opportunities")
       .delete()
       .eq("id", id)
       .select();
-
-    console.log("Delete operation result:", { data, error: deleteError });
 
     if (deleteError) {
       throw new Error(deleteError.message);

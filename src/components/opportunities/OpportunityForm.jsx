@@ -6,15 +6,17 @@ import toast from "react-hot-toast";
 
 const OpportunityForm = ({
   showOpportunityForm,
-  setShowOpportunityForm,
-  initialData,
+  initialData = null,
   onSuccess,
   onClose,
 }) => {
   const [categories, setCategories] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const [categoriesError, setCategoriesError] = useState(null);
-  console.log(initialData);
+  const isEditing = !!initialData?.id;
+  const formTitle = isEditing
+    ? "Editar Oportunidad"
+    : "Crear Nueva Oportunidad";
   const {
     formData,
     currentBenefit,
@@ -32,20 +34,9 @@ const OpportunityForm = ({
     removeArrayItem,
     submitForm,
     errors,
-  } = useOpportunityForm(initialData || {}, categories);
+    resetForm,
+  } = useOpportunityForm(initialData, categories);
 
-  // console.log("requirements:", formData.requirements);
-  // console.log("type:", typeof formData.requirements);
-  // console.log("is array:", Array.isArray(formData.requirements));
-
-  // console.log("benefits:", formData.benefits);
-  // console.log("type:", typeof formData.benefits);
-  // console.log("is array:", Array.isArray(formData.benefits));
-
-  // const parsedBenefits =
-  //   typeof formData.benefits === "string"
-  //     ? JSON.parse(formData.benefits)
-  //     : formData.benefits;
   // Cargar categorías al montar el componente
   useEffect(() => {
     const loadCategories = async () => {
@@ -87,7 +78,7 @@ const OpportunityForm = ({
         <div className="flex flex-col gap-2 mb-8">
           <div className="flex items-center justify-center relative">
             <button
-              onClick={() => setShowOpportunityForm(false)}
+              onClick={onClose}
               className="absolute right-0 text-primary hover:text-white bg-secondary rounded-full p-2 transition-colors shadow hover:bg-primary"
               aria-label="Cerrar formulario"
             >
@@ -97,7 +88,7 @@ const OpportunityForm = ({
               <span>
                 <X className="hidden" />
               </span>
-              Crea una nueva oportunidad
+              {formTitle}
             </h2>
           </div>
         </div>
@@ -647,7 +638,7 @@ const OpportunityForm = ({
           <div className="flex justify-end space-x-4 pt-8">
             <button
               type="button"
-              onClick={() => setShowOpportunityForm(false)}
+              onClick={onClose}
               className="px-6 py-2 border border-secondary text-secondary rounded-full font-semibold shadow hover:bg-secondary hover:text-white transition-colors"
             >
               Cancelar

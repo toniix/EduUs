@@ -4,26 +4,18 @@ import ModalConfirmacion from "../../ModalConfirmacion";
 import { updateUserRole } from "../../../services/rolesService";
 import { deleteUser } from "../../../services/userService";
 import toast from "react-hot-toast";
-
-import { useEffect } from "react";
-import { getSession } from "../../../services/AuthService";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function UserActionsMenu({
   user,
   onUserUpdated,
   onUserDeleted,
 }) {
+  const { user: currentUser } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null); // "role" o "delete"
   const [selectedRole, setSelectedRole] = useState(user.role);
   const [loading, setLoading] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(null);
-
-  useEffect(() => {
-    getSession().then((session) => {
-      setCurrentUserId(session?.user?.id || null);
-    });
-  }, []);
 
   const handleRoleChange = async () => {
     setLoading(true);
@@ -78,15 +70,15 @@ export default function UserActionsMenu({
           setModalOpen(true);
         }}
         title={
-          user.id === currentUserId
+          user.id === currentUser.id
             ? "No puedes eliminarte a ti mismo"
             : "Eliminar usuario"
         }
-        disabled={user.id === currentUserId}
+        disabled={user.id === currentUser.id}
       >
         <Trash2
           className={`h-4 w-4 ${
-            user.id === currentUserId
+            user.id === currentUser.id
               ? "text-gray-400"
               : "text-red-600 hover:text-red-900"
           }`}

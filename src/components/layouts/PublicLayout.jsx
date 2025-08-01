@@ -1,16 +1,22 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import HeaderWrapper from "./wrappers/HeaderWrapper";
 import FooterWrapper from "./wrappers/FooterWrapper";
 
-const PublicLayout = ({ children }) => {
+const PublicLayout = () => {
+  const location = useLocation();
+  const hideFooter =
+    location.pathname === "/edutracker" ||
+    location.pathname.startsWith("/edutracker/opportunity/");
+
   return (
     <>
       <HeaderWrapper />
       <main>
         <Outlet />
       </main>
-      <FooterWrapper />
+      {!hideFooter && <FooterWrapper />}
     </>
   );
 };
+
 export default PublicLayout;

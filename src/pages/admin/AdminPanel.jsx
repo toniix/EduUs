@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { ThemeProvider } from "../../contexts/ThemeContext";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminPanelHeader from "../../components/admin/AdminPanelHeader";
 import UsersTab from "../../components/admin/tabs/UsersTab";
@@ -109,30 +110,39 @@ const AdminPanel = () => {
     fetchOpportunities();
   }, [activeTab, opportunities.length]);
 
+  const searchOpportunities = useCallback((term, opportunitiesList) => {
+    if (!term || term.trim() === "") return opportunitiesList;
+
+    const searchLower = term.toLowerCase();
+    return opportunitiesList.filter(
+      (opp) => opp.title.toLowerCase().includes(searchLower)
+      // opp.location.toLowerCase().includes(searchLower) ||
+      // opp.tags?.some((tag) => tag.name.toLowerCase().includes(searchLower))
+    );
+  }, []);
   // Memoizar el contenido filtrado
-  const filteredContent = useMemo(
-    () =>
-      searchTerm
-        ? opportunities.filter(
-            (content) =>
-              content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              content.author.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        : opportunities,
-    [searchTerm]
+  const filteredOpportunities = useMemo(
+    () => searchOpportunities(searchTerm, opportunities),
+    [searchTerm, opportunities, searchOpportunities]
   );
 
-  // Memoizar la paginación del contenido
+  // Memoizar la paginación de oportunidades
   const { items: paginatedOpportunities, totalPages } = useMemo(
     () => ({
-      items: paginate(opportunities, currentPage, ITEMS_PER_PAGE),
-      totalPages: Math.ceil(opportunities.length / ITEMS_PER_PAGE),
+      items: paginate(filteredOpportunities, currentPage, ITEMS_PER_PAGE),
+      totalPages: Math.ceil(filteredOpportunities.length / ITEMS_PER_PAGE),
     }),
-    [opportunities, currentPage]
+    [filteredOpportunities, currentPage]
   );
 
-  console.log("paginatedOpportunities:", paginatedOpportunities);
+  const handleSearch = useCallback((term) => {
+    setSearchTerm(term);
+    // Resetear a la primera página al buscar
+    setCurrentPage(1);
+  }, []);
+  // console.log("paginatedOpportunities:", paginatedOpportunities);
 
+  // console.log(paginatedOpportunities);
   // Memoizar el contenido de la pestaña actual
   const tabContent = useMemo(() => {
     switch (activeTab) {
@@ -158,9 +168,8 @@ const AdminPanel = () => {
           return <div className="text-red-600">{opportunitiesError}</div>;
         return (
           <ContentTab
-            opportunities={opportunities}
-            filteredContent={filteredContent}
-            paginatedContent={paginatedOpportunities}
+            opportunities={paginatedOpportunities}
+            // filteredContent={filteredContent}
             totalPages={totalPages}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
@@ -186,7 +195,6 @@ const AdminPanel = () => {
     handleUserRoleUpdate,
     handleUserDelete,
     loadingUsers,
-    filteredContent,
     paginatedOpportunities,
     totalPages,
     currentPage,
@@ -194,37 +202,46 @@ const AdminPanel = () => {
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  // Clases para el tema oscuro solo en el panel de administración
+  const adminPanelClasses = `flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`;
+  const mainContentClasses = `flex-1 flex flex-col overflow-hidden`;
+
   return (
-    <DesktopOnlyWrapper>
-      <div className="min-h-screen flex bg-gray-50">
-        <Sidebar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          isCollapsed={isSidebarCollapsed}
-          setIsCollapsed={setIsSidebarCollapsed}
-        />
+    <ThemeProvider>
+      <div className={adminPanelClasses}>
+        <DesktopOnlyWrapper>
+          <div className={mainContentClasses}>
+            <Sidebar
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              isCollapsed={isSidebarCollapsed}
+              setIsCollapsed={setIsSidebarCollapsed}
+            />
 
-        <div
-          className={`flex-1 flex flex-col transition-all duration-300 ${
-            isSidebarCollapsed ? "ml-20" : "ml-64"
-          }`}
-        >
-          <AdminPanelHeader
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            isSidebarCollapsed={isSidebarCollapsed}
-          />
+            <div
+              className={`flex-1 flex flex-col transition-all duration-300 ${
+                isSidebarCollapsed ? "ml-20" : "ml-64"
+              }`}
+            >
+              <AdminPanelHeader
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                handleSearch={handleSearch}
+                isSidebarCollapsed={isSidebarCollapsed}
+              />
 
-          <main className="flex-1 p-4 pt-16 overflow-y-auto transition-all duration-300">
-            <div className="w-full max-w-full mx-auto">
-              <div className="transform hover:translate-y-[-2px] transition-all duration-300">
-                {tabContent}
-              </div>
+              <main className="flex-1 p-4 pt-16 overflow-y-auto transition-all duration-300">
+                <div className="w-full max-w-full mx-auto">
+                  <div className="transform hover:translate-y-[-2px] transition-all duration-300">
+                    {tabContent}
+                  </div>
+                </div>
+              </main>
             </div>
-          </main>
-        </div>
+          </div>
+        </DesktopOnlyWrapper>
       </div>
-    </DesktopOnlyWrapper>
+    </ThemeProvider>
   );
 };
 export default AdminPanel;
