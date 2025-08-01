@@ -20,6 +20,7 @@ import RoleGuard from "./components/admin/RoleGuard";
 import { RoleProvider } from "./contexts/RoleContext";
 import NoAccessFallback from "./components/ui/NoAccessFallback";
 import PublicRoute from "./routes/PublicRoute";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 function App() {
   return (
@@ -27,71 +28,72 @@ function App() {
       <AuthProvider>
         <RoleProvider>
           <OpportunityProvider>
-            <Router>
-              <ScrollToTop />
-              {/* <HeaderWrapper /> */}
-              {/* <main className="flex-grow"> */}
-              <Routes>
-                {/* 🌐 RUTAS PÚBLICAS */}
-                <Route element={<PublicLayout />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/news" element={<News />} />
-                  <Route
-                    path="/edutracker/opportunity/:id"
-                    element={<OpportunityDetail />}
-                  />
-                  <Route path="/edutracker" element={<Opportunities />} />
+            <ThemeProvider>
+              <Router>
+                <ScrollToTop />
+                {/* <HeaderWrapper /> */}
+                {/* <main className="flex-grow"> */}
+                <Routes>
+                  {/* 🌐 RUTAS PÚBLICAS */}
+                  <Route element={<PublicLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/news" element={<News />} />
+                    <Route
+                      path="/edutracker/opportunity/:id"
+                      element={<OpportunityDetail />}
+                    />
+                    <Route path="/edutracker" element={<Opportunities />} />
 
+                    <Route
+                      path="/login"
+                      element={
+                        <PublicRoute>
+                          <Login />
+                        </PublicRoute>
+                      }
+                    />
+                    <Route
+                      path="/register"
+                      element={
+                        <PublicRoute>
+                          <Register />
+                        </PublicRoute>
+                      }
+                    />
+                  </Route>
+
+                  {/* 🔒 RUTAS PRIVADAS */}
                   <Route
-                    path="/login"
+                    path="/profile"
                     element={
-                      <PublicRoute>
-                        <Login />
-                      </PublicRoute>
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
                     }
                   />
                   <Route
-                    path="/register"
+                    path="/admin"
                     element={
-                      <PublicRoute>
-                        <Register />
-                      </PublicRoute>
+                      <ProtectedRoute>
+                        <RoleGuard
+                          requiredRoles={["admin", "editor"]}
+                          fallback={<NoAccessFallback />}
+                        >
+                          <PrivateLayout>
+                            <AdminPanel />
+                          </PrivateLayout>
+                        </RoleGuard>
+                      </ProtectedRoute>
                     }
                   />
-                </Route>
+                </Routes>
+                {/* </main> */}
 
-                {/* 🔒 RUTAS PRIVADAS */}
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  }
-                />
-
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute>
-                      <RoleGuard
-                        requiredRoles={["admin", "editor"]}
-                        fallback={<NoAccessFallback />}
-                      >
-                        <PrivateLayout>
-                          <AdminPanel />
-                        </PrivateLayout>
-                      </RoleGuard>
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-              {/* </main> */}
-
-              <Toaster position="top-right" />
-            </Router>
+                <Toaster position="top-right" />
+              </Router>
+            </ThemeProvider>
           </OpportunityProvider>
         </RoleProvider>
       </AuthProvider>

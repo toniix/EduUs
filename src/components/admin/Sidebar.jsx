@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import logo from "../../assets/logo_1.png";
 
 const menuItems = [
@@ -28,6 +29,7 @@ export default function Sidebar({
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isDark } = useTheme();
 
   const handleItemClick = (item) => {
     setActiveTab(item.value);
@@ -35,13 +37,18 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`fixed left-0 h-screen bg-white shadow-xl transition-all duration-300 ${
+      className={`fixed left-0 h-screen shadow-xl transition-all duration-300 ${
         isCollapsed ? "w-20" : "w-64"
-      }`}
+      } ${isDark ? "bg-gray-900 text-gray-200" : "bg-gray-100 text-gray-800"}`}
     >
-      {/* Logo y botón de colapsar */}
-      {/* Header mejorado */}
-      <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-white">
+      {/*  Header mejorado */}
+      <div
+        className={`flex items-center justify-between p-3.5 border-b ${
+          isDark
+            ? "bg-gray-900 border-gray-700"
+            : "bg-gradient-to-r from-gray-100 to-white border-gray-200"
+        }`}
+      >
         <div className="flex items-center space-x-2">
           <img
             src={logo}
@@ -50,9 +57,12 @@ export default function Sidebar({
           />
           {!isCollapsed && (
             <div className="flex flex-col">
-              {/* <span className="font-bold text-lg text-primary">EDU-US</span> */}
               {user && (
-                <span className="text-xs text-gray-600">
+                <span
+                  className={`text-xs ${
+                    isDark ? "text-gray-200" : "text-gray-700"
+                  }`}
+                >
                   Bienvenido,{" "}
                   <span className="font-semibold">
                     {user.user_metadata.full_name ||
@@ -66,7 +76,9 @@ export default function Sidebar({
         </div>
         <button
           onClick={() => setIsCollapsed((prev) => !prev)}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className={`p-2 rounded-lg hover:bg-${
+            isDark ? "gray-800" : "gray-100"
+          } transition-colors`}
         >
           {isCollapsed ? (
             <ChevronRight className="h-5 w-5 text-gray-600" />
@@ -87,8 +99,10 @@ export default function Sidebar({
               } px-4 py-3 rounded-xl transition-all duration-300 ${
                 activeTab.startsWith(item.value)
                   ? "bg-primary text-white shadow-md hover:shadow-lg"
-                  : "hover:bg-gray-50 text-gray-700 hover:text-primary"
-              }`}
+                  : `hover:${
+                      isDark ? "bg-gray-800" : "bg-gray-50"
+                    } text-gray-700 hover:text-primary`
+              } ${isDark ? "text-gray-200" : "text-gray-700"}`}
             >
               <div className="flex items-center">
                 <span
@@ -114,7 +128,9 @@ export default function Sidebar({
             onClick={() => navigate("/")}
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
-            } px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 hover:text-primary transition-all duration-300`}
+            } px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 hover:text-primary transition-all duration-300 ${
+              isDark ? "text-gray-200" : "text-gray-700"
+            }`}
           >
             <Home className="h-5 w-5" />
             {!isCollapsed && (

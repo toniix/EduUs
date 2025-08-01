@@ -1,10 +1,11 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import ModalConfirmacion from "../../ModalConfirmacion";
 import { deleteOpportunity } from "../../../services/opportunityService";
 import { toast } from "react-hot-toast";
 import { Edit, Trash2 } from "lucide-react";
 import { useAuth } from "../../../contexts/AuthContext";
+import { ThemeContext } from "../../../contexts/ThemeContext";
 
 const OpportunityActionsMenu = ({
   opportunity,
@@ -13,6 +14,7 @@ const OpportunityActionsMenu = ({
   fetchOpportunities,
 }) => {
   const { role, user } = useAuth();
+  const { isDark } = useContext(ThemeContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [opportunityToDelete, setOpportunityToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -60,30 +62,53 @@ const OpportunityActionsMenu = ({
       setOpportunityToDelete(null);
     }
   };
+  const getButtonClasses = (isDisabled, isDelete = false) => {
+    const baseClasses = "flex items-center justify-center p-1 rounded";
+    const sizeClasses = "h-6 w-6";
+
+    if (isDisabled) {
+      return `${baseClasses} ${sizeClasses} ${
+        isDark ? "text-gray-600" : "text-gray-400"
+      } cursor-not-allowed`;
+    }
+
+    if (isDelete) {
+      return `${baseClasses} ${sizeClasses} ${
+        isDark
+          ? "text-red-400 hover:bg-red-900/50 hover:text-red-300"
+          : "text-red-600 hover:bg-red-50 hover:text-red-800"
+      }`;
+    }
+
+    return `${baseClasses} ${sizeClasses} ${
+      isDark
+        ? "text-indigo-400 hover:bg-gray-700 hover:text-indigo-300"
+        : "text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800"
+    }`;
+  };
+
+  const isOwner = user.id === opportunity.created_by;
+  const editButtonClasses = getButtonClasses(!isOwner);
+  const deleteButtonClasses = getButtonClasses(isDeleting, true);
+
   return (
     <>
-      <div className="flex space-x-2">
+      <div className="flex space-x-1">
         <button
-          className="text-indigo-600 hover:text-indigo-900"
+          className={editButtonClasses}
           title="Editar"
           onClick={() => handleEdit(opportunity)}
-          disabled={user.id !== opportunity.created_by}
+          disabled={!isOwner}
         >
-          <Edit
-            className={`h-4 w-4 ${
-              user.id !== opportunity.created_by
-                ? "text-gray-400"
-                : "text-indigo-600 hover:text-indigo-900"
-            }`}
-          />
+          <Edit className="h-4 w-4" />
         </button>
         <button
-          className="text-red-600 hover:text-red-900 disabled:opacity-50"
+          className={deleteButtonClasses}
           title="Eliminar"
           onClick={() => handleDeleteClick(opportunity)}
           disabled={isDeleting}
         >
-          <Trash2 className="h-5 w-5" />
+          <Trash2 className="h-4 w-4" />
         </button>
       </div>
       <ModalConfirmacion

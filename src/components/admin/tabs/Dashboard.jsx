@@ -10,6 +10,8 @@ import {
   MapPin,
   RefreshCcw,
 } from "lucide-react";
+import { useContext } from "react";
+import { ThemeContext } from "../../../contexts/ThemeContext";
 
 const analytics = [
   {
@@ -91,7 +93,7 @@ const recentActivity = [
 
 const Dashboard = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
-
+  const { isDark } = useContext(ThemeContext);
   const handleRefresh = async () => {
     setIsRefreshing(true);
     // Aquí iría la lógica para recargar los datos
@@ -100,7 +102,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 pt-24">
+    <div className={`p-6 bg-gray-50 pt-24 ${isDark ? "bg-gray-900" : ""}`}>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
         <div className="flex items-center gap-4">

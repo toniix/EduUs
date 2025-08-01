@@ -11,12 +11,12 @@ import DesktopOnlyWrapper from "../../components/layouts/wrappers/DesktopOnlyWra
 import { paginate } from "../../utils/pagination";
 import { getAllProfiles } from "../../services/userService";
 import { opportunitiesService } from "../../services/fetchOpportunityService";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const ITEMS_PER_PAGE = 10;
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState(() => {
-    // Intentar recuperar la pestaña activa del localStorage
     const savedTab = localStorage.getItem("adminActiveTab");
     return savedTab || "dashboard";
   });
@@ -31,6 +31,7 @@ const AdminPanel = () => {
   const [opportunities, setOpportunities] = useState([]);
   const [loadingOpportunities, setLoadingOpportunities] = useState(false);
   const [opportunitiesError, setOpportunitiesError] = useState(null);
+  const { isDark } = useTheme();
 
   // Guardar la pestaña activa en localStorage cuando cambie
   useEffect(() => {
@@ -203,45 +204,57 @@ const AdminPanel = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Clases para el tema oscuro solo en el panel de administración
-  const adminPanelClasses = `flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`;
+  const adminPanelClasses = `flex h-screen transition-colors duration-200`;
   const mainContentClasses = `flex-1 flex flex-col overflow-hidden`;
 
+  console.log("isDark:", isDark);
   return (
-    <ThemeProvider>
-      <div className={adminPanelClasses}>
-        <DesktopOnlyWrapper>
-          <div className={mainContentClasses}>
-            <Sidebar
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
+    <DesktopOnlyWrapper>
+      <div
+        className={`${adminPanelClasses} ${
+          isDark ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+        }`}
+      >
+        <div className={mainContentClasses}>
+          <Sidebar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            isCollapsed={isSidebarCollapsed}
+            setIsCollapsed={setIsSidebarCollapsed}
+          />
+
+          <div className="flex-1 flex flex-col transition-all duration-300">
+            <AdminPanelHeader
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              handleSearch={handleSearch}
+              isSidebarCollapsed={isSidebarCollapsed}
               isCollapsed={isSidebarCollapsed}
               setIsCollapsed={setIsSidebarCollapsed}
+              activeTab={activeTab}
             />
 
-            <div
-              className={`flex-1 flex flex-col transition-all duration-300 ${
-                isSidebarCollapsed ? "ml-20" : "ml-64"
+            <main
+              className={`flex-1 pt-16 overflow-y-auto transition-all duration-300 ${
+                isDark ? "bg-gray-900" : "bg-white"
               }`}
+              style={{
+                marginLeft: isSidebarCollapsed ? "5rem" : "16rem",
+                transition: "margin-left 0.3s ease-in-out",
+              }}
             >
-              <AdminPanelHeader
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                handleSearch={handleSearch}
-                isSidebarCollapsed={isSidebarCollapsed}
-              />
-
-              <main className="flex-1 p-4 pt-16 overflow-y-auto transition-all duration-300">
-                <div className="w-full max-w-full mx-auto">
-                  <div className="transform hover:translate-y-[-2px] transition-all duration-300">
-                    {tabContent}
-                  </div>
-                </div>
-              </main>
-            </div>
+              {/* <div className="w-full max-w-full mx-auto px-4"> */}
+              <div
+                className={`transform hover:translate-y-[-2px] transition-all duration-300`}
+              >
+                {tabContent}
+              </div>
+              {/* </div> */}
+            </main>
           </div>
-        </DesktopOnlyWrapper>
+        </div>
       </div>
-    </ThemeProvider>
+    </DesktopOnlyWrapper>
   );
 };
 export default AdminPanel;
