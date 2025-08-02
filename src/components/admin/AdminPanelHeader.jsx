@@ -108,7 +108,7 @@ const AdminPanelHeader = ({
               </div>
               <span
                 className={`text-sm font-medium text-gray-700 ${
-                  isDark ? "text-gray-200" : "text-gray-800"
+                  isDark ? "text-gray-100" : "text-gray-800"
                 }`}
               >
                 {userRole}

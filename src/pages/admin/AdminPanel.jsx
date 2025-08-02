@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { ThemeProvider } from "../../contexts/ThemeContext";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminPanelHeader from "../../components/admin/AdminPanelHeader";
 import UsersTab from "../../components/admin/tabs/UsersTab";
@@ -12,6 +11,7 @@ import { paginate } from "../../utils/pagination";
 import { getAllProfiles } from "../../services/userService";
 import { opportunitiesService } from "../../services/fetchOpportunityService";
 import { useTheme } from "../../contexts/ThemeContext";
+import CategoriesTab from "../../components/admin/tabs/CategoriesTab";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -183,6 +183,8 @@ const AdminPanel = () => {
         return <AnalyticsTab />;
       case "settings":
         return <SettingsTab />;
+      case "categories":
+        return <CategoriesTab />;
       default:
         return <div>Pestaña no encontrada</div>;
     }
@@ -205,7 +207,7 @@ const AdminPanel = () => {
 
   // Clases para el tema oscuro solo en el panel de administración
   const adminPanelClasses = `flex h-screen transition-colors duration-200`;
-  const mainContentClasses = `flex-1 flex flex-col overflow-hidden`;
+  const mainContentClasses = `flex-1 flex flex-col min-h-0 overflow-y-auto`;
 
   console.log("isDark:", isDark);
   return (
@@ -243,13 +245,9 @@ const AdminPanel = () => {
                 transition: "margin-left 0.3s ease-in-out",
               }}
             >
-              {/* <div className="w-full max-w-full mx-auto px-4"> */}
-              <div
-                className={`transform hover:translate-y-[-2px] transition-all duration-300`}
-              >
-                {tabContent}
+              <div className="w-full max-w-full mx-auto px-4 h-full flex flex-col">
+                <div className="flex-1 min-h-0">{tabContent}</div>
               </div>
-              {/* </div> */}
             </main>
           </div>
         </div>

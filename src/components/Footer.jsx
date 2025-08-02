@@ -1,12 +1,12 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import { GraduationCap, Mail } from "lucide-react";
 import {
-  GraduationCap,
-  Facebook,
-  Twitter,
-  Instagram,
-  Mail,
-} from "lucide-react";
+  FaFacebook,
+  FaInstagram,
+  FaXTwitter,
+  FaLinkedin,
+  FaTiktok,
+} from "react-icons/fa6";
 
 const Footer = () => {
   return (
@@ -57,19 +57,28 @@ const Footer = () => {
             </h3>
             <div className="flex gap-4">
               {[
-                { icon: Facebook, href: "#", color: "hover:text-blue-500" },
-                { icon: Twitter, href: "#", color: "hover:text-sky-500" },
-                { icon: Instagram, href: "#", color: "hover:text-pink-500" },
+                { icon: FaFacebook, href: "#", color: "hover:text-blue-500" },
+                { icon: FaXTwitter, href: "#", color: "hover:text-sky-500" },
                 {
-                  icon: Mail,
-                  href: "mailto:contact@edu-us.org",
-                  color: "hover:text-yellow-500",
+                  icon: FaInstagram,
+                  href: "https://www.instagram.com/edu.us_/",
+                  color: "hover:text-pink-500",
+                },
+                {
+                  icon: FaTiktok,
+                  href: "https://www.tiktok.com/@eduus_latam",
+                  color: "hover:text-pink-500",
+                },
+                {
+                  icon: FaLinkedin,
+                  href: "https://www.linkedin.com/company/eduus-latam/",
+                  color: "hover:text-blue-500",
                 },
               ].map((social, index) => (
                 <a
                   key={index}
                   href={social.href}
-                  className={`bg-dark/50 p-3 rounded-lg ${social.color} transition-all duration-300 hover:shadow-lg hover:-translate-y-1`}
+                  className={`bg-dark/50 p-3 rounded-lg ${social.color} transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-white`}
                 >
                   <social.icon className="h-5 w-5" />
                 </a>

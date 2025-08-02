@@ -73,8 +73,8 @@ const OpportunityForm = ({
   if (!showOpportunityForm) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-      <div className="bg-light rounded-3xl w-full max-w-3xl max-h-[95vh] overflow-y-auto p-8 shadow-2xl border border-primary/20">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-start justify-center z-[100] overflow-y-auto py-8">
+      <div className="bg-light rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl border border-primary/20 relative my-8">
         <div className="flex flex-col gap-2 mb-8">
           <div className="flex items-center justify-center relative">
             <button

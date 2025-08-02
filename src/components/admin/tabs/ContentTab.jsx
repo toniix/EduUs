@@ -56,9 +56,9 @@ export default function ContentTab({
 
   return (
     <div
-      className={`rounded-lg shadow-md p-6 pt-8 max-w-full overflow-x-auto ${
+      className={`rounded-lg shadow-md p-6 w-full h-full flex flex-col ${
         isDark ? "bg-gray-800" : "bg-white"
-      }`}
+      } relative`}
     >
       {showOpportunityForm && (
         <OpportunityForm
@@ -90,142 +90,143 @@ export default function ContentTab({
           Nueva Oportunidad
         </button>
       </div>
-
-      {loading && (
-        <InlineLoader message="Cargando oportunidades..." size="md" />
-      )}
-      <div className="w-full overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className={isDark ? "bg-gray-700" : "bg-gray-50"}>
-            <tr>
-              <th
-                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
-              >
-                Título
-              </th>
-              <th
-                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
-              >
-                Tipo
-              </th>
-              <th
-                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
-              >
-                Estado
-              </th>
-              <th
-                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
-              >
-                Autor
-              </th>
-              <th
-                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
-              >
-                Fecha
-              </th>
-              <th
-                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
-              >
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody
-            className={`divide-y ${
-              isDark
-                ? "bg-gray-700 divide-gray-600"
-                : "bg-white divide-gray-200"
-            }`}
-          >
-            {opportunities.map((opportunity) => (
-              <tr
-                key={opportunity.id}
-                className={isDark ? "hover:bg-gray-600" : "hover:bg-gray-50"}
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div
-                    className={`text-sm font-medium ${
-                      isDark ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {opportunity.title}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div
-                    className={`text-sm ${
+      <div className="flex-1 min-h-0 flex flex-col">
+        {loading && (
+          <InlineLoader message="Cargando oportunidades..." size="md" />
+        )}
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className={isDark ? "bg-gray-700" : "bg-gray-50"}>
+              <tr>
+                <th
+                  className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
+                    isDark ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
+                  Título
+                </th>
+                <th
+                  className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
+                    isDark ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
+                  Tipo
+                </th>
+                <th
+                  className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
+                    isDark ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
+                  Estado
+                </th>
+                <th
+                  className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
+                    isDark ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
+                  Autor
+                </th>
+                <th
+                  className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
+                    isDark ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
+                  Fecha
+                </th>
+                <th
+                  className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
+                    isDark ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              className={`divide-y ${
+                isDark
+                  ? "bg-gray-700 divide-gray-600"
+                  : "bg-white divide-gray-200"
+              }`}
+            >
+              {opportunities.map((opportunity) => (
+                <tr
+                  key={opportunity.id}
+                  className={isDark ? "hover:bg-gray-600" : "hover:bg-gray-50"}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div
+                      className={`text-sm font-medium ${
+                        isDark ? "text-white" : "text-gray-900"
+                      }`}
+                    >
+                      {opportunity.title}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div
+                      className={`text-sm ${
+                        isDark ? "text-gray-300" : "text-gray-500"
+                      }`}
+                    >
+                      {opportunity.type}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        opportunity.status === "active"
+                          ? isDark
+                            ? "bg-green-900 text-green-200"
+                            : "bg-green-100 text-green-800"
+                          : isDark
+                          ? "bg-red-900 text-red-200"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {opportunity.status === "active" ? "Activo" : "Inactivo"}
+                    </span>
+                  </td>
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap text-sm ${
                       isDark ? "text-gray-300" : "text-gray-500"
                     }`}
                   >
-                    {opportunity.type}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      opportunity.status === "active"
-                        ? isDark
-                          ? "bg-green-900 text-green-200"
-                          : "bg-green-100 text-green-800"
-                        : isDark
-                        ? "bg-red-900 text-red-200"
-                        : "bg-red-100 text-red-800"
+                    {opportunity.creator?.full_name || "N/A"}
+                  </td>
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap text-sm ${
+                      isDark ? "text-gray-300" : "text-gray-500"
                     }`}
                   >
-                    {opportunity.status === "active" ? "Activo" : "Inactivo"}
-                  </span>
-                </td>
-                <td
-                  className={`px-6 py-4 whitespace-nowrap text-sm ${
-                    isDark ? "text-gray-300" : "text-gray-500"
-                  }`}
-                >
-                  {opportunity.creator?.full_name || "N/A"}
-                </td>
-                <td
-                  className={`px-6 py-4 whitespace-nowrap text-sm ${
-                    isDark ? "text-gray-300" : "text-gray-500"
-                  }`}
-                >
-                  {opportunity.created_at
-                    ? new Date(opportunity.created_at).toLocaleString()
-                    : "-"}
-                </td>
-                <td
-                  className={`px-6 py-4 whitespace-nowrap text-right text-sm font-medium ${
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
-                  <OpportunityActionsMenu
-                    opportunity={opportunity}
-                    setShowOpportunityForm={setShowOpportunityForm}
-                    setSelectedOpportunity={setSelectedOpportunity}
-                    fetchOpportunities={fetchOpportunities}
-                    isDark={isDark}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="mt-6">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+                    {opportunity.created_at
+                      ? new Date(opportunity.created_at).toLocaleString()
+                      : "-"}
+                  </td>
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap text-right text-sm font-medium ${
+                      isDark ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    <OpportunityActionsMenu
+                      opportunity={opportunity}
+                      setShowOpportunityForm={setShowOpportunityForm}
+                      setSelectedOpportunity={setSelectedOpportunity}
+                      fetchOpportunities={fetchOpportunities}
+                      isDark={isDark}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </div>
       </div>
     </div>

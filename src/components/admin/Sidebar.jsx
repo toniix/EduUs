@@ -3,10 +3,10 @@ import {
   FileText,
   BarChart2,
   Settings,
-  LogOut,
   Home,
   ChevronLeft,
   ChevronRight,
+  Tag,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -16,9 +16,10 @@ import logo from "../../assets/logo_1.png";
 const menuItems = [
   { icon: <Home />, label: "Dashboard", value: "dashboard" },
   { icon: <Users />, label: "Usuarios", value: "users" },
-  { icon: <FileText />, label: "Contenido", value: "content" },
+  { icon: <FileText />, label: "Oportunidades", value: "content" },
   { icon: <BarChart2 />, label: "Analíticas", value: "analytics" },
   { icon: <Settings />, label: "Configuración", value: "settings" },
+  { icon: <Tag />, label: "Categorías", value: "categories" },
 ];
 
 export default function Sidebar({
@@ -34,6 +35,7 @@ export default function Sidebar({
   const handleItemClick = (item) => {
     setActiveTab(item.value);
   };
+  // console.log(isDark);
 
   return (
     <aside
@@ -46,7 +48,7 @@ export default function Sidebar({
         className={`flex items-center justify-between p-3.5 border-b ${
           isDark
             ? "bg-gray-900 border-gray-700"
-            : "bg-gradient-to-r from-gray-100 to-white border-gray-200"
+            : "border-gray-200 bg-gradient-to-l from-gray-100 to-white"
         }`}
       >
         <div className="flex items-center space-x-2">
@@ -102,7 +104,7 @@ export default function Sidebar({
                   : `hover:${
                       isDark ? "bg-gray-800" : "bg-gray-50"
                     } text-gray-700 hover:text-primary`
-              } ${isDark ? "text-gray-200" : "text-gray-700"}`}
+              } ${isDark ? "text-gray-100" : "text-gray-700"}`}
             >
               <div className="flex items-center">
                 <span
@@ -129,7 +131,7 @@ export default function Sidebar({
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
             } px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 hover:text-primary transition-all duration-300 ${
-              isDark ? "text-gray-200" : "text-gray-700"
+              isDark ? "text-gray-100" : "text-gray-700"
             }`}
           >
             <Home className="h-5 w-5" />

@@ -24,7 +24,7 @@ const Home = () => {
             </p>
             <Link
               to="/edutracker"
-              className="inline-flex items-center bg-primary text-light px-6 py-3 rounded-md hover:bg-opacity-90"
+              className="inline-flex items-center bg-primary text-light px-6 py-3 rounded-md hover:bg-opacity-90 hover:text-dark"
             >
               Explorar Oportunidades
               <ArrowRight className="ml-2 h-5 w-5" />
