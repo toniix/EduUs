@@ -115,11 +115,9 @@ export const ERROR_MESSAGES = {
 
 // Esquema de validación con Zod
 export const opportunitySchema = z.object({
-  title: z.string().min(5, "El título es obligatorio."),
+  title: z.string().min(3, "El título es obligatorio."),
   description: z.string().min(5, "La descripción es obligatoria."),
-  type: z.string().min(1, "El tipo es obligatorio."),
   modality: z.string().min(1, "La modalidad es obligatoria."),
-  status: z.string().min(1, "El estado es obligatorio."),
   organization: z.string().min(1, "La organización es obligatoria."),
   country: z.string().min(1, "El país es obligatorio."),
   location: z.string().min(1, "La ubicación es obligatoria."),

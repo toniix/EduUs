@@ -6,8 +6,6 @@ import {
   MapPin,
   ChevronLeft,
   Building,
-  User,
-  Tag,
   CheckCircle,
   Mail,
   Phone,
@@ -20,18 +18,34 @@ import {
   BookOpen,
   Users,
   Briefcase,
+  Trophy,
+  Laptop,
+  HeartHandshake,
+  Medal,
+  BadgeCheck,
+  Plane,
 } from "lucide-react";
 import { statusColors, modalityStyles } from "../../utils/opportunity";
 import OpportunityLoading from "./OpportunityLoading";
 import OpportunityError from "./OpportunityError";
 import OpportunityNotFound from "./OpportunityNotFound";
 
-const typeIcons = {
-  beca: <Award className="h-5 w-5" />,
+const categoryIcons = {
   taller: <BookOpen className="h-5 w-5" />,
-  intercambio: <Users className="h-5 w-5" />,
   charla: <Briefcase className="h-5 w-5" />,
   conferencia: <Users className="h-5 w-5" />,
+  hackathon: <Trophy className="h-5 w-5" />,
+  bootcamp: <Laptop className="h-5 w-5" />,
+  voluntario: <HeartHandshake className="h-5 w-5" />,
+  olimpiada: <Medal className="h-5 w-5" />,
+  certificacion: <BadgeCheck className="h-5 w-5" />,
+  curso: <BookOpen className="h-5 w-5" />,
+  intercambio: <Globe className="h-5 w-5" />,
+  practica: <Briefcase className="h-5 w-5" />,
+  programa: <Plane className="h-5 w-5" />,
+  beca: <Award className="h-5 w-5" />,
+  concurso: <Trophy className="h-5 w-5" />,
+  simulacion: <Users className="h-5 w-5" />,
 };
 const modalityIcons = {
   virtual: <Globe className="h-5 w-5" />,
@@ -92,20 +106,16 @@ const OpportunityDetail = () => {
     title,
     organization,
     description,
-    type,
     location,
     deadline,
     image_url,
     tags,
     category,
-    creator,
     country,
     requirements,
     benefits,
-    status,
     contact,
     modality,
-    created_at,
   } = opportunity;
 
   // Supón que data.requirements viene como un string JSON
@@ -118,11 +128,13 @@ const OpportunityDetail = () => {
   // console.log("requirements:", requirements);
   // console.log("type:", typeof requirements);
   // console.log("is array:", Array.isArray(requirements));
+  const isExpired = deadline && new Date(deadline) < new Date();
+
+  const status = isExpired ? "inactive" : "active";
 
   const statusConfig = statusColors[status] || statusColors.active;
   const StatusIcon = statusConfig.icon;
 
-  const isExpired = deadline && new Date(deadline) < new Date();
   const daysUntilDeadline = deadline
     ? Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24))
     : null;
@@ -167,15 +179,15 @@ const OpportunityDetail = () => {
                       <StatusIcon className="h-4 w-4 mr-1" />
                       {status === "active"
                         ? "Activa"
-                        : status === "closed"
-                        ? "Cerrada"
-                        : "Borrador"}
+                        : status === "inactive"
+                        ? "Inactiva"
+                        : "Inactiva"}
                     </div>
 
-                    {type && (
+                    {category && (
                       <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {typeIcons[type]}
-                        <span className="ml-1 capitalize">{type}</span>
+                        {categoryIcons[category.name]}
+                        <span className="ml-1 capitalize">{category.name}</span>
                       </div>
                     )}
                     {modality && (
@@ -244,13 +256,6 @@ const OpportunityDetail = () => {
                     <div className="flex items-center">
                       <Globe className="h-4 w-4 mr-2 text-gray-400" />
                       <span>{country}</span>
-                    </div>
-                  )}
-
-                  {category && (
-                    <div className="flex items-center">
-                      <Tag className="h-4 w-4 mr-2 text-gray-400" />
-                      <span>{category.name}</span>
                     </div>
                   )}
                 </div>
@@ -385,24 +390,15 @@ const OpportunityDetail = () => {
               )}
 
               {/* Botón de Aplicar */}
-              <button
-                onClick={handleApply}
-                disabled={isExpired || status === "closed"}
-                className={`w-full flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  isExpired || status === "closed"
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-primary text-white hover:bg-primary/90 hover:shadow-lg"
-                }`}
+              <a
+                href={contact.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`w-full flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-all duration-200 bg-primary text-white hover:bg-primary/90 hover:shadow-lg`}
               >
-                {isExpired
-                  ? "Fecha límite vencida"
-                  : status === "closed"
-                  ? "Oportunidad cerrada"
-                  : "Aplicar ahora"}
-                {!isExpired && status !== "closed" && (
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                )}
-              </button>
+                Mas información
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </a>
 
               {/* Información de Contacto */}
               {contact && (
@@ -422,17 +418,6 @@ const OpportunityDetail = () => {
                         </a>
                       </div>
                     )}
-                    {contact.phone && (
-                      <div className="flex items-center text-gray-600">
-                        <Phone className="h-4 w-4 mr-2" />
-                        <a
-                          href={`tel:${contact.phone}`}
-                          className="hover:text-primary"
-                        >
-                          {contact.phone}
-                        </a>
-                      </div>
-                    )}
                     {contact.website && (
                       <div className="flex items-center text-gray-600">
                         <Globe className="h-4 w-4 mr-2" />
@@ -442,46 +427,10 @@ const OpportunityDetail = () => {
                           rel="noopener noreferrer"
                           className="hover:text-primary"
                         >
-                          Sitio web
+                          Sitio web o plataforma de inscripción
                         </a>
                       </div>
                     )}
-                  </div>
-                </div>
-              )}
-
-              {/* Información del Creador */}
-              {creator && (
-                <div className="mt-6 pt-6 border-t border-gray-100">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">
-                    Publicado por
-                  </h3>
-                  <div className="flex items-center">
-                    {creator.avatar_url ? (
-                      <img
-                        src={creator.avatar_url}
-                        alt={creator.full_name}
-                        className="h-10 w-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User className="h-5 w-5 text-gray-400" />
-                      </div>
-                    )}
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">
-                        {creator.full_name}
-                      </p>
-                      {created_at && (
-                        <p className="text-xs text-gray-500">
-                          {new Date(created_at).toLocaleDateString("es-ES", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </p>
-                      )}
-                    </div>
                   </div>
                 </div>
               )}

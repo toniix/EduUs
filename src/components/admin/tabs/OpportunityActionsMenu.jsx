@@ -68,7 +68,7 @@ const OpportunityActionsMenu = ({
 
     if (isDisabled) {
       return `${baseClasses} ${sizeClasses} ${
-        isDark ? "text-gray-600" : "text-gray-400"
+        isDark ? "text-secondary" : "text-gray-400"
       } cursor-not-allowed`;
     }
 
@@ -92,35 +92,39 @@ const OpportunityActionsMenu = ({
   const deleteButtonClasses = getButtonClasses(isDeleting, true);
 
   return (
-    <>
-      <div className="flex space-x-1">
-        <button
-          className={editButtonClasses}
-          title="Editar"
-          onClick={() => handleEdit(opportunity)}
-          disabled={!isOwner}
-        >
-          <Edit className="h-4 w-4" />
-        </button>
-        <button
-          className={deleteButtonClasses}
-          title="Eliminar"
-          onClick={() => handleDeleteClick(opportunity)}
-          disabled={isDeleting}
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      </div>
+    <div className="flex space-x-2">
+      <button
+        className={editButtonClasses}
+        title="Editar"
+        onClick={() => handleEdit(opportunity)}
+        disabled={!isOwner}
+      >
+        <Edit className="h-4 w-4" />
+      </button>
+      <button
+        className={deleteButtonClasses}
+        title="Eliminar"
+        onClick={() => handleDeleteClick(opportunity)}
+        disabled={isDeleting}
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
       <ModalConfirmacion
         open={showDeleteModal}
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteConfirm}
         title="Eliminar Oportunidad"
-        message={`¿Estás seguro de que deseas eliminar la oportunidad "${opportunityToDelete?.title}"? Esta acción no se puede deshacer.`}
+        message={
+          <>
+            ¿Estás seguro de que deseas eliminar la oportunidad{" "}
+            <span className="font-bold">"{opportunityToDelete?.title}"</span>?
+            Esta acción no se puede deshacer.
+          </>
+        }
         confirmText="Eliminar"
         cancelText="Cancelar"
       />
-    </>
+    </div>
   );
 };
 

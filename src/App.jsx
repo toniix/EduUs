@@ -91,7 +91,7 @@ function App() {
                 </Routes>
                 {/* </main> */}
 
-                <Toaster position="top-right" />
+                <Toaster position="bottom-right" />
               </Router>
             </ThemeProvider>
           </OpportunityProvider>

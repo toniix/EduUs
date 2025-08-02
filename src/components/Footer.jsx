@@ -58,7 +58,6 @@ const Footer = () => {
             <div className="flex gap-4">
               {[
                 { icon: FaFacebook, href: "#", color: "hover:text-blue-500" },
-                { icon: FaXTwitter, href: "#", color: "hover:text-sky-500" },
                 {
                   icon: FaInstagram,
                   href: "https://www.instagram.com/edu.us_/",

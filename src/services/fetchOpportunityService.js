@@ -15,15 +15,7 @@ class OpportunitiesService {
       sortOrder = "desc",
     } = pagination;
 
-    const {
-      search,
-      type,
-      modality,
-      country,
-      organization,
-      category_id,
-      status = "active",
-    } = filters;
+    const { search, modality, country, organization, category_id } = filters;
 
     try {
       let query = supabase.from("opportunities").select(
@@ -35,12 +27,10 @@ class OpportunitiesService {
       );
 
       const exactFilters = {
-        type,
         modality,
         country,
         organization,
         category_id,
-        status,
       };
 
       Object.entries(exactFilters).forEach(([key, value]) => {

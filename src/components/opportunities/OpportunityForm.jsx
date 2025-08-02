@@ -198,7 +198,7 @@ const OpportunityForm = ({
                 )}
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Tipo
                 </label>
@@ -218,7 +218,7 @@ const OpportunityForm = ({
                   <option value="taller">Taller</option>
                   <option value="charla">Charla</option>
                 </select>
-              </div>
+              </div> */}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -272,7 +272,7 @@ const OpportunityForm = ({
                 </select>
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Estado
                 </label>
@@ -287,7 +287,7 @@ const OpportunityForm = ({
                   <option value="inactive">Inactivo</option>
                   <option value="draft">Borrador</option>
                 </select>
-              </div>
+              </div> */}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -312,19 +312,20 @@ const OpportunityForm = ({
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Ubicación
                 </label>
-                <input
-                  type="text"
+                <select
                   name="location"
                   // required
                   className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.location || ""}
+                  value={formData.location}
                   onChange={handleChange}
-                />
-                {errors?.location && (
-                  <div className="text-xs text-red-600 mt-1 font-semibold">
-                    {errors.location}
-                  </div>
-                )}
+                >
+                  <option value="national">Nacional</option>
+                  <option value="international">Internacional</option>
+                  <option value="latin-america">Latinoamerica</option>
+                  <option value="europe">Europa</option>
+                  <option value="asia">Asia</option>
+                  <option value="u-s">EEUU</option>
+                </select>
               </div>
 
               <div>
@@ -358,7 +359,7 @@ const OpportunityForm = ({
                     htmlFor="website"
                     className="block text-sm font-semibold text-dark mb-1"
                   >
-                    Sitio Web
+                    Sitio Web o link de la oportunidad
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -399,7 +400,7 @@ const OpportunityForm = ({
                     htmlFor="email"
                     className="block text-sm font-semibold text-dark mb-1"
                   >
-                    Email
+                    Email (opcional)
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">

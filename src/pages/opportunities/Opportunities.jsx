@@ -29,6 +29,8 @@ const Opportunities = () => {
     limit: 1000,
   });
 
+  console.log("allOpportunities:", allOpportunities);
+
   const searchOpportunities = useCallback((term, opportunitiesList) => {
     if (!term || term.trim() === "") return opportunitiesList;
 

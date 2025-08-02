@@ -34,17 +34,19 @@ export default function UserActionsMenu({
   const handleDelete = async () => {
     setLoading(true);
     try {
-      if (user.id === currentUserId) {
+      if (user.id === currentUser.id) {
         toast.error("No puedes eliminar tu propio usuario.");
         setLoading(false);
         setModalOpen(false);
         return;
       }
       await deleteUser(user.id);
+      toast.success("Usuario eliminado correctamente");
       setModalOpen(false);
       onUserDeleted && onUserDeleted(user.id);
     } catch (err) {
-      toast.error("Error al eliminar usuario: " + err.message);
+      console.error("Error al eliminar usuario:", err);
+      toast.error("Error al eliminar usuario");
     } finally {
       setLoading(false);
     }
@@ -113,9 +115,13 @@ export default function UserActionsMenu({
       <ModalConfirmacion
         open={modalOpen && modalType === "delete"}
         title={`Eliminar usuario`}
-        message={`¿Estás seguro de que deseas eliminar a ${
-          user.full_name || user.email
-        }? Esta acción no se puede deshacer.`}
+        message={
+          <>
+            ¿Estás seguro de que deseas eliminar a{" "}
+            <span className="font-bold">{user.full_name || user.email}</span>?
+            Esta acción no se puede deshacer.
+          </>
+        }
         onCancel={() => setModalOpen(false)}
         onConfirm={handleDelete}
         confirmText={loading ? "Eliminando..." : "Eliminar"}
