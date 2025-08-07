@@ -6,7 +6,10 @@ export default {
     extend: {
       colors: {
         primary: "#ED441D",
-        secondary: "#4BBAAA",
+        secondary: {
+          DEFAULT: "#4BBAAA",
+          light: "#E0F2F0", // Lighter variant of secondary color
+        },
         accent: "#F4B63B",
         light: "#FFFFFF",
         dark: "#222222",
@@ -38,8 +41,14 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Roboto", "sans-serif"],
-        heading: ["Poppins", "sans-serif"],
+        // Para títulos
+        heading: ["Space Grotesk", "sans-serif"],
+
+        // Para contenido general - sobrescribe la fuente sans por defecto
+        sans: ["Nunito", "ui-sans-serif", "system-ui"],
+
+        // // También puedes crear un alias específico para Nunito
+        // body: ["Nunito", "sans-serif"],
       },
       transitionProperty: {
         colors:

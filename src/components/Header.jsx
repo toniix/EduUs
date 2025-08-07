@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { GraduationCap, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import UserMenu from "./UserMenu";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "./ui/Buttom";
@@ -29,31 +29,25 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-4">
             <Link
               to="/"
-              className="text-dark hover:text-primary px-3 py-2 rounded-md"
+              className="font-heading font-medium hover:text-primary px-3 py-2 rounded-md"
             >
               Inicio
             </Link>
             <Link
               to="/about"
-              className="text-dark hover:text-primary px-3 py-2 rounded-md"
+              className="font-heading font-medium hover:text-primary px-3 py-2 rounded-md"
             >
-              Sobre Nosotros
+              Nosotros
             </Link>
             <Link
-              to="/blog"
-              className="text-dark hover:text-primary px-3 py-2 rounded-md"
+              to="/projects"
+              className="font-heading font-medium hover:text-primary px-3 py-2 rounded-md"
             >
-              Blog
-            </Link>
-            <Link
-              to="/news"
-              className="text-dark hover:text-primary px-3 py-2 rounded-md"
-            >
-              Noticias
+              Proyectos
             </Link>
             <Link
               to="/edutracker"
-              className="text-dark hover:text-primary px-3 py-2 rounded-md"
+              className="font-heading font-medium text-dark hover:text-primary px-3 py-2 rounded-md"
             >
               EDUTRACKER
             </Link>
@@ -89,31 +83,25 @@ const Header = () => {
             <div className="px-2 pt-2 pb-3 space-y-1">
               <Link
                 to="/"
-                className="block text-dark hover:text-primary px-3 py-2 rounded-md"
+                className="block font-heading font-medium hover:text-primary px-3 py-2 rounded-md"
               >
                 Inicio
               </Link>
               <Link
                 to="/about"
-                className="block text-dark hover:text-primary px-3 py-2 rounded-md"
+                className="block font-heading font-medium hover:text-primary px-3 py-2 rounded-md"
               >
                 Sobre Nosotros
               </Link>
               <Link
                 to="/blog"
-                className="block text-dark hover:text-primary px-3 py-2 rounded-md"
+                className="block font-heading font-medium hover:text-primary px-3 py-2 rounded-md"
               >
                 Blog
               </Link>
               <Link
-                to="/news"
-                className="block text-dark hover:text-primary px-3 py-2 rounded-md"
-              >
-                Noticias
-              </Link>
-              <Link
-                to="/dashboard"
-                className="block text-dark hover:text-primary px-3 py-2 rounded-md"
+                to="/edutracker"
+                className="block font-heading font-medium text-dark hover:text-primary px-3 py-2 rounded-md"
               >
                 Oportunidades
               </Link>

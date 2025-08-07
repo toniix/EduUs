@@ -3,7 +3,6 @@ import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Blog from "./pages/Blog";
-import News from "./pages/News";
 import Opportunities from "./pages/opportunities/Opportunities";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -38,8 +37,7 @@ function App() {
                   <Route element={<PublicLayout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/about" element={<About />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/news" element={<News />} />
+                    <Route path="/projects" element={<Blog />} />
                     <Route
                       path="/edutracker/opportunity/:id"
                       element={<OpportunityDetail />}
