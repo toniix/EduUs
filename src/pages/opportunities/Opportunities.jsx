@@ -142,8 +142,7 @@ const Opportunities = () => {
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-6">
             Explora becas, talleres y experiencias únicas para transformar tu
-            futuro. Encuentra la oportunidad perfecta para crecer, aprender y
-            conectar con el mundo.
+            futuro.
           </p>
         </header>
 

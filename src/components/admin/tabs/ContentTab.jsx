@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { Link } from "react-router-dom";
 import OpportunityForm from "../../opportunities/OpportunityForm";
 import { useState, useContext } from "react";
 import { ThemeContext } from "../../../contexts/ThemeContext";
@@ -83,13 +84,22 @@ export default function ContentTab({
             {opportunities.length === 1 ? "" : "s"}
           </span>
         </h2>
-        <button
-          className="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 flex items-center"
-          onClick={() => setShowOpportunityForm(true)}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Nueva Oportunidad
-        </button>
+
+        <div className="flex gap-3">
+          <Link
+            to="/edutracker"
+            className="bg-secondary-light hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md flex items-center transition-colors"
+          >
+            Ir a Edutracker
+          </Link>
+          <button
+            className="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 flex items-center"
+            onClick={() => setShowOpportunityForm(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Crear
+          </button>
+        </div>
       </div>
       <div className="flex-1 min-h-0 flex flex-col">
         {loading && (

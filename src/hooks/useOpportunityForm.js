@@ -12,7 +12,7 @@ const initialState = {
   category_id: null,
   organization: "",
   country: "",
-  location: "",
+  location: "Nacional",
   deadline: "",
   image_url: "",
   contact: { website: "" },

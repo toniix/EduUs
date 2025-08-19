@@ -79,15 +79,12 @@ const OpportunityForm = ({
           <div className="flex items-center justify-center relative">
             <button
               onClick={onClose}
-              className="absolute right-0 text-primary hover:text-white bg-secondary rounded-full p-2 transition-colors shadow hover:bg-primary"
+              className="absolute right-0 text-primary hover:text-white bg-secondary-light rounded-full p-2 transition-colors shadow hover:bg-primary"
               aria-label="Cerrar formulario"
             >
               <X className="h-6 w-6" />
             </button>
-            <h2 className="text-3xl font-bold text-primary mb-1 text-center w-full">
-              <span>
-                <X className="hidden" />
-              </span>
+            <h2 className="text-3xl font-bold text-secondary mb-1 text-center w-full">
               {formTitle}
             </h2>
           </div>
@@ -164,11 +161,10 @@ const OpportunityForm = ({
                 <label className="block text-sm font-semibold text-dark mb-1">
                   Descripción <span className="text-primary">*</span>
                 </label>
-                <input
-                  type="text"
+                <textarea
                   name="description"
-                  // required
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                  rows="4"
+                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400 resize-none"
                   value={formData.description || ""}
                   onChange={handleChange}
                 />
@@ -272,23 +268,6 @@ const OpportunityForm = ({
                 </select>
               </div>
 
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Estado
-                </label>
-                <select
-                  name="status"
-                  //   required
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.status}
-                  onChange={handleChange}
-                >
-                  <option value="active">Activo</option>
-                  <option value="inactive">Inactivo</option>
-                  <option value="draft">Borrador</option>
-                </select>
-              </div> */}
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   País
@@ -321,10 +300,10 @@ const OpportunityForm = ({
                 >
                   <option value="national">Nacional</option>
                   <option value="international">Internacional</option>
-                  <option value="latin-america">Latinoamerica</option>
+                  {/* <option value="latin-america">Latinoamerica</option>
                   <option value="europe">Europa</option>
                   <option value="asia">Asia</option>
-                  <option value="u-s">EEUU</option>
+                  <option value="u-s">EEUU</option> */}
                 </select>
               </div>
 

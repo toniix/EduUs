@@ -89,10 +89,10 @@ const About = () => {
                   Nuestra Visión
                 </h3>
                 <p className="text-gray-600 leading-relaxed text-center">
-                  Ser referentes en la transformación educativa, creando puentes
-                  entre el talento joven y las oportunidades del siglo XXI,
-                  contribuyendo así a reducir la brecha de desigualdad en
-                  nuestra sociedad.
+                  Ser una organización sostenible, innovadora y referente en
+                  América Latina por su capacidad de reducir brechas
+                  estructurales, conectar talento joven con el mercado y generar
+                  impacto medible en la empleabilidad juvenil.
                 </p>
                 <div className="mt-6 flex justify-center">
                   <div className="h-1 w-20 bg-gradient-to-r from-secondary/30 to-primary/30 rounded-full"></div>

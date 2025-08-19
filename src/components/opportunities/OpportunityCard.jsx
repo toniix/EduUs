@@ -10,7 +10,6 @@ export default function OpportunityCard({ opportunity }) {
     organization,
     description,
     type,
-    location,
     deadline,
     image_url,
     tags,
@@ -43,10 +42,6 @@ export default function OpportunityCard({ opportunity }) {
         <p className="text-sm text-gray-700 mb-4 line-clamp-2">{description}</p>
 
         <div className="flex flex-col space-y-2 mb-4">
-          <div className="flex items-center text-sm text-gray-600">
-            <MapPin className="h-4 w-4 mr-1" />
-            <span>{location}</span>
-          </div>
           <div className="flex items-center text-sm text-gray-600">
             <Calendar className="h-4 w-4 mr-1" />
             <span>Fecha límite: {formatDate(deadline)}</span>
