@@ -30,9 +30,7 @@ const UserMenu = () => {
 
   const handleLogout = async () => {
     try {
-      console.log("Cerrando sesión...");
       await signOut();
-      console.log("Sesión cerrada");
       navigate("/");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
