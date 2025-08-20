@@ -64,7 +64,7 @@ const About = () => {
                   <Target className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold text-center text-gray-900 mb-4">
-                  Nuestra Misión
+                  Misión
                 </h3>
                 <p className="text-gray-600 leading-relaxed text-center">
                   Empoderar a jóvenes en situación de desventaja a través de
@@ -86,7 +86,7 @@ const About = () => {
                   <Globe className="w-8 h-8 text-secondary" />
                 </div>
                 <h3 className="text-2xl font-bold text-center text-gray-900 mb-4">
-                  Nuestra Visión
+                  Visión
                 </h3>
                 <p className="text-gray-600 leading-relaxed text-center">
                   Ser una organización sostenible, innovadora y referente en

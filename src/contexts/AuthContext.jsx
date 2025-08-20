@@ -44,7 +44,6 @@ export const AuthProvider = ({ children }) => {
         await checkOrCreateProfile(currentUser);
         const role = await getCurrentUserRole();
         console.log(role);
-
         // Actualizar last_login
         await updateLastLogin(currentUser);
       } catch (error) {

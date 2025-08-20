@@ -20,6 +20,7 @@ import { RoleProvider } from "./contexts/RoleContext";
 import NoAccessFallback from "./components/ui/NoAccessFallback";
 import PublicRoute from "./routes/PublicRoute";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import NotFound from "./routes/NotFound";
 
 function App() {
   return (
@@ -86,6 +87,7 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
                 {/* </main> */}
 

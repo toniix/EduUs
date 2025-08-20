@@ -20,7 +20,6 @@ export const RoleProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const { user, loading: authLoading } = useAuth();
 
-  console.log("cargando RolePorvider");
   const fetchUserRole = useCallback(async () => {
     // No hacer nada si ya estamos cargando o no hay usuario
     if (authLoading || !user) return;
@@ -46,13 +45,13 @@ export const RoleProvider = ({ children }) => {
   // Funciones memoizadas para evitar re-renders innecesarios
   const hasRole = useCallback((role) => userRole === role, [userRole]);
 
-  const hasAnyRole = useCallback(
-    (roles) => {
-      if (!Array.isArray(roles)) return false;
-      return roles.includes(userRole);
-    },
-    [userRole]
-  );
+  // const hasAnyRole = useCallback(
+  //   (roles) => {
+  //     if (!Array.isArray(roles)) return false;
+  //     return roles.includes(userRole);
+  //   },
+  //   [userRole]
+  // );
 
   // Valores derivados memoizados
   const derivedValues = useMemo(
@@ -71,7 +70,7 @@ export const RoleProvider = ({ children }) => {
       error,
       refetch: fetchUserRole,
       hasRole,
-      hasAnyRole,
+      // hasAnyRole,
       ...derivedValues,
     }),
     [
@@ -80,7 +79,7 @@ export const RoleProvider = ({ children }) => {
       error,
       fetchUserRole,
       hasRole,
-      hasAnyRole,
+      // hasAnyRole,
       derivedValues,
     ]
   );

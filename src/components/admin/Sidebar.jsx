@@ -104,7 +104,7 @@ export default function Sidebar({
                   : `hover:${
                       isDark ? "bg-gray-800" : "bg-gray-50"
                     } text-gray-700 hover:text-primary`
-              } ${isDark ? "text-gray-100" : "text-gray-700"}`}
+              } ${isDark ? "text-secondary-light" : "text-gray-700"}`}
             >
               <div className="flex items-center">
                 <span
@@ -131,7 +131,7 @@ export default function Sidebar({
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
             } px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 hover:text-primary transition-all duration-300 ${
-              isDark ? "text-gray-100" : "text-gray-700"
+              isDark ? "text-secondary" : "text-gray-700"
             }`}
           >
             <Home className="h-5 w-5" />

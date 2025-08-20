@@ -20,7 +20,7 @@ export default function NoAccessFallback() {
         to="/"
         className="inline-block mt-2 px-6 py-3 bg-primary text-white rounded-full font-semibold shadow hover:bg-secondary transition-colors text-base"
       >
-        Explora oportunidades
+        Ir a inicio
       </Link>
     </div>
   );
