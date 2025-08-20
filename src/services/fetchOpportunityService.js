@@ -15,7 +15,7 @@ class OpportunitiesService {
       sortOrder = "desc",
     } = pagination;
 
-    const { search, modality, country, organization, category_id } = filters;
+    const { modality, country, location } = filters;
 
     try {
       let query = supabase.from("opportunities").select(
@@ -29,8 +29,9 @@ class OpportunitiesService {
       const exactFilters = {
         modality,
         country,
-        organization,
-        category_id,
+        location,
+        // organization,
+        // category_id,
       };
 
       Object.entries(exactFilters).forEach(([key, value]) => {
@@ -41,10 +42,12 @@ class OpportunitiesService {
 
       query = query.order(sortBy, { ascending: sortOrder === "asc" });
 
+      // Paginación
       const from = (page - 1) * limit;
       const to = from + limit - 1;
       query = query.range(from, to);
 
+      // Ejecutar la consulta
       const { data, error, count } = await query;
 
       if (error) throw error;
@@ -301,26 +304,34 @@ class OpportunitiesService {
         .order("modality", { ascending: true });
 
       // Obtener países únicos
-      const { data: countries } = await supabase
-        .from("opportunities")
-        .select("country")
-        .not("country", "is", null)
-        .order("country", { ascending: true });
+      // const { data: countries } = await supabase
+      //   .from("opportunities")
+      //   .select("country")
+      //   .not("country", "is", null)
+      //   .order("country", { ascending: true });
 
-      // Obtener organizaciones únicas
-      const { data: organizations } = await supabase
+      // // Obtener organizaciones únicas
+      // const { data: organizations } = await supabase
+      //   .from("opportunities")
+      //   .select("organization")
+      //   .not("organization", "is", null)
+      //   .order("organization", { ascending: true });
+
+      // Obtener ubicaciones únicas
+      const { data: locations } = await supabase
         .from("opportunities")
-        .select("organization")
-        .not("organization", "is", null)
-        .order("organization", { ascending: true });
+        .select("location")
+        .not("location", "is", null)
+        .order("location", { ascending: true });
 
       return {
         types: [...new Set(types.map((item) => item.type))],
         modalities: [...new Set(modalities.map((item) => item.modality))],
-        countries: [...new Set(countries.map((item) => item.country))],
-        organizations: [
-          ...new Set(organizations.map((item) => item.organization)),
-        ],
+        // countries: [...new Set(countries.map((item) => item.country))],
+        // organizations: [
+        //   ...new Set(organizations.map((item) => item.organization)),
+        // ],
+        locations: [...new Set(locations.map((item) => item.location))],
       };
     } catch (error) {
       console.error("Error fetching filter options:", error);

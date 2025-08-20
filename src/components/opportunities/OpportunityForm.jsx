@@ -300,10 +300,6 @@ const OpportunityForm = ({
                 >
                   <option value="national">Nacional</option>
                   <option value="international">Internacional</option>
-                  {/* <option value="latin-america">Latinoamerica</option>
-                  <option value="europe">Europa</option>
-                  <option value="asia">Asia</option>
-                  <option value="u-s">EEUU</option> */}
                 </select>
               </div>
 

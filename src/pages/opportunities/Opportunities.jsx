@@ -29,8 +29,9 @@ const Opportunities = () => {
     limit: 1000,
   });
 
-  console.log("allOpportunities:", allOpportunities);
+  // console.log("allOpportunities:", allOpportunities);
 
+  // Buscar oportunidades por término de búsqueda
   const searchOpportunities = useCallback((term, opportunitiesList) => {
     if (!term || term.trim() === "") return opportunitiesList;
 
@@ -146,30 +147,31 @@ const Opportunities = () => {
           </p>
         </header>
 
-        {/* Barra de búsqueda */}
-        <SearchHeader searchTerm={searchTerm} onSearchChange={handleSearch} />
-
-        {/* Indicador de búsqueda activa */}
-        {isSearching && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-800 font-medium">
-                  Resultados de búsqueda para "{searchTerm}"
-                </p>
-                <p className="text-blue-600 text-sm">
-                  {filteredOpportunities.length} resultado(s) encontrado(s)
-                </p>
-              </div>
-              <button
-                onClick={() => setSearchTerm("")}
-                className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
-              >
-                Limpiar búsqueda
-              </button>
+        {/* Barra de búsqueda con contador */}
+        <div className="relative mb-6 max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div className="w-full md:flex-1">
+              <SearchHeader
+                searchTerm={searchTerm}
+                onSearchChange={handleSearch}
+                onClearSearch={() => setSearchTerm("")}
+                loading={loading}
+              />
             </div>
+
+            {isSearching && (
+              <div className="w-full md:w-auto flex-shrink-0 mt-1 md:mt-0">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5 inline-flex items-center">
+                  <span className="text-blue-800 text-sm font-medium">
+                    {filteredOpportunities.length} resultado
+                    {filteredOpportunities.length !== 1 ? "s" : ""}
+                    {searchTerm && ` para "${searchTerm}"`}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Mobile filter dialog */}
         <div className="lg:hidden mb-6">

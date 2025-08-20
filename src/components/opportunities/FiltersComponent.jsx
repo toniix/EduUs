@@ -5,17 +5,19 @@ const FiltersComponent = ({ onFilterChange, filterOptions = {} }) => {
   const [localFilters, setLocalFilters] = useState({
     type: "",
     modality: "",
-    country: "",
-    organization: "",
-    category_id: "",
+    location: "",
+    // country: "",
+    // organization: "",
+    // category_id: "",
   });
 
   // Initialize filter options with empty arrays if not provided
   const {
     types = [],
     modalities = [],
-    countries = [],
-    organizations = [],
+    locations = [],
+    // countries = [],
+    // organizations = [],
   } = filterOptions;
 
   const handleFilterChange = (e) => {
@@ -39,9 +41,10 @@ const FiltersComponent = ({ onFilterChange, filterOptions = {} }) => {
     setLocalFilters({
       type: "",
       modality: "",
-      country: "",
-      organization: "",
-      category_id: "",
+      location: "",
+      // country: "",
+      // organization: "",
+      // category_id: "",
     });
     onFilterChange({});
   };
@@ -100,41 +103,21 @@ const FiltersComponent = ({ onFilterChange, filterOptions = {} }) => {
           </select>
         </div>
 
-        {/* Filtro por país */}
+        {/* Filtro por ubicación */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            País
+            Ubicación
           </label>
           <select
-            name="country"
-            value={localFilters.country}
+            name="location"
+            value={localFilters.location}
             onChange={handleFilterChange}
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
-            <option value="">Todos los países</option>
-            {countries.map((country) => (
-              <option key={country} value={country}>
-                {country}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Filtro por organización */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Organización
-          </label>
-          <select
-            name="organization"
-            value={localFilters.organization}
-            onChange={handleFilterChange}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          >
-            <option value="">Todas las organizaciones</option>
-            {organizations.map((org) => (
-              <option key={org} value={org}>
-                {org}
+            <option value="">Todas las ubicaciones</option>
+            {locations.map((location) => (
+              <option key={location} value={location}>
+                {location.charAt(0).toUpperCase() + location.slice(1)}
               </option>
             ))}
           </select>

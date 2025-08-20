@@ -16,8 +16,9 @@ export function useOpportunities(filters = {}, pagination = {}) {
   const [filterOptions, setFilterOptions] = useState({
     types: [],
     modalities: [],
-    countries: [],
-    organizations: [],
+    // countries: [],
+    // organizations: [],
+    locations: [],
   });
 
   // Memoizar las dependencias para evitar recreación en cada render
