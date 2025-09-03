@@ -108,7 +108,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Nuestros Valores Fundamentales
+              Nuestros Valores
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4"></div>
           </div>
@@ -144,12 +144,10 @@ const About = () => {
               Nuestros Ejes Estratégicos
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Nuestros pilares se alinean con los{" "}
+              Se alinean con los{" "}
               <span className="font-bold text-secundary">
-                Objetivos de Desarrollo Sostenible 4 y 10 (Educación de calidad
-                y Reducción de desigualdades)
+                Objetivos de Desarrollo Sostenible (ODS) 4 y 10
               </span>{" "}
-              y se concretan en tres ejes:
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4"></div>
           </div>
