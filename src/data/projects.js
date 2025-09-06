@@ -1,10 +1,10 @@
-import { Monitor, HelpCircle, DollarSign, Users } from "lucide-react";
+import { GraduationCap, BookOpen, Presentation, Search } from "lucide-react";
 export const projects = [
   {
     id: "educacion-comunitaria",
     name: "BOOTCAMP DE EMPLEABILIDAD JUVENIL",
     description: "Herramientas reales para el futuro laboral",
-    icon: Monitor,
+    icon: GraduationCap,
     details:
       "Fue un programa intensivo que fortaleció el perfil profesional de estudiantes y egresados de educación superior. A lo largo de seis fases, los participantes recorrieron desde el autoconocimiento hasta la conexión con el mercado laboral mediante talleres, asesorías y experiencias prácticas.",
     objectives: [
@@ -30,7 +30,7 @@ export const projects = [
     id: "apoyo-alimentario",
     name: "UN LIBRO, UNA SONRISA",
     description: "Promoviendo la lectura desde la solidaridad",
-    icon: HelpCircle,
+    icon: BookOpen,
     details:
       "Fue una iniciativa social de EDU-US que acercó la lectura a poblaciones en situación de vulnerabilidad mediante la donación de libros y actividades lúdicas y formativas. En su primera edición, se desarrolló en Piura, Lambayeque y Lima, en alianza con albergues, casas de reposo y voluntarios locales. Se entregaron colecciones adaptadas a cada grupo etario y se realizaron actividades para niños, adultos mayores y personas en situación de calle, promoviendo la lectura como herramienta de bienestar, desarrollo emocional y enriquecimiento cultural.",
     objectives: [
@@ -51,7 +51,7 @@ export const projects = [
     id: "microfinanzas",
     name: "TALLERES LIBRES",
     description: "Formación sin barreras para jóvenes con iniciativa",
-    icon: DollarSign,
+    icon: Presentation,
     details:
       "Fue una propuesta gratuita y flexible para ofrecer formación complementaria a jóvenes de distintas regiones del Perú. Desde 2023 se consolidaron como una estrategia para reducir brechas en el acceso a conocimientos prácticos poco abordados en la educación formal",
     objectives: [
@@ -72,7 +72,7 @@ export const projects = [
     id: "salud-preventiva",
     name: "EDUTRACKER",
     description: "Conectando Jóvenes con Oportunidades",
-    icon: Users,
+    icon: Search,
     details:
       "Es una iniciativa de la sección de Oportunidades de EDU-US, acerca a jóvenes peruanos a becas, intercambios y programas de liderazgo mediante información, motivación y acompañamiento estratégico. Se desarrolla a través de talleres en escuelas de zonas vulnerables y una plataforma digital que reúne las principales oportunidades vigentes, complementada con una estrategia de comunicación en redes sociales.",
     objectives: [

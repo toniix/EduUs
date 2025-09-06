@@ -1,10 +1,9 @@
-import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { ChevronDown, ExternalLink, Github, Globe } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { projects } from "../data/projects";
 
 const ProjectsSection = () => {
@@ -19,54 +18,48 @@ const ProjectsSection = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section
-        className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white overflow-hidden"
+        className="relative text-white overflow-hidden min-h-[85vh] flex items-center"
         style={{
-          background:
-            "linear-gradient(135deg, #ED441D 0%, #c73a17 50%, #a02f12 100%)",
+          background: `linear-gradient(135deg, #ED441D 0%, #F4B63B 100%)`,
         }}
       >
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-transparent"></div>
+        {/* Decorative backgrounds */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PC9zdmc+')] opacity-40"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#4BBAAA]/20 via-transparent to-[#F4B63B]/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
+
+        {/* Animated shapes */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#4BBAAA] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute top-0 -left-20 w-72 h-72 bg-[#F4B63B] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-32 left-40 w-96 h-96 bg-[#ED441D] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
-              Proyectos de EDU-US
-            </h1>
-            <p className="text-xl md:text-2xl text-red-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <div className="inline-block">
+              <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80 drop-shadow-lg">
+                Proyectos de EDU-US
+              </h1>
+            </div>
+            <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
               Iniciativas enfocadas en generar cambios positivos y desarrollo
               sostenible en nuestras comunidades de jóvenes
             </p>
             <div className="flex justify-center">
               <button
                 onClick={() => scrollToProject("navigation")}
-                className="px-8 py-4 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                style={{ backgroundColor: "#FFFFFF", color: "#ED441D" }}
-                onMouseEnter={(e) =>
-                  (e.target.style.backgroundColor = "#f8f8f8")
-                }
-                onMouseLeave={(e) =>
-                  (e.target.style.backgroundColor = "#FFFFFF")
-                }
+                className="group px-8 py-4 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-1 bg-gradient-to-r from-[#4BBAAA] to-[#4BBAAA]/90"
+                style={{
+                  boxShadow: "0 20px 40px -15px rgba(75,186,170,0.4)",
+                }}
               >
-                Explorar Proyectos
+                <span className="bg-clip-text font-medium text-lg">
+                  Explorar Proyectos
+                </span>
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Decorative elements */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg
-            viewBox="0 0 1200 120"
-            fill="none"
-            className="w-full h-20 md:h-32"
-          >
-            <path
-              d="M0,120 C150,80 350,40 600,60 C850,80 1050,40 1200,80 L1200,120 Z"
-              fill="white"
-            />
-          </svg>
         </div>
       </section>
 
@@ -77,21 +70,14 @@ const ProjectsSection = () => {
         style={{ backgroundColor: "#f8f8f8" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* <div className="text-center mb-12">
-            <h2
-              className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ color: "#222222" }}
-            >
-              Proyectos Sociales
-            </h2>
+          <div className="text-center mb-12">
             <p
               className="text-lg max-w-2xl mx-auto"
               style={{ color: "#666666" }}
             >
               Haz clic en cualquier proyecto para ver los detalles completos
             </p>
-          </div> */}
-
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
             {projects.map((project) => {
               const IconComponent = project.icon;
@@ -101,12 +87,6 @@ const ProjectsSection = () => {
                   onClick={() => scrollToProject(project.id)}
                   className="group flex flex-col items-center p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105"
                   style={{ backgroundColor: "#FFFFFF" }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#f0fffe")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#FFFFFF")
-                  }
                 >
                   <div
                     className="w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors duration-300"
@@ -135,7 +115,7 @@ const ProjectsSection = () => {
       </section>
 
       {/* Projects Details */}
-      <section className="py-16">
+      <section className="py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
           {projects.map((project, index) => {
             const IconComponent = project.icon;
@@ -182,27 +162,49 @@ const ProjectsSection = () => {
                     </p>
 
                     <div className="space-y-4">
-                      <h4
+                      <h3
                         className="font-semibold"
                         style={{ color: "#222222" }}
                       >
                         Objetivos:
-                      </h4>
-                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      </h3>
+                      <div className="flex flex-col gap-4">
                         {project.objectives.map((objective, objectiveIndex) => (
-                          <li
+                          <div
                             key={objectiveIndex}
-                            className="flex items-center"
-                            style={{ color: "#666666" }}
+                            className="shadow-md rounded-lg px-4 py-3 flex items-center border-l-4 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group backdrop-blur-sm"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(75,186,170,0.15) 100%)",
+                              borderColor: "#4BBAAA",
+                              color: "#444",
+                              transition: "all 0.3s ease",
+                              boxShadow: "0 4px 15px rgba(244,182,59,0.08)",
+                            }}
                           >
-                            <div
-                              className="w-2 h-2 rounded-full mr-3"
-                              style={{ backgroundColor: "#4BBAAA" }}
-                            ></div>
-                            {objective}
-                          </li>
+                            <span
+                              className="mr-3 flex items-center justify-center w-8 h-8 rounded-full transform transition-all duration-300 group-hover:scale-110"
+                              style={{
+                                background:
+                                  "linear-gradient(135deg, #4BBAAA30 0%, #F4B63B20 100%)",
+                                border: "2px solid rgba(75,186,170,0.2)",
+                              }}
+                            >
+                              <svg
+                                width="20"
+                                height="20"
+                                fill="#4BBAAA"
+                                viewBox="0 0 20 20"
+                              >
+                                <circle cx="10" cy="10" r="8" />
+                              </svg>
+                            </span>
+                            <span className="text-base font-medium">
+                              {objective}
+                            </span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
 
                     <div className="space-y-3">
@@ -229,9 +231,9 @@ const ProjectsSection = () => {
                     </div>
                   </div>
 
-                  <div className="flex-1 max-w-lg">
+                  <div className="w-full lg:flex-1 lg:max-w-lg">
                     <div
-                      className="rounded-2xl overflow-hidden shadow-lg"
+                      className="rounded-2xl overflow-hidden shadow-lg w-full"
                       style={{ backgroundColor: "#FFFFFF" }}
                     >
                       <Swiper
@@ -254,7 +256,7 @@ const ProjectsSection = () => {
                                 alt={`${project.name} - Imagen ${
                                   imageIndex + 1
                                 }`}
-                                className="w-full h-full object-cover"
+                                // className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                             </div>
@@ -262,12 +264,6 @@ const ProjectsSection = () => {
                         ))}
                       </Swiper>
                       <div className="p-6">
-                        <div className="flex items-center justify-center mb-3">
-                          <IconComponent
-                            className="w-8 h-8"
-                            style={{ color: "#4BBAAA" }}
-                          />
-                        </div>
                         <h4
                           className="text-lg font-bold text-center mb-2"
                           style={{ color: "#222222" }}
