@@ -279,36 +279,60 @@ export async function updateOpportunity(id, data) {
  */
 export async function deleteOpportunity(id, userRole = null) {
   try {
+    // 1. Autenticar al usuario
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData?.user) {
-      return {
-        success: false,
-        error: "No se pudo autenticar al usuario",
-      };
+      return { success: false, error: "No se pudo autenticar al usuario" };
     }
 
-    const { data: existingOpportunity, error: fetchError } = await supabase
+    // 2. Obtener la oportunidad y verificar permisos
+    const { data: opportunity, error: fetchError } = await supabase
       .from("opportunities")
-      .select("created_by")
+      .select("created_by, image_url")
       .eq("id", id)
       .single();
 
-    if (fetchError || !existingOpportunity) {
-      return {
-        success: false,
-        error: "No se encontró la oportunidad",
-      };
+    if (fetchError || !opportunity) {
+      return { success: false, error: "No se encontró la oportunidad" };
     }
 
     const isAdmin = userRole === "admin";
-    if (existingOpportunity.created_by !== userData.user.id && !isAdmin) {
+    const isCreator = opportunity.created_by === userData.user.id;
+
+    if (!isCreator && !isAdmin) {
       return {
         success: false,
-        error:
-          "No tienes permiso para eliminar esta oportunidad. Solo el creador o un administrador pueden eliminarla.",
+        error: "No tienes permiso para eliminar esta oportunidad",
       };
     }
 
+    // 3. Eliminar la imagen de Cloudinary si existe
+    console.log("Deleting image from Cloudinary...");
+    console.log("Image URL:", opportunity.image_url);
+    if (opportunity.image_url) {
+      try {
+        const response = await fetch(
+          "https://tlhkmdnopmqftsglmyqr.supabase.co/functions/v1/delete-image",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ imageUrl: opportunity.image_url }),
+          }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          console.warn(
+            `Warning: Could not delete image from Cloudinary: ${result.error}`
+          );
+        }
+      } catch (error) {
+        console.warn("Warning: Error calling deleteImage API:", error);
+      }
+    }
+
+    // 4. Eliminar relaciones de tags
     const { error: deleteTagsError } = await supabase
       .from("opportunity_tags")
       .delete()
@@ -316,30 +340,19 @@ export async function deleteOpportunity(id, userRole = null) {
 
     if (deleteTagsError) {
       console.warn("Warning deleting tag relations:", deleteTagsError);
-      // Continuamos con la eliminación de la oportunidad aunque falle la eliminación de tags
-    } else {
-      console.log("Tag relations deleted successfully");
     }
 
-    const { data, error: deleteError } = await supabase
+    // 5. Eliminar la oportunidad de Supabase
+    const { error: deleteOppError } = await supabase
       .from("opportunities")
       .delete()
-      .eq("id", id)
-      .select();
+      .eq("id", id);
 
-    if (deleteError) {
-      throw new Error(deleteError.message);
+    if (deleteOppError) {
+      throw new Error(deleteOppError.message);
     }
 
-    if (!data || data.length === 0) {
-      throw new Error("No se encontró la oportunidad para eliminar");
-    }
-
-    console.log("Opportunity deleted successfully");
-    return {
-      success: true,
-      error: null,
-    };
+    return { success: true, error: null };
   } catch (error) {
     console.error("Error in deleteOpportunity:", error);
     return {

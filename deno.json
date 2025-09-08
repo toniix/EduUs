@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns"]
+  },
+  "tasks": {
+    "dev": "deno run --allow-env --allow-net --watch supabase/functions/delete-image/index.ts"
+  }
+}

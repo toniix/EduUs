@@ -141,7 +141,6 @@ const AdminPanel = () => {
     // Resetear a la primera página al buscar
     setCurrentPage(1);
   }, []);
-  // console.log("paginatedOpportunities:", paginatedOpportunities);
 
   // console.log(paginatedOpportunities);
   // Memoizar el contenido de la pestaña actual
@@ -209,7 +208,7 @@ const AdminPanel = () => {
   const adminPanelClasses = `flex h-screen transition-colors duration-200`;
   const mainContentClasses = `flex-1 flex flex-col min-h-0 overflow-y-auto`;
 
-  console.log("isDark:", isDark);
+  // console.log("isDark:", isDark);
   return (
     <DesktopOnlyWrapper>
       <div
