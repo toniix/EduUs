@@ -3,60 +3,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Star, Quote } from "lucide-react";
-
-// Sample testimonials data
-const testimonials = [
-  {
-    id: 1,
-    name: "María García",
-    role: "Estudiante de Desarrollo Web",
-    content:
-      "Gracias a los programas de EduUs, pude conseguir mi primer trabajo como desarrolladora. ¡La formación fue increíble y los mentores son expertos en su campo!",
-    rating: 5,
-    image: "https://randomuser.me/api/portraits/women/32.jpg",
-  },
-  {
-    id: 2,
-    name: "Carlos Mendoza",
-    role: "Emprendedor",
-    content:
-      "Los talleres prácticos me dieron las herramientas necesarias para lanzar mi propio negocio digital. ¡Altamente recomendado!",
-    rating: 4,
-    image: "https://randomuser.me/api/portraits/men/42.jpg",
-  },
-  {
-    id: 3,
-    name: "Ana Torres",
-    role: "Diseñadora UX/UI",
-    content:
-      "La comunidad de aprendizaje es increíble. He conocido a profesionales talentosos y he crecido mucho gracias a las mentorías.",
-    rating: 5,
-    image: "https://randomuser.me/api/portraits/women/68.jpg",
-  },
-  {
-    id: 4,
-    name: "Javier Rojas",
-    role: "Estudiante de Marketing Digital",
-    content:
-      "El contenido es de alta calidad y muy actualizado. Me ha ayudado a mantenerme relevante en mi carrera profesional.",
-    rating: 5,
-    image: "https://randomuser.me/api/portraits/men/75.jpg",
-  },
-  {
-    id: 5,
-    name: "Javier Rojas",
-    role: "Estudiante de Marketing Digital",
-    content:
-      "El contenido es de alta calidad y muy actualizado. Me ha ayudado a mantenerme relevante en mi carrera profesional.",
-    rating: 5,
-    image: "https://randomuser.me/api/portraits/men/75.jpg",
-  },
-];
+import { Quote } from "lucide-react";
+import { testimonials } from "../data/testimonials";
 
 const TestimonialsSection = () => {
   return (
-    <section className="pt-8 pb-8 sm:pt-12 lg:pt-16 px-4 sm:px-6 lg:px-8 bg-secondary-light">
+    <section className="pt-8 pb-8 sm:pt-12 lg:pt-8 px-4 sm:px-6 lg:px-8 bg-secondary-light">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16 max-w-4xl mx-auto">
@@ -131,7 +83,7 @@ const TestimonialsSection = () => {
             ))}
           </Swiper>
 
-          <div className="testimonial-pagination text-center mt-8" />
+          <div className="testimonial-pagination text-center mt-4" />
         </div>
       </div>
     </section>
