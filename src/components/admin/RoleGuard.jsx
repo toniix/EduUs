@@ -12,7 +12,7 @@ const RoleGuard = ({
   const { role, loading } = useAuth();
 
   // Verificar si el usuario tiene acceso basado en el rol
-  console.log("verificando permisos...");
+  // console.log("verificando permisos...");
 
   const hasAccess = useMemo(() => {
     // Si no hay roles requeridos, se otorga acceso según la condición inverse
@@ -27,7 +27,7 @@ const RoleGuard = ({
     return inverse ? !hasRequiredRole : hasRequiredRole;
   }, [role, requiredRoles, inverse]);
 
-  console.log("hasAccess:", hasAccess);
+  // console.log("hasAccess:", hasAccess);
 
   // Mostrar spinner mientras se carga la autenticación
   if (loading) {

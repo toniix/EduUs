@@ -2,7 +2,6 @@ import {
   Users,
   FileText,
   BarChart2,
-  Settings,
   Home,
   ChevronLeft,
   ChevronRight,
@@ -18,7 +17,6 @@ const menuItems = [
   { icon: <Users />, label: "Usuarios", value: "users" },
   { icon: <FileText />, label: "Oportunidades", value: "content" },
   { icon: <BarChart2 />, label: "Analíticas", value: "analytics" },
-  { icon: <Settings />, label: "Configuración", value: "settings" },
   { icon: <Tag />, label: "Categorías", value: "categories" },
 ];
 
@@ -35,7 +33,6 @@ export default function Sidebar({
   const handleItemClick = (item) => {
     setActiveTab(item.value);
   };
-  // console.log(isDark);
 
   return (
     <aside

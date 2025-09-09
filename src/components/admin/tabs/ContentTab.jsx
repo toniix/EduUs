@@ -69,6 +69,7 @@ export default function ContentTab({
           onSuccess={handleFormSubmit}
           onClose={handleFormClose}
           initialData={selectedOpportunity}
+          isDark={isDark}
         />
       )}
 

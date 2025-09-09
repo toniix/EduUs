@@ -4,7 +4,6 @@ import AdminPanelHeader from "../../components/admin/AdminPanelHeader";
 import UsersTab from "../../components/admin/tabs/UsersTab";
 import ContentTab from "../../components/admin/tabs/ContentTab";
 import AnalyticsTab from "../../components/admin/tabs/AnalyticsTab";
-import SettingsTab from "../../components/admin/tabs/SettingsTab";
 import Dashboard from "../../components/admin/tabs/Dashboard";
 import DesktopOnlyWrapper from "../../components/layouts/wrappers/DesktopOnlyWrapper";
 import { paginate } from "../../utils/pagination";
@@ -20,7 +19,6 @@ const AdminPanel = () => {
     const savedTab = localStorage.getItem("adminActiveTab");
     return savedTab || "dashboard";
   });
-
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState([]);
@@ -180,8 +178,6 @@ const AdminPanel = () => {
         );
       case "analytics":
         return <AnalyticsTab />;
-      case "settings":
-        return <SettingsTab />;
       case "categories":
         return <CategoriesTab />;
       default:
@@ -208,7 +204,6 @@ const AdminPanel = () => {
   const adminPanelClasses = `flex h-screen transition-colors duration-200`;
   const mainContentClasses = `flex-1 flex flex-col min-h-0 overflow-y-auto`;
 
-  // console.log("isDark:", isDark);
   return (
     <DesktopOnlyWrapper>
       <div

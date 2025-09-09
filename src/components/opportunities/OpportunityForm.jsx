@@ -194,28 +194,6 @@ const OpportunityForm = ({
                 )}
               </div>
 
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tipo
-                </label>
-                <select
-                  name="type"
-                  // required
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.type}
-                  onChange={handleChange}
-                >
-                  <option value="beca">Beca</option>
-                  <option value="intercambio">Intercambio</option>
-                  <option value="practica">Práctica</option>
-                  <option value="voluntariado">Voluntariado</option>
-                  <option value="curso">Curso</option>
-                  <option value="pasantia">Pasantía</option>
-                  <option value="taller">Taller</option>
-                  <option value="charla">Charla</option>
-                </select>
-              </div> */}
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Categoría
@@ -426,10 +404,12 @@ const OpportunityForm = ({
                 onChange={(e) => setCurrentBenefit(e.target.value)}
                 className="flex-1 rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
                 placeholder="Agregar beneficio"
-                onKeyPress={(e) =>
-                  e.key === "Enter" &&
-                  handleArrayInput("benefits", currentBenefit)
-                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleArrayInput("benefits", currentBenefit);
+                  }
+                }}
               />
 
               <button
@@ -476,10 +456,12 @@ const OpportunityForm = ({
                 onChange={(e) => setCurrentRequirement(e.target.value)}
                 className="flex-1 rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
                 placeholder="Agregar requisito"
-                onKeyPress={(e) =>
-                  e.key === "Enter" &&
-                  handleArrayInput("requirements", currentRequirement)
-                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleArrayInput("requirements", currentRequirement);
+                  }
+                }}
               />
 
               <button
@@ -528,9 +510,12 @@ const OpportunityForm = ({
                 onChange={(e) => setCurrentTag(e.target.value)}
                 className="flex-1 rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
                 placeholder="Agregar etiqueta"
-                onKeyPress={(e) =>
-                  e.key === "Enter" && handleArrayInput("tags", currentTag)
-                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleArrayInput("tags", currentTag);
+                  }
+                }}
               />
 
               <button

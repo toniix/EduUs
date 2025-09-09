@@ -133,7 +133,12 @@ const Profile = () => {
             />
             <div className="flex gap-2 mt-4">
               {!editing && (
-                <Button type="button" variante="primary" onClick={handleEdit}>
+                <Button
+                  type="button"
+                  disabled={true}
+                  variante="primary"
+                  onClick={handleEdit}
+                >
                   Editar
                 </Button>
               )}
@@ -153,19 +158,6 @@ const Profile = () => {
               )}
             </div>
           </form>
-        </div>
-
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-dark mb-2">Seguridad</h3>
-          <Button variante="secondary" className="w-full mb-2" disabled>
-            Cambiar contraseña (próximamente)
-          </Button>
-        </div>
-
-        <div className="flex justify-end">
-          <Button variante="danger" onClick={handleSignOut}>
-            Cerrar sesión
-          </Button>
         </div>
       </div>
     </div>

@@ -1,84 +1,90 @@
-import React, { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2, Search, X } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
+import { categoryService } from "../../../services/categoryService";
+import toast from "react-hot-toast";
+import CategoryForm from "../../CategoryForm";
+import { ThemeContext } from "../../../contexts/ThemeContext";
+import { useContext } from "react";
+import { useAuth } from "../../../contexts/AuthContext";
 
-const CategoriesTab = ({ isDark }) => {
+const CategoriesTab = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
+  const { isDark } = useContext(ThemeContext);
+  const { userRole } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    color: "#3b82f6", // Color por defecto
+    color: "#3b82f6",
   });
 
-  // Simulación de carga de categorías
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        // Aquí iría la llamada a tu API
-        // const response = await yourApiService.getCategories();
-        // setCategories(response.data);
-
-        // Datos de ejemplo
-        setTimeout(() => {
-          setCategories([
-            {
-              id: 1,
-              name: "Becas",
-              description: "Oportunidades de becas",
-              color: "#3b82f6",
-            },
-            {
-              id: 2,
-              name: "Talleres",
-              description: "Talleres educativos",
-              color: "#10b981",
-            },
-            {
-              id: 3,
-              name: "Intercambios",
-              description: "Programas de intercambio",
-              color: "#f59e0b",
-            },
-          ]);
-          setLoading(false);
-        }, 500);
-      } catch (err) {
-        setError("Error al cargar las categorías");
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
+  const fetchCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await categoryService.getCategories();
+      setCategories(data);
+      setError(null);
+    } catch (err) {
+      setError("Error al cargar las categorías. Inténtalo de nuevo más tarde.");
+      toast.error("No se pudieron cargar las categorías.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const resetForm = () => {
+    setFormData({ name: "", description: "", color: "#3b82f6" });
+    setCurrentCategory(null);
+    setIsModalOpen(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí iría la lógica para crear/actualizar la categoría
-    console.log("Formulario enviado:", formData);
-    setIsModalOpen(false);
-    // Limpiar el formulario
-    setFormData({ name: "", description: "", color: "#3b82f6" });
-    setCurrentCategory(null);
+    setIsSubmitting(true);
+    try {
+      if (currentCategory) {
+        const updatedCategory = await categoryService.updateCategory(
+          currentCategory.id,
+          formData
+        );
+        setCategories((prev) =>
+          prev.map((cat) =>
+            cat.id === currentCategory.id ? updatedCategory : cat
+          )
+        );
+        toast.success("Categoría actualizada con éxito");
+      } else {
+        const newCategory = await categoryService.createCategory(formData);
+        setCategories((prev) => [...prev, newCategory]);
+        toast.success("Categoría creada con éxito");
+      }
+      resetForm();
+    } catch (err) {
+      toast.error("Ocurrió un error. Por favor, inténtalo de nuevo.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleEdit = (category) => {
     setCurrentCategory(category);
     setFormData({
       name: category.name,
-      description: category.description,
-      color: category.color,
+      description: category.description || "",
+      color: category.color || "#3b82f6",
     });
     setIsModalOpen(true);
   };
@@ -87,16 +93,21 @@ const CategoriesTab = ({ isDark }) => {
     if (
       window.confirm("¿Estás seguro de que quieres eliminar esta categoría?")
     ) {
-      // Aquí iría la lógica para eliminar la categoría
-      console.log("Eliminar categoría:", id);
+      try {
+        await categoryService.deleteCategory(id, userRole);
+        setCategories((prev) => prev.filter((cat) => cat.id !== id));
+        toast.success("Categoría eliminada con éxito");
+      } catch (err) {
+        toast.error("No se pudo eliminar la categoría. " + err);
+      }
     }
   };
 
-  const filteredCategories = categories.filter(
-    (category) =>
-      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const filteredCategories = categories.filter(
+  //   (category) =>
+  //     category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     category.description.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
   if (loading) {
     return (
@@ -119,34 +130,23 @@ const CategoriesTab = ({ isDark }) => {
   }
 
   return (
-    <div className="rounded-lg shadow-md p-6 pt-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="relative w-full sm:w-80">
-          <Search
-            className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${
-              isDark ? "text-gray-400" : "text-gray-500"
-            }`}
-          />
-          <input
-            type="text"
-            placeholder="Buscar categorías..."
-            className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
-              isDark
-                ? "bg-gray-800 border-gray-700 text-white"
-                : "bg-white border-gray-300 text-gray-900"
-            } focus:outline-none focus:ring-2 focus:ring-primary/50`}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
+    <div
+      className={`rounded-lg shadow-md p-6 w-full h-full flex flex-col ${
+        isDark ? "bg-gray-800" : "bg-white"
+      }`}
+    >
+      <div className="flex justify-between items-center mb-6">
+        <h2
+          className={`text-xl font-semibold flex items-center gap-2 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}
+        >
+          Gestión de Categorías
+          <span className="ml-2 px-3 py-1 rounded-full bg-secondary text-white text-xs font-semibold">
+            {categories.length} categoría
+            {categories.length === 1 ? "" : "s"}
+          </span>
+        </h2>
 
         <button
           onClick={() => {
@@ -159,15 +159,16 @@ const CategoriesTab = ({ isDark }) => {
               ? "bg-blue-600 hover:bg-blue-700 text-white"
               : "bg-primary hover:bg-primary/90 text-white"
           } transition-colors`}
+          disabled={userRole !== "admin"}
         >
           <Plus className="h-4 w-4 mr-2" />
           Nueva Categoría
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className={`${isDark ? "bg-gray-800" : "bg-gray-50"}`}>
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className={`${isDark ? "bg-gray-700" : "bg-gray-50"}`}>
             <tr>
               <th
                 scope="col"
@@ -196,12 +197,14 @@ const CategoriesTab = ({ isDark }) => {
             </tr>
           </thead>
           <tbody
-            className={`divide-y divide-gray-200 dark:divide-gray-700 ${
-              isDark ? "bg-gray-900" : "bg-white"
+            className={`divide-y ${
+              isDark
+                ? "bg-gray-700 divide-gray-600"
+                : "bg-white divide-gray-200"
             }`}
           >
-            {filteredCategories.length > 0 ? (
-              filteredCategories.map((category) => (
+            {categories.length > 0 ? (
+              categories.map((category) => (
                 <tr key={category.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -237,6 +240,7 @@ const CategoriesTab = ({ isDark }) => {
                             ? "text-blue-400 hover:bg-blue-900/30"
                             : "text-blue-600 hover:bg-blue-50"
                         }`}
+                        disabled={userRole !== "admin"}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
@@ -272,128 +276,15 @@ const CategoriesTab = ({ isDark }) => {
 
       {/* Modal para crear/editar categoría */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div
-            className={`w-full max-w-md rounded-xl p-6 ${
-              isDark ? "bg-gray-800" : "bg-white"
-            }`}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium">
-                {currentCategory ? "Editar Categoría" : "Nueva Categoría"}
-              </h3>
-              <button
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setCurrentCategory(null);
-                }}
-                className={`p-1 rounded-full ${
-                  isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                }`}
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label
-                  htmlFor="name"
-                  className={`block text-sm font-medium mb-1 ${
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
-                  Nombre
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className={`w-full px-3 py-2 rounded-lg border ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white"
-                      : "bg-white border-gray-300 text-gray-900"
-                  } focus:outline-none focus:ring-2 focus:ring-primary/50`}
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="description"
-                  className={`block text-sm font-medium mb-1 ${
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
-                  Descripción
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  rows="3"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className={`w-full px-3 py-2 rounded-lg border ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white"
-                      : "bg-white border-gray-300 text-gray-900"
-                  } focus:outline-none focus:ring-2 focus:ring-primary/50`}
-                ></textarea>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="color"
-                  className={`block text-sm font-medium mb-1 ${
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
-                  Color
-                </label>
-                <div className="flex items-center space-x-4">
-                  <input
-                    type="color"
-                    id="color"
-                    name="color"
-                    value={formData.color}
-                    onChange={handleInputChange}
-                    className="h-10 w-16 cursor-pointer rounded border border-gray-300"
-                  />
-                  <span className="text-sm font-mono">{formData.color}</span>
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setCurrentCategory(null);
-                  }}
-                  className={`px-4 py-2 rounded-lg ${
-                    isDark
-                      ? "text-gray-300 hover:bg-gray-700"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className={`px-4 py-2 rounded-lg ${
-                    isDark
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
-                      : "bg-primary hover:bg-primary/90 text-white"
-                  }`}
-                >
-                  {currentCategory ? "Actualizar" : "Crear"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <CategoryForm
+          isDark={isDark}
+          currentCategory={currentCategory}
+          formData={formData}
+          isSubmitting={isSubmitting}
+          handleSubmit={handleSubmit}
+          resetForm={resetForm}
+          handleInputChange={handleInputChange}
+        />
       )}
     </div>
   );
