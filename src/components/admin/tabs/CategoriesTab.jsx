@@ -15,7 +15,7 @@ const CategoriesTab = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
   const { isDark } = useContext(ThemeContext);
-  const { userRole } = useAuth();
+  const { role } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -58,7 +58,8 @@ const CategoriesTab = () => {
       if (currentCategory) {
         const updatedCategory = await categoryService.updateCategory(
           currentCategory.id,
-          formData
+          formData,
+          role
         );
         setCategories((prev) =>
           prev.map((cat) =>
@@ -67,7 +68,10 @@ const CategoriesTab = () => {
         );
         toast.success("Categoría actualizada con éxito");
       } else {
-        const newCategory = await categoryService.createCategory(formData);
+        const newCategory = await categoryService.createCategory(
+          formData,
+          role
+        );
         setCategories((prev) => [...prev, newCategory]);
         toast.success("Categoría creada con éxito");
       }
@@ -94,7 +98,8 @@ const CategoriesTab = () => {
       window.confirm("¿Estás seguro de que quieres eliminar esta categoría?")
     ) {
       try {
-        await categoryService.deleteCategory(id, userRole);
+        console.log(role);
+        await categoryService.deleteCategory(id, role);
         setCategories((prev) => prev.filter((cat) => cat.id !== id));
         toast.success("Categoría eliminada con éxito");
       } catch (err) {
@@ -159,7 +164,7 @@ const CategoriesTab = () => {
               ? "bg-blue-600 hover:bg-blue-700 text-white"
               : "bg-primary hover:bg-primary/90 text-white"
           } transition-colors`}
-          disabled={userRole !== "admin"}
+          disabled={role !== "admin"}
         >
           <Plus className="h-4 w-4 mr-2" />
           Nueva Categoría
@@ -240,7 +245,7 @@ const CategoriesTab = () => {
                             ? "text-blue-400 hover:bg-blue-900/30"
                             : "text-blue-600 hover:bg-blue-50"
                         }`}
-                        disabled={userRole !== "admin"}
+                        disabled={role !== "admin"}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
