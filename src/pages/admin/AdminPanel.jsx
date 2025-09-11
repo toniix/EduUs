@@ -3,7 +3,7 @@ import Sidebar from "../../components/admin/Sidebar";
 import AdminPanelHeader from "../../components/admin/AdminPanelHeader";
 import UsersTab from "../../components/admin/tabs/UsersTab";
 import ContentTab from "../../components/admin/tabs/ContentTab";
-import AnalyticsTab from "../../components/admin/tabs/AnalyticsTab";
+// import AnalyticsTab from "../../components/admin/tabs/AnalyticsTab";
 import DashboardTab from "../../components/admin/tabs/DashboardTab";
 import DesktopOnlyWrapper from "../../components/layouts/wrappers/DesktopOnlyWrapper";
 import { paginate } from "../../utils/pagination";
@@ -176,8 +176,6 @@ const AdminPanel = () => {
             fetchOpportunities={fetchOpportunities}
           />
         );
-      case "analytics":
-        return <AnalyticsTab />;
       case "categories":
         return <CategoriesTab />;
       default:

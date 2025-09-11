@@ -1,7 +1,6 @@
 import {
   Users,
   FileText,
-  BarChart2,
   Home,
   ChevronLeft,
   ChevronRight,
@@ -16,7 +15,6 @@ const menuItems = [
   { icon: <Home />, label: "Dashboard", value: "dashboard" },
   { icon: <Users />, label: "Usuarios", value: "users" },
   { icon: <FileText />, label: "Oportunidades", value: "content" },
-  { icon: <BarChart2 />, label: "Analíticas", value: "analytics" },
   { icon: <Tag />, label: "Categorías", value: "categories" },
 ];
 

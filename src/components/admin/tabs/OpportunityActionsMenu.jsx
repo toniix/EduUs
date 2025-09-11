@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import { Edit, Trash2 } from "lucide-react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ThemeContext } from "../../../contexts/ThemeContext";
+import DeletionLoader from "../../ui/DeletionLoader";
 
 const OpportunityActionsMenu = ({
   opportunity,
@@ -62,6 +63,7 @@ const OpportunityActionsMenu = ({
       setOpportunityToDelete(null);
     }
   };
+
   const getButtonClasses = (isDisabled, isDelete = false) => {
     const baseClasses = "flex items-center justify-center p-1 rounded";
     const sizeClasses = "h-6 w-6";
@@ -90,6 +92,16 @@ const OpportunityActionsMenu = ({
   const isOwner = user.id === opportunity.created_by;
   const editButtonClasses = getButtonClasses(!isOwner);
   const deleteButtonClasses = getButtonClasses(isDeleting, true);
+
+  if (isDeleting) {
+    return (
+      <DeletionLoader
+        isDeleting={isDeleting}
+        message="Eliminando oportunidad..."
+        variant="danger"
+      />
+    );
+  }
 
   return (
     <div className="flex space-x-2">

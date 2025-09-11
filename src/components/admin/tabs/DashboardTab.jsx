@@ -146,7 +146,13 @@ const DashboardTab = () => {
   return (
     <div className={`p-6 bg-gray-50 pt-24 ${isDark ? "bg-gray-900" : ""}`}>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+        <h1
+          className={
+            "text-2xl font-bold " + (isDark ? "text-white" : "text-gray-800")
+          }
+        >
+          Dashboard
+        </h1>
         <div className="flex items-center gap-4">
           <button
             onClick={handleRefresh}
@@ -216,7 +222,7 @@ const DashboardTab = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      {/* <div className="bg-white rounded-lg shadow-sm p-6">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Acciones Rápidas
         </h2>
@@ -231,7 +237,7 @@ const DashboardTab = () => {
             Ver Reportes
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
