@@ -4,7 +4,7 @@ import AdminPanelHeader from "../../components/admin/AdminPanelHeader";
 import UsersTab from "../../components/admin/tabs/UsersTab";
 import ContentTab from "../../components/admin/tabs/ContentTab";
 import AnalyticsTab from "../../components/admin/tabs/AnalyticsTab";
-import Dashboard from "../../components/admin/tabs/Dashboard";
+import DashboardTab from "../../components/admin/tabs/DashboardTab";
 import DesktopOnlyWrapper from "../../components/layouts/wrappers/DesktopOnlyWrapper";
 import { paginate } from "../../utils/pagination";
 import { getAllProfiles } from "../../services/userService";
@@ -145,7 +145,7 @@ const AdminPanel = () => {
   const tabContent = useMemo(() => {
     switch (activeTab) {
       case "dashboard":
-        return <Dashboard />;
+        return <DashboardTab />;
       case "users":
         if (usersError) return <div className="text-red-600">{usersError}</div>;
         return (

@@ -1,66 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Users,
   Award,
-  Mail,
-  TrendingUp,
-  Activity,
   GraduationCap,
   BookOpen,
-  MapPin,
   RefreshCcw,
 } from "lucide-react";
 import { useContext } from "react";
 import { ThemeContext } from "../../../contexts/ThemeContext";
+import {
+  getUserCount,
+  getOpportunitiesCount,
+  getActiveOpportunitiesCount,
+  getExpiredOpportunitiesCount,
+  getPreviousUserCount,
+  getPreviousOpportunitiesCount,
+} from "../../../services/dashboardService";
+import { getGrowth } from "../../../utils/dashboard";
 
-const analytics = [
+const initialAnalytics = [
   {
+    key: "users",
     title: "Usuarios registrados",
-    value: 256,
+    value: 0,
     icon: <Users className="h-8 w-8" />,
-    trend: "+12%",
+    trend: "0%",
   },
   {
+    key: "opportunities",
     title: "Oportunidades publicadas",
-    value: 142,
+    value: 0,
     icon: <GraduationCap className="h-8 w-8" />,
-    trend: "+5%",
+    trend: "0%",
   },
   {
-    title: "Aplicaciones activas",
-    value: 38,
+    key: "active",
+    title: "Oportunidades activas",
+    value: 0,
     icon: <BookOpen className="h-8 w-8" />,
-    trend: "+8%",
+    trend: "0%",
   },
   {
-    title: "Visitas totales",
-    value: 823,
-    icon: <Activity className="h-8 w-8" />,
-    trend: "+25%",
-  },
-  {
-    title: "Becas disponibles",
-    value: 45,
+    key: "expired",
+    title: "Oportunidades vencidas",
+    value: 0,
     icon: <Award className="h-8 w-8" />,
-    trend: "+15%",
-  },
-  {
-    title: "Países alcanzados",
-    value: 28,
-    icon: <MapPin className="h-8 w-8" />,
-    trend: "+2%",
-  },
-  {
-    title: "Suscriptores",
-    value: 567,
-    icon: <Mail className="h-8 w-8" />,
-    trend: "+18%",
-  },
-  {
-    title: "Tasa de conversión",
-    value: "12.5%",
-    icon: <TrendingUp className="h-8 w-8" />,
-    trend: "+3%",
+    trend: "0%",
   },
 ];
 
@@ -91,15 +76,72 @@ const recentActivity = [
   },
 ];
 
-const Dashboard = () => {
+const DashboardTab = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [analytics, setAnalytics] = useState(initialAnalytics);
   const { isDark } = useContext(ThemeContext);
-  const handleRefresh = async () => {
+
+  console.log("analytics", analytics);
+  const fetchStats = async () => {
     setIsRefreshing(true);
-    // Aquí iría la lógica para recargar los datos
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulación de carga
-    setIsRefreshing(false);
+    try {
+      // Set your period for growth calculation (e.g. last week)
+      const now = new Date();
+      const lastWeek = new Date(now);
+      lastWeek.setDate(now.getDate() - 7);
+      const lastWeekISO = lastWeek.toISOString();
+
+      const [users, usersPrev, opps, oppsPrev, active, expired] =
+        await Promise.all([
+          getUserCount(),
+          getPreviousUserCount(lastWeekISO),
+          getOpportunitiesCount(),
+          getPreviousOpportunitiesCount(lastWeekISO),
+          getActiveOpportunitiesCount(),
+          getExpiredOpportunitiesCount(),
+        ]);
+
+      setAnalytics([
+        {
+          key: "users",
+          title: "Usuarios registrados",
+          value: users,
+          icon: <Users className="h-8 w-8" />,
+          trend: getGrowth(users, usersPrev),
+        },
+        {
+          key: "opportunities",
+          title: "Oportunidades publicadas",
+          value: opps,
+          icon: <GraduationCap className="h-8 w-8" />,
+          trend: getGrowth(opps, oppsPrev),
+        },
+        {
+          key: "active",
+          title: "Oportunidades activas",
+          value: active,
+          icon: <BookOpen className="h-8 w-8" />,
+        },
+        {
+          key: "expired",
+          title: "Oportunidades vencidas",
+          value: expired,
+          icon: <Award className="h-8 w-8" />,
+        },
+      ]);
+    } catch (err) {
+      // Manejo de error (puedes mostrar un toast o alert)
+      console.error("Error al cargar estadísticas:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const handleRefresh = fetchStats;
 
   return (
     <div className={`p-6 bg-gray-50 pt-24 ${isDark ? "bg-gray-900" : ""}`}>
@@ -194,4 +236,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardTab;
