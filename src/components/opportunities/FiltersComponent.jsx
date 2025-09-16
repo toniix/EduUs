@@ -1,24 +1,13 @@
-import { useState, useEffect } from "react";
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 
-const FiltersComponent = ({ onFilterChange, filterOptions = {} }) => {
-  const [localFilters, setLocalFilters] = useState({
-    type: "",
-    modality: "",
-    location: "",
-    // country: "",
-    // organization: "",
-    // category_id: "",
-  });
-
-  // Initialize filter options with empty arrays if not provided
-  const {
-    types = [],
-    modalities = [],
-    locations = [],
-    // countries = [],
-    // organizations = [],
-  } = filterOptions;
+const FiltersComponent = ({
+  onFilterChange,
+  filterOptions = {},
+  clearFilters,
+  localFilters,
+  setLocalFilters,
+}) => {
+  const { modalities = [], locations = [], categories = [] } = filterOptions;
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +19,6 @@ const FiltersComponent = ({ onFilterChange, filterOptions = {} }) => {
 
   const handleFilterSubmit = (e) => {
     e.preventDefault();
-    // Remove empty values from filters
     const cleanFilters = Object.fromEntries(
       Object.entries(localFilters).filter(([_, value]) => value !== "")
     );
@@ -42,11 +30,9 @@ const FiltersComponent = ({ onFilterChange, filterOptions = {} }) => {
       type: "",
       modality: "",
       location: "",
-      // country: "",
-      // organization: "",
-      // category_id: "",
+      category_id: "",
     });
-    onFilterChange({});
+    clearFilters();
   };
 
   return (
@@ -63,21 +49,21 @@ const FiltersComponent = ({ onFilterChange, filterOptions = {} }) => {
       </div>
 
       <form onSubmit={handleFilterSubmit} className="space-y-4">
-        {/* Filtro por tipo de oportunidad */}
+        {/* Filtro por categoria*/}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            Tipo de oportunidad
+            Categoría
           </label>
           <select
-            name="type"
-            value={localFilters.type}
+            name="category_id"
+            value={localFilters.category_id || ""}
             onChange={handleFilterChange}
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
-            <option value="">Todos los tipos</option>
-            {types.map((type) => (
-              <option key={type} value={type}>
-                {type.charAt(0).toUpperCase() + type.slice(1)}
+            <option value="">Todas las categorías</option>
+            {categories?.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
               </option>
             ))}
           </select>

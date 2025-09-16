@@ -1,5 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
-import { useOpportunities } from "../../hooks/useOpportunities";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import FiltersComponent from "../../components/opportunities/FiltersComponent";
 import Pagination from "../../components/Pagination";
 import OpportunityList from "../../components/opportunities/OpportunityList";
@@ -7,15 +6,20 @@ import SearchHeader from "../../components/opportunities/SearchHeader";
 import ResultsSummary from "../../components/opportunities/ResultsSummary";
 import InlineLoading from "../../components/ui/LoadingSpinner";
 import NotFoundOpportunities from "../../components/opportunities/NotFoundOpportunities";
+import { useOpportunities } from "../../hooks/useOpportunities";
 
 const ITEMS_PER_PAGE = 9;
 
 const Opportunities = () => {
-  // Estados para filtros, búsqueda y paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [localFilters, setLocalFilters] = useState({
+    type: "",
+    modality: "",
+    location: "",
+    category_id: "",
+  });
 
   const {
     opportunities: allOpportunities,
@@ -24,12 +28,19 @@ const Opportunities = () => {
     error,
     refetch,
     filterOptions,
-  } = useOpportunities(filters, {
-    page: 1,
-    limit: 1000,
-  });
+    filters,
+    updateFilters,
+    clearFilters,
+    updatePagination,
+  } = useOpportunities();
 
-  // console.log("allOpportunities:", allOpportunities);
+  // Configurar la paginación inicial en el contexto
+  useEffect(() => {
+    updatePagination({
+      page: 1,
+      limit: 1000,
+    });
+  }, []); // Solo al montar el componente
 
   // Buscar oportunidades por término de búsqueda
   const searchOpportunities = useCallback((term, opportunitiesList) => {
@@ -79,16 +90,28 @@ const Opportunities = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  const handleFilterChange = useCallback((newFilters) => {
-    setFilters(newFilters);
-    setCurrentPage(1);
-  }, []);
+  const handleFilterChange = useCallback(
+    (newFilters) => {
+      // console.log("newFilters:", newFilters);
+      // Actualizar filtros en el contexto
+      updateFilters(newFilters);
+      setCurrentPage(1);
+    },
+    [updateFilters]
+  );
 
   const handleClearFilters = useCallback(() => {
     setSearchTerm("");
-    setFilters({});
+    setLocalFilters({
+      type: "",
+      modality: "",
+      location: "",
+      category_id: "",
+    });
+    // Limpiar filtros en el contexto
+    clearFilters();
     setCurrentPage(1);
-  }, []);
+  }, [clearFilters]);
 
   const handleRetry = useCallback(() => {
     refetch();
@@ -192,6 +215,9 @@ const Opportunities = () => {
               <FiltersComponent
                 onFilterChange={handleFilterChange}
                 filterOptions={filterOptions}
+                clearFilters={clearFilters}
+                localFilters={localFilters}
+                setLocalFilters={setLocalFilters}
               />
             </div>
           </section>

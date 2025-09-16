@@ -15,7 +15,7 @@ class OpportunitiesService {
       sortOrder = "desc",
     } = pagination;
 
-    const { modality, country, location } = filters;
+    const { modality, country, location, category_id } = filters;
 
     try {
       let query = supabase.from("opportunities").select(
@@ -30,8 +30,7 @@ class OpportunitiesService {
         modality,
         country,
         location,
-        // organization,
-        // category_id,
+        category_id,
       };
 
       Object.entries(exactFilters).forEach(([key, value]) => {
@@ -296,26 +295,18 @@ class OpportunitiesService {
         .not("type", "is", null)
         .order("type", { ascending: true });
 
+      // Obtener categorías únicas
+      const { data: categories } = await supabase
+        .from("categories")
+        .select("id, name")
+        .order("name", { ascending: true });
+
       // Obtener modalidades únicas
       const { data: modalities } = await supabase
         .from("opportunities")
         .select("modality")
         .not("modality", "is", null)
         .order("modality", { ascending: true });
-
-      // Obtener países únicos
-      // const { data: countries } = await supabase
-      //   .from("opportunities")
-      //   .select("country")
-      //   .not("country", "is", null)
-      //   .order("country", { ascending: true });
-
-      // // Obtener organizaciones únicas
-      // const { data: organizations } = await supabase
-      //   .from("opportunities")
-      //   .select("organization")
-      //   .not("organization", "is", null)
-      //   .order("organization", { ascending: true });
 
       // Obtener ubicaciones únicas
       const { data: locations } = await supabase
@@ -327,10 +318,7 @@ class OpportunitiesService {
       return {
         types: [...new Set(types.map((item) => item.type))],
         modalities: [...new Set(modalities.map((item) => item.modality))],
-        // countries: [...new Set(countries.map((item) => item.country))],
-        // organizations: [
-        //   ...new Set(organizations.map((item) => item.organization)),
-        // ],
+        categories,
         locations: [...new Set(locations.map((item) => item.location))],
       };
     } catch (error) {

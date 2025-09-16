@@ -35,12 +35,12 @@ export default function Sidebar({
   return (
     <aside
       className={`fixed left-0 h-screen shadow-xl transition-all duration-300 ${
-        isCollapsed ? "w-20" : "w-64"
+        isCollapsed ? "w-25" : "w-64"
       } ${isDark ? "bg-gray-900 text-gray-200" : "bg-gray-100 text-gray-800"}`}
     >
       {/*  Header mejorado */}
       <div
-        className={`flex items-center justify-between p-3.5 border-b ${
+        className={`flex items-center justify-between p-2 border-b ${
           isDark
             ? "bg-gray-900 border-gray-700"
             : "border-gray-200 bg-gradient-to-l from-gray-100 to-white"

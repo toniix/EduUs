@@ -9,7 +9,7 @@ import Register from "./pages/Register";
 import AdminPanel from "./pages/admin/AdminPanel";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import { OpportunityProvider } from "./contexts/OpportunityContext";
+import { OpportunitiesProvider } from "./contexts/OpportunityContext";
 import OpportunityDetail from "./components/opportunities/OpportunityDetail";
 import ScrollToTop from "./components/ScrollToTop";
 import PublicLayout from "./components/layouts/PublicLayout";
@@ -27,7 +27,7 @@ function App() {
     <div className="min-h-screen flex flex-col">
       <AuthProvider>
         <RoleProvider>
-          <OpportunityProvider>
+          <OpportunitiesProvider>
             <ThemeProvider>
               <Router>
                 <ScrollToTop />
@@ -94,7 +94,7 @@ function App() {
                 <Toaster position="bottom-right" />
               </Router>
             </ThemeProvider>
-          </OpportunityProvider>
+          </OpportunitiesProvider>
         </RoleProvider>
       </AuthProvider>
     </div>

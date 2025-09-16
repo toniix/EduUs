@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { opportunitiesService } from "../services/fetchOpportunityService";
+import { OpportunitiesContext } from "../contexts/OpportunityContext";
 
 /**
  * Hook para obtener lista de oportunidades
@@ -7,81 +8,90 @@ import { opportunitiesService } from "../services/fetchOpportunityService";
  * @param {Object} pagination - Parámetros de paginación
  * @returns {Object} Estado con oportunidades, loading, error, etc.
  */
-export function useOpportunities(filters = {}, pagination = {}) {
-  const [opportunities, setOpportunities] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [totalCount, setTotalCount] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [filterOptions, setFilterOptions] = useState({
-    types: [],
-    modalities: [],
-    // countries: [],
-    // organizations: [],
-    locations: [],
-  });
+// export function useOpportunities(filters = {}, pagination = {}) {
+//   const [opportunities, setOpportunities] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [totalCount, setTotalCount] = useState(0);
+//   const [totalPages, setTotalPages] = useState(0);
+//   const [filterOptions, setFilterOptions] = useState({
+//     types: [],
+//     modalities: [],
+//     locations: [],
+//   });
 
-  // Memoizar las dependencias para evitar recreación en cada render
-  const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)]);
-  const memoizedPagination = useMemo(
-    () => pagination,
-    [JSON.stringify(pagination)]
-  );
+//   // Memoizar las dependencias para evitar recreación en cada render
+//   const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)]);
+//   const memoizedPagination = useMemo(
+//     () => pagination,
+//     [JSON.stringify(pagination)]
+//   );
 
-  // Función para cargar oportunidades
-  const fetchOpportunities = useCallback(async () => {
-    try {
-      setLoading(true);
-      const result = await opportunitiesService.getOpportunitiesWithFilters(
-        memoizedFilters,
-        memoizedPagination
-      );
-      setOpportunities(result.data);
-      setTotalCount(result.total);
-      setTotalPages(result.totalPages);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching opportunities:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [memoizedFilters, memoizedPagination]); // Dependencias memoizadas
+//   // Función para cargar oportunidades
+//   const fetchOpportunities = useCallback(async () => {
+//     try {
+//       setLoading(true);
+//       const result = await opportunitiesService.getOpportunitiesWithFilters(
+//         memoizedFilters,
+//         memoizedPagination
+//       );
+//       setOpportunities(result.data);
+//       setTotalCount(result.total);
+//       setTotalPages(result.totalPages);
+//       setError(null);
+//     } catch (err) {
+//       console.error("Error fetching opportunities:", err);
+//       setError(err.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [memoizedFilters, memoizedPagination]); // Dependencias memoizadas
 
-  // Función para cargar opciones de filtro (solo una vez)
-  const fetchFilterOptions = useCallback(async () => {
-    try {
-      const options = await opportunitiesService.getFilterOptions();
-      setFilterOptions(options);
-    } catch (err) {
-      console.error("Error fetching filter options:", err);
-    }
-  }, []); // Sin dependencias, solo se ejecuta una vez
+//   // Función para cargar opciones de filtro (solo una vez)
+//   const fetchFilterOptions = useCallback(async () => {
+//     try {
+//       const options = await opportunitiesService.getFilterOptions();
+//       setFilterOptions(options);
+//     } catch (err) {
+//       console.error("Error fetching filter options:", err);
+//     }
+//   }, []); // Sin dependencias, solo se ejecuta una vez
 
-  // Cargar oportunidades cuando cambian los filtros o paginación
-  useEffect(() => {
-    fetchOpportunities();
-  }, [fetchOpportunities]);
+//   // Cargar oportunidades cuando cambian los filtros o paginación
+//   useEffect(() => {
+//     fetchOpportunities();
+//   }, [fetchOpportunities]);
 
-  // Cargar opciones de filtro solo al montar
-  useEffect(() => {
-    fetchFilterOptions();
-  }, [fetchFilterOptions]);
+//   // Cargar opciones de filtro solo al montar
+//   useEffect(() => {
+//     fetchFilterOptions();
+//   }, [fetchFilterOptions]);
 
-  const refetch = useCallback(() => {
-    fetchOpportunities();
-  }, [fetchOpportunities]);
+//   const refetch = useCallback(() => {
+//     fetchOpportunities();
+//   }, [fetchOpportunities]);
 
-  return {
-    opportunities,
-    loading,
-    error,
-    totalCount,
-    totalPages,
-    filterOptions,
-    refetch,
-  };
-}
+//   return {
+//     opportunities,
+//     loading,
+//     error,
+//     totalCount,
+//     totalPages,
+//     filterOptions,
+//     refetch,
+//   };
+// }
+
+// Hook para usar el contexto
+export const useOpportunities = () => {
+  const context = useContext(OpportunitiesContext);
+  if (!context) {
+    throw new Error(
+      "useOpportunities debe ser usado dentro de OpportunitiesProvider"
+    );
+  }
+  return context;
+};
 
 /**
  * Hook para obtener una oportunidad específica
