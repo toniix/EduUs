@@ -66,7 +66,7 @@ export const OpportunitiesProvider = ({ children }) => {
     }
   }, []);
 
-  // console.log(filterOptions);
+  // console.log(filters);
 
   // Función para actualizar filtros
   const updateFilters = useCallback((newFilters) => {

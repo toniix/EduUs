@@ -14,12 +14,6 @@ const Opportunities = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [localFilters, setLocalFilters] = useState({
-    type: "",
-    modality: "",
-    location: "",
-    category_id: "",
-  });
 
   const {
     opportunities: allOpportunities,
@@ -28,11 +22,26 @@ const Opportunities = () => {
     error,
     refetch,
     filterOptions,
-    filters,
+    filters: globalFilters,
     updateFilters,
     clearFilters,
     updatePagination,
   } = useOpportunities();
+
+  const [localFilters, setLocalFilters] = useState({
+    type: globalFilters.type || "",
+    modality: globalFilters.modality || "",
+    location: globalFilters.location || "",
+    category_id: globalFilters.category_id || "",
+  });
+
+  // Sincronizar los filtros locales con los globales cuando cambien
+  useEffect(() => {
+    setLocalFilters((prev) => ({
+      ...prev,
+      ...globalFilters,
+    }));
+  }, [globalFilters]);
 
   // Configurar la paginación inicial en el contexto
   useEffect(() => {
@@ -40,7 +49,7 @@ const Opportunities = () => {
       page: 1,
       limit: 1000,
     });
-  }, []); // Solo al montar el componente
+  }, []);
 
   // Buscar oportunidades por término de búsqueda
   const searchOpportunities = useCallback((term, opportunitiesList) => {
@@ -162,11 +171,10 @@ const Opportunities = () => {
         {/* Header Section */}
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-primary mb-3 bg-gradient-to-r from-primary to-blue-600 text-transparent bg-clip-text">
-            ¡Descubre y aprovecha las mejores oportunidades para jóvenes!
+            ¡Descubre las mejores oportunidades para jóvenes!
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-6">
-            Explora becas, talleres y experiencias únicas para transformar tu
-            futuro.
+            Explora becas, talleres y experiencias únicas para tu futuro.
           </p>
         </header>
 
@@ -297,7 +305,7 @@ const Opportunities = () => {
                   filteredCount={displayOpportunities.length}
                   onClearFilters={handleClearFilters}
                   hasActiveFilters={
-                    Object.keys(filters).length > 0 || isSearching
+                    Object.keys(globalFilters).length > 0 || isSearching
                   }
                   isSearching={isSearching}
                   searchTerm={searchTerm}
