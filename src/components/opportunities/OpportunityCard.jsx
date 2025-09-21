@@ -14,6 +14,7 @@ export default function OpportunityCard({ opportunity }) {
     image_url,
     tags,
     modality,
+    country,
   } = opportunity;
 
   const typeInfo = typeConfig[type];
@@ -50,6 +51,11 @@ export default function OpportunityCard({ opportunity }) {
             <div className="flex items-center text-sm text-gray-600">
               <span className="mr-1">{modalityConfig[modality].icon}</span>
               <span>{modalityConfig[modality].label}</span>
+            </div>
+          )}
+          {country && (
+            <div className="flex items-center text-sm text-gray-600">
+              <span className="mr-1">{country}</span>
             </div>
           )}
         </div>

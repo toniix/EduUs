@@ -2,17 +2,13 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useOpportunity } from "../../hooks/useOpportunities";
 import {
-  Calendar,
   MapPin,
   ChevronLeft,
   Building,
   CheckCircle,
-  Mail,
-  Phone,
   Globe,
   Share2,
   Bookmark,
-  ArrowRight,
   Star,
   Award,
   BookOpen,
@@ -29,6 +25,7 @@ import { statusColors, modalityStyles } from "../../utils/opportunity";
 import OpportunityLoading from "./OpportunityLoading";
 import OpportunityError from "./OpportunityError";
 import OpportunityNotFound from "./OpportunityNotFound";
+import OpportunitySidebar from "./OpportunitySidebar";
 
 const categoryIcons = {
   taller: <BookOpen className="h-5 w-5" />,
@@ -103,6 +100,7 @@ const OpportunityDetail = () => {
   }
 
   const {
+    id: opportunityId,
     title,
     organization,
     description,
@@ -331,111 +329,13 @@ const OpportunityDetail = () => {
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Card de Acción */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24">
-              {/* Deadline */}
-              {deadline && (
-                <div
-                  className={`mb-4 p-3 rounded-lg ${
-                    isExpired
-                      ? "bg-red-50 border border-red-200"
-                      : daysUntilDeadline <= 7
-                      ? "bg-yellow-50 border border-yellow-200"
-                      : "bg-green-50 border border-green-200"
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <Calendar
-                      className={`h-4 w-4 mr-2 ${
-                        isExpired
-                          ? "text-red-500"
-                          : daysUntilDeadline <= 7
-                          ? "text-yellow-500"
-                          : "text-green-500"
-                      }`}
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {isExpired ? "Fecha límite vencida" : "Fecha límite"}
-                      </p>
-                      <p
-                        className={`text-sm ${
-                          isExpired
-                            ? "text-red-600"
-                            : daysUntilDeadline <= 7
-                            ? "text-yellow-600"
-                            : "text-green-600"
-                        }`}
-                      >
-                        {new Date(deadline).toLocaleDateString("es-ES", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                        {!isExpired && daysUntilDeadline !== null && (
-                          <span className="block">
-                            {daysUntilDeadline === 0
-                              ? "¡Hoy!"
-                              : daysUntilDeadline === 1
-                              ? "¡Mañana!"
-                              : `${daysUntilDeadline} días restantes`}
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Botón de Aplicar */}
-              <a
-                href={contact.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`w-full flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-all duration-200 bg-primary text-white hover:bg-primary/90 hover:shadow-lg`}
-              >
-                Mas información
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </a>
-
-              {/* Información de Contacto */}
-              {contact && (
-                <div className="mt-6 pt-6 border-t border-gray-100">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">
-                    Información de contacto
-                  </h3>
-                  <div className="space-y-2 text-sm">
-                    {contact.email && (
-                      <div className="flex items-center text-gray-600">
-                        <Mail className="h-4 w-4 mr-2" />
-                        <a
-                          href={`mailto:${contact.email}`}
-                          className="hover:text-primary"
-                        >
-                          {contact.email}
-                        </a>
-                      </div>
-                    )}
-                    {contact.website && (
-                      <div className="flex items-center text-gray-600">
-                        <Globe className="h-4 w-4 mr-2" />
-                        <a
-                          href={contact.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-primary"
-                        >
-                          Sitio web o plataforma de inscripción
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          <OpportunitySidebar
+            deadline={deadline}
+            contact={contact}
+            opportunityId={opportunityId}
+            isExpired={isExpired}
+            daysUntilDeadline={daysUntilDeadline}
+          />
         </div>
       </div>
     </div>

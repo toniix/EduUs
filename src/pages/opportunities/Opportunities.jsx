@@ -284,6 +284,9 @@ const Opportunities = () => {
                             setShowMobileFilters(false);
                           }}
                           filterOptions={filterOptions}
+                          clearFilters={handleClearFilters}
+                          localFilters={localFilters}
+                          setLocalFilters={setLocalFilters}
                         />
                       </div>
                     </div>
