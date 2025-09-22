@@ -90,11 +90,15 @@ export const signInWithGoogle = async () => {
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
     if (error) throw error;
     return data;
   } catch (error) {
     console.error("Error al iniciar sesión con Google", error.message);
+    sessionStorage.removeItem("redirectAfterLogin");
     throw error;
   }
 };

@@ -24,11 +24,6 @@ export function useReminders() {
     setError(null);
 
     try {
-      // console.log("🔔 Creando recordatorios...", {
-      //   opportunityId,
-      //   reminderTypes,
-      // });
-
       // Llamar a la Edge Function
       const { data, error } = await supabase.functions.invoke(
         "create-reminder",

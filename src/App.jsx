@@ -21,6 +21,7 @@ import NoAccessFallback from "./components/ui/NoAccessFallback";
 import PublicRoute from "./routes/PublicRoute";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import NotFound from "./routes/NotFound";
+import AuthCallback from "./routes/AuthCallback";
 
 function App() {
   return (
@@ -88,6 +89,7 @@ function App() {
                     }
                   />
                   <Route path="*" element={<NotFound />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
                 </Routes>
                 {/* </main> */}
 

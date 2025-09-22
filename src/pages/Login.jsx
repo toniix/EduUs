@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import toast from "react-hot-toast";
-import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/ui/Buttom";
 import Input from "../components/ui/Input";
 import AuthError from "../components/auth/AuthError";
@@ -10,9 +9,9 @@ import {
   signInWithEmail,
   resendConfirmationEmail,
 } from "../services/AuthService";
+import { useLoginRedirect } from "../hooks/useLoginRedirect";
 
 const Login = () => {
-  const { signInWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -22,10 +21,12 @@ const Login = () => {
   const [showResendButton, setShowResendButton] = useState(false);
   const [pendingEmail, setPendingEmail] = useState("");
 
+  const { loginWithGoogle } = useLoginRedirect();
+
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await signInWithGoogle();
+      await loginWithGoogle();
     } catch (error) {
       setError(error.message);
       toast.error("Error al iniciar sesión con Google");

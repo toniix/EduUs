@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useReminders } from "../../hooks/useReminders";
 import toast from "react-hot-toast";
+import { useLoginRedirect } from "../../hooks/useLoginRedirect";
 
 export default function OpportunitySidebar({
   deadline,
@@ -36,6 +37,7 @@ export default function OpportunitySidebar({
   const [existingReminders, setExistingReminders] = useState([]);
   const [hasReminders, setHasReminders] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const { redirectToLogin } = useLoginRedirect();
 
   const reminderOptions = [
     { value: "14", label: "2 semanas", icon: "📅" },
@@ -85,18 +87,10 @@ export default function OpportunitySidebar({
     }
   };
 
-  // const getReminderStatusColor = (status) => {
-  //   switch (status) {
-  //     case "pending":
-  //       return "text-yellow-600 bg-yellow-50";
-  //     case "sent":
-  //       return "text-green-600 bg-green-50";
-  //     case "failed":
-  //       return "text-red-600 bg-red-50";
-  //     default:
-  //       return "text-gray-600 bg-gray-50";
-  //   }
-  // };
+  const handleLoginClick = () => {
+    // Guardar la URL actual antes de redirigir a login
+    redirectToLogin();
+  };
 
   return (
     <div className="space-y-6">
@@ -507,8 +501,8 @@ export default function OpportunitySidebar({
                     </p>
                     <div className="flex justify-center">
                       <button
-                        onClick={() => navigate("/login")}
-                        className="px-4 py-2 text-s font-medium rounded-md text-white bg-[#4db9a9] hover:bg-[#3a9e8f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4db9a9] transition-colors"
+                        onClick={handleLoginClick}
+                        className="px-4 py-2 text-s font-medium rounded-md text-white bg-[#4db9a9] hover:bg-[#3a9e8f]"
                       >
                         Iniciar sesión
                       </button>

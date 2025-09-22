@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import InlineLoader from "../components/ui/LoadingSpinner";
 
@@ -11,7 +11,14 @@ const PublicRoute = ({ children }) => {
     if (authLoading) return;
 
     if (user) {
-      navigate("/", { replace: true });
+      // Obtener la URL guardada o usar "/" como fallback
+      const redirectTo = sessionStorage.getItem("redirectAfterLogin") || "/";
+
+      // Limpiar el sessionStorage
+      sessionStorage.removeItem("redirectAfterLogin");
+
+      // Redirigir
+      navigate(redirectTo, { replace: true });
     }
   }, [user, authLoading, navigate]);
 
