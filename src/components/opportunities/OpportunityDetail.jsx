@@ -26,6 +26,7 @@ import OpportunityLoading from "./OpportunityLoading";
 import OpportunityError from "./OpportunityError";
 import OpportunityNotFound from "./OpportunityNotFound";
 import OpportunitySidebar from "./OpportunitySidebar";
+import ShareOpportunity from "./ShareOpportunity";
 
 const categoryIcons = {
   taller: <BookOpen className="h-5 w-5" />,
@@ -54,37 +55,26 @@ const OpportunityDetail = () => {
   const { id } = useParams();
   const { opportunity, loading, error } = useOpportunity(id);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedNetwork, setSelectedNetwork] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: opportunity.title,
-          text: opportunity.description,
-          url: window.location.href,
-        });
-      } catch (err) {
-        console.log("Error sharing:", err);
-      }
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      alert("¡Enlace copiado al portapapeles!");
-    }
+  // Función para abrir el modal
+  const openShareModal = () => {
+    setIsModalOpen(true);
   };
 
+  // Función para cerrar el modal
+  const closeShareModal = () => {
+    setIsModalOpen(false);
+    setSelectedNetwork(null);
+  };
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
     // Aquí implementarías la lógica para guardar/quitar de favoritos
-  };
-
-  const handleApply = () => {
-    // Lógica para aplicar a la oportunidad
-    console.log("Aplicando a la oportunidad:", opportunity.id);
   };
 
   if (loading) {
@@ -221,7 +211,7 @@ const OpportunityDetail = () => {
                       />
                     </button>
                     <button
-                      onClick={handleShare}
+                      onClick={openShareModal}
                       className="p-2 rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 transition-colors"
                     >
                       <Share2 className="h-5 w-5" />
@@ -338,6 +328,13 @@ const OpportunityDetail = () => {
           />
         </div>
       </div>
+      {/* Modal de compartir */}
+      {isModalOpen && (
+        <ShareOpportunity
+          opportunity={opportunity}
+          closeModal={closeShareModal}
+        />
+      )}
     </div>
   );
 };
