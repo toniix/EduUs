@@ -41,7 +41,6 @@ serve(async (req) => {
     )
 
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-    // const ORGANIZATION_LOGO = Deno.env.get('ORGANIZATION_LOGO_URL') // ← Nueva variable de entorno
 
     if (!RESEND_API_KEY) {
       throw new Error('RESEND_API_KEY no está configurado')
@@ -51,7 +50,7 @@ serve(async (req) => {
 
     const now = new Date()
     
-    // Query actualizada para incluir organizaciones
+  
     const { data: reminders, error } = await supabaseClient
       .from('reminders')
       .select(`
@@ -230,16 +229,10 @@ async function sendReminderEmail(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'EduUs <onboarding@resend.dev>', // ← Cambiar por tu dominio
+        from: 'EduTracker <notificaciones@eduus.club>',
         to: [userEmail],
         subject: subject,
         html: emailHtml,
-        // Metadatos adicionales para tracking
-        // tags: [
-        //   { name: 'type', value: 'reminder' },
-        //   { name: 'urgency', value: urgencyLevel },
-        //   { name: 'opportunity_type', value: opportunity.type }
-        // ]
       }),
     })
 

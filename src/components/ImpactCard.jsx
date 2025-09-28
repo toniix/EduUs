@@ -35,7 +35,7 @@ const ImpactCard = ({ item, isFeatured = false }) => {
         </div>
 
         {/* Title */}
-        <h4 className="text-lg font-heading font-semibold text-gray-800 mb-2">
+        <h4 className="text-2xl font-heading font-semibold text-gray-800 mb-2">
           {item.title}
         </h4>
 

@@ -18,98 +18,179 @@ const ProjectsSection = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section
-        className="relative text-white overflow-hidden min-h-[85vh] flex items-center"
+        className="relative text-white min-h-screen flex flex-col"
         style={{
-          background: `linear-gradient(135deg, #ED441D 0%, #F4B63B 100%)`,
+          background: `linear-gradient(135deg, #0c2b2a 0%, #1a3d3b 100%)`,
         }}
       >
-        {/* Decorative backgrounds */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PC9zdmc+')] opacity-40"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#4BBAAA]/20 via-transparent to-[#F4B63B]/20"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
+        {/* Fondo con textura sutil */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='2' fill='%23ffffff' fill-opacity='0.03'/%3E%3C/svg%3E")
+      `,
+            backgroundColor: "#0c2b2a",
+          }}
+        ></div>
 
-        {/* Animated shapes */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#4BBAAA] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-          <div className="absolute top-0 -left-20 w-72 h-72 bg-[#F4B63B] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-32 left-40 w-96 h-96 bg-[#ED441D] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        {/* Efecto de partículas con los colores de la marca */}
+        <div className="absolute inset-0 overflow-hidden opacity-70">
+          {/* Verde agua principal (#4db9a9) más intenso */}
+          <div
+            className="absolute -top-20 -right-20 w-[600px] h-[600px] rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(77,185,169,0.25) 0%, rgba(12,43,42,0) 70%)",
+              filter: "blur(80px)",
+            }}
+          ></div>
+
+          {/* Naranja (#f5ba3c) más sutil */}
+          <div
+            className="absolute top-1/4 -left-20 w-[500px] h-[500px] rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(245,186,60,0.15) 0%, rgba(12,43,42,0) 70%)",
+              filter: "blur(80px)",
+              animation: "float 25s ease-in-out infinite",
+            }}
+          ></div>
+
+          {/* Rojo (#ec451d) más sutil */}
+          <div
+            className="absolute bottom-0 right-1/4 w-[550px] h-[550px] rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(236,69,29,0.1) 0%, rgba(12,43,42,0) 70%)",
+              filter: "blur(80px)",
+              animation: "float 30s ease-in-out infinite 5s",
+            }}
+          ></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
-          <div className="text-center">
-            <div className="inline-block">
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80 drop-shadow-lg">
-                Proyectos de EDU-US
+        {/* Contenido principal */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 flex-1 flex flex-col">
+          {/* Contenido superior */}
+          <div className="text-center mb-4 lg:mb-8">
+            <div className="inline-block relative">
+              <div
+                className="absolute -inset-1 rounded-lg opacity-30 group-hover:opacity-50 transition duration-200"
+                style={{
+                  background:
+                    "linear-gradient(90deg, #4db9a9 0%, #f5ba3c 50%, #ec451d 100%)",
+                  filter: "blur(15px)",
+                }}
+              ></div>
+              <h1 className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#4db9a9] via-[#f5ba3c] to-[#ec451d]">
+                  Proyectos de EDU-US
+                </span>
               </h1>
             </div>
-            <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light mb-8 mt-8">
               Iniciativas enfocadas en generar cambios positivos y desarrollo
               sostenible en nuestras comunidades de jóvenes
             </p>
-            <div className="flex justify-center">
-              <button
-                onClick={() => scrollToProject("navigation")}
-                className="group px-8 py-4 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-1 bg-gradient-to-r from-[#4BBAAA] to-[#4BBAAA]/90"
-                style={{
-                  boxShadow: "0 20px 40px -15px rgba(75,186,170,0.4)",
-                }}
-              >
-                <span className="bg-clip-text font-medium text-lg">
-                  Explorar Proyectos
-                </span>
-              </button>
+          </div>
+
+          {/* Navegación de proyectos integrada */}
+          <div className="mt-auto mb-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+              {projects.slice(0, 4).map((project) => {
+                const IconComponent = project.icon;
+                return (
+                  <button
+                    key={project.id}
+                    onClick={() => {
+                      scrollToProject(project.id);
+                      document.getElementById(project.id)?.scrollIntoView({
+                        behavior: "smooth",
+                      });
+                    }}
+                    className="group relative p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-gradient-to-br hover:from-white/10 hover:to-transparent transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+                    style={{
+                      "--tw-shadow-color": "rgba(77, 185, 169, 0.4)",
+                      "--tw-shadow-colored":
+                        "0 10px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color)",
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background:
+                          "radial-gradient(circle at center, rgba(77,185,169,0.1) 0%, rgba(0,0,0,0) 70%)",
+                      }}
+                    ></div>
+                    <div className="relative z-10">
+                      <div
+                        className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 mx-auto"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #4db9a9 0%, #3da89a 100%)",
+                        }}
+                      >
+                        <IconComponent className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-white mb-2">
+                        {project.name}
+                      </h3>
+                      <p className="text-sm text-gray-300">
+                        {project.shortDescription}
+                      </p>
+                      <div
+                        className="mt-3 flex items-center justify-center text-xs font-medium"
+                        style={{
+                          background:
+                            "linear-gradient(90deg, #4db9a9, #f5ba3c)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                        }}
+                      >
+                        Ver más
+                        <svg
+                          className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          style={{
+                            stroke: "url(#gradient)",
+                          }}
+                        >
+                          <defs>
+                            <linearGradient
+                              id="gradient"
+                              x1="0%"
+                              y1="0%"
+                              x2="100%"
+                              y2="0%"
+                            >
+                              <stop offset="0%" stopColor="#4db9a9" />
+                              <stop offset="100%" stopColor="#f5ba3c" />
+                            </linearGradient>
+                          </defs>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Projects Navigation */}
-      <section
-        id="navigation"
-        className="py-16"
-        style={{ backgroundColor: "#f8f8f8" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <p
-              className="text-lg max-w-2xl mx-auto"
-              style={{ color: "#666666" }}
-            >
-              Haz clic en cualquier proyecto para ver los detalles completos
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
-            {projects.map((project) => {
-              const IconComponent = project.icon;
-              return (
-                <button
-                  key={project.id}
-                  onClick={() => scrollToProject(project.id)}
-                  className="group flex flex-col items-center p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105"
-                  style={{ backgroundColor: "#FFFFFF" }}
-                >
-                  <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors duration-300"
-                    style={{ backgroundColor: "#e6f7f5" }}
-                  >
-                    <IconComponent
-                      className="w-8 h-8 transition-colors duration-300"
-                      style={{ color: "#4BBAAA" }}
-                    />
-                  </div>
-                  <h3
-                    className="font-semibold text-center text-sm md:text-base transition-colors duration-300"
-                    style={{ color: "#222222" }}
-                  >
-                    {project.name}
-                  </h3>
-                  <ChevronDown
-                    className="w-4 h-4 mt-2 transition-all duration-300 group-hover:translate-y-1"
-                    style={{ color: "#999999" }}
-                  />
-                </button>
-              );
-            })}
+          {/* Indicador de scroll */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <div className="animate-bounce">
+              <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+                <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -136,7 +217,7 @@ const ProjectsSection = () => {
                       >
                         <IconComponent
                           className="w-6 h-6"
-                          style={{ color: "#F4B63B" }}
+                          style={{ color: "#4db9a9" }}
                         />
                       </div>
                       <h3

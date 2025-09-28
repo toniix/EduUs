@@ -196,7 +196,7 @@ const OpportunityDetail = () => {
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <button
+                    {/* <button
                       onClick={handleBookmark}
                       className={`p-2 rounded-full transition-colors ${
                         isBookmarked
@@ -209,7 +209,7 @@ const OpportunityDetail = () => {
                           isBookmarked ? "fill-current" : ""
                         }`}
                       />
-                    </button>
+                    </button> */}
                     <button
                       onClick={openShareModal}
                       className="p-2 rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 transition-colors"

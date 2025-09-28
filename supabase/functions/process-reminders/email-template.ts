@@ -194,7 +194,7 @@ export function getEmailTemplate(
                   
                   <div style="position: relative; z-index: 1;">
                     <p style="margin: 0 0 8px 0; color: ${config.color}; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;">
-                      ${config.icon} ${getTimeMessage()}
+                       ${getTimeMessage()}
                     </p>
                     ${daysUntilDeadline > 0 ? `
                       <p style="margin: 0; color: ${config.color}; font-size: 16px; font-weight: 600;">
@@ -265,9 +265,6 @@ export function getEmailTemplate(
               </p>
               
               <div style="text-align: center; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-                <p style="margin: 0; font-size: 12px; color: #9ca3af; font-weight: 500;">
-                  📧 Enviado por el Sistema EduTracker • ${new Date().toLocaleDateString('es-ES')}
-                </p>
                 <p style="margin: 8px 0 0 0; font-size: 11px; color: #d1d5db;">
                   © ${new Date().getFullYear()} EduUS. Todos los derechos reservados.
                 </p>

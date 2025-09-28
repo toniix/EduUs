@@ -46,7 +46,7 @@ const About = () => {
       </section>
       {/* <Hero /> */}
       {/* Mission and Vision - Rediseñado */}
-      <section className="py-20 bg-white bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-[length:40px_40px]">
+      <section className="py-20 bg-white bg-[url('https://www.transparenttextures.com/patterns/wavecut.png')]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -66,15 +66,13 @@ const About = () => {
                 <h3 className="text-2xl font-bold text-center text-gray-900 mb-4">
                   Misión
                 </h3>
-                <p className="text-gray-600 leading-relaxed text-center">
+                <p className="text-gray-600 leading-relaxed text-center mb-4">
                   Empoderar a jóvenes en situación de desventaja a través de
                   procesos formativos integrales que desarrollen sus capacidades
                   personales y profesionales, conectándolos con oportunidades
                   reales en el mercado laboral.
                 </p>
-                <div className="mt-6 flex justify-center">
-                  <div className="h-1 w-20 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-full"></div>
-                </div>
+                <div className="w-16 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full group-hover:w-24 transition-all duration-300"></div>
               </div>
             </div>
 
@@ -88,15 +86,13 @@ const About = () => {
                 <h3 className="text-2xl font-bold text-center text-gray-900 mb-4">
                   Visión
                 </h3>
-                <p className="text-gray-600 leading-relaxed text-center">
+                <p className="text-gray-600 leading-relaxed text-center mb-4">
                   Ser una organización sostenible, innovadora y referente en
                   América Latina por su capacidad de reducir brechas
                   estructurales, conectar talento joven con el mercado y generar
                   impacto medible en la empleabilidad juvenil.
                 </p>
-                <div className="mt-6 flex justify-center">
-                  <div className="h-1 w-20 bg-gradient-to-r from-secondary/30 to-primary/30 rounded-full"></div>
-                </div>
+                <div className="w-16 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full group-hover:w-24 transition-all duration-300"></div>
               </div>
             </div>
           </div>
@@ -104,7 +100,7 @@ const About = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-20 bg-gradient-to-r from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -123,7 +119,7 @@ const About = () => {
                     >
                       <value.icon className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900">
+                    <h3 className="text-2xl  font-bold text-gray-900">
                       {value.title}
                     </h3>
                   </div>
@@ -248,7 +244,7 @@ const About = () => {
       </section>
 
       {/* Team Section - Minimalista */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+      <section className="py-20 bg-gradient-to-l from-gray-50 to-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
