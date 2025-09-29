@@ -100,7 +100,7 @@ export default function OpportunityCard({ opportunity }) {
         </div>
 
         <Link
-          to={`/edutracker/opportunity/${id}`}
+          to={`/edutracker/oportunidad/${id}`}
           className="block w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-opacity-80 transition-colors text-center"
         >
           Ver detalles

@@ -32,16 +32,14 @@ function App() {
             <ThemeProvider>
               <Router>
                 <ScrollToTop />
-                {/* <HeaderWrapper /> */}
-                {/* <main className="flex-grow"> */}
                 <Routes>
                   {/* 🌐 RUTAS PÚBLICAS */}
                   <Route element={<PublicLayout />}>
                     <Route path="/" element={<Home />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/nosotros" element={<About />} />
+                    <Route path="/proyectos" element={<Projects />} />
                     <Route
-                      path="/edutracker/opportunity/:id"
+                      path="/edutracker/oportunidad/:id"
                       element={<OpportunityDetail />}
                     />
                     <Route path="/edutracker" element={<Opportunities />} />
@@ -66,7 +64,7 @@ function App() {
 
                   {/* 🔒 RUTAS PRIVADAS */}
                   <Route
-                    path="/profile"
+                    path="/perfil"
                     element={
                       <ProtectedRoute>
                         <Profile />
@@ -74,7 +72,7 @@ function App() {
                     }
                   />
                   <Route
-                    path="/admin"
+                    path="/adminpanel"
                     element={
                       <ProtectedRoute>
                         <RoleGuard

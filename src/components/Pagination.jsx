@@ -87,7 +87,7 @@ function Pagination({
                   onClick={() => onPageChange(Number(pageNum))}
                   className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${
                     pageNum === currentPage
-                      ? "bg-blue-600 text-white"
+                      ? "bg-secondary text-white"
                       : "border hover:bg-gray-50"
                   }`}
                   aria-current={pageNum === currentPage ? "page" : undefined}

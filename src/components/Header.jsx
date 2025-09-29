@@ -59,13 +59,13 @@ const Header = () => {
               Inicio
             </Link>
             <Link
-              to="/about"
+              to="/nosotros"
               className="font-heading font-medium hover:text-primary px-3 py-2 rounded-md"
             >
               Nosotros
             </Link>
             <Link
-              to="/projects"
+              to="/proyectos"
               className="font-heading font-medium hover:text-primary px-3 py-2 rounded-md"
             >
               Proyectos
@@ -145,14 +145,14 @@ const Header = () => {
               Inicio
             </Link>
             <Link
-              to="/about"
+              to="/nosotros"
               onClick={closeMenu}
               className="block font-heading font-medium text-dark hover:bg-gray-50 hover:text-primary px-4 py-3 rounded-lg transition-colors duration-200"
             >
               Nosotros
             </Link>
             <Link
-              to="/projects"
+              to="/proyectos"
               onClick={closeMenu}
               className="block font-heading font-medium text-dark hover:bg-gray-50 hover:text-primary px-4 py-3 rounded-lg transition-colors duration-200"
             >
@@ -164,13 +164,6 @@ const Header = () => {
               className="block font-heading font-medium text-dark hover:bg-gray-50 hover:text-primary px-4 py-3 rounded-lg transition-colors duration-200"
             >
               EDUTRACKER
-            </Link>
-            <Link
-              to="/blog"
-              onClick={closeMenu}
-              className="block font-heading font-medium text-dark hover:bg-gray-50 hover:text-primary px-4 py-3 rounded-lg transition-colors duration-200"
-            >
-              Blog
             </Link>
           </nav>
           <div className="mt-auto px-4 pb-6">

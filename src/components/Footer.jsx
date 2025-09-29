@@ -1,34 +1,32 @@
-import { GraduationCap } from "lucide-react";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok } from "react-icons/fa6";
-
+import logo from "../assets/logo_3.png";
+const socialLinks = [
+  {
+    icon: FaFacebook,
+    href: "https://web.facebook.com/profile.php?id=100090641378967",
+    color: "hover:text-blue-400",
+    name: "Facebook",
+  },
+  {
+    icon: FaInstagram,
+    href: "https://www.instagram.com/edu.us_/",
+    color: "hover:text-pink-400",
+    name: "Instagram",
+  },
+  {
+    icon: FaTiktok,
+    href: "https://www.tiktok.com/@edu.us_",
+    color: "hover:text-pink-400",
+    name: "TikTok",
+  },
+  {
+    icon: FaLinkedin,
+    href: "https://www.linkedin.com/company/eduus-latam/",
+    color: "hover:text-blue-400",
+    name: "LinkedIn",
+  },
+];
 const Footer = () => {
-  const socialLinks = [
-    {
-      icon: FaFacebook,
-      href: "https://web.facebook.com/profile.php?id=100090641378967",
-      color: "hover:text-blue-400",
-      name: "Facebook",
-    },
-    {
-      icon: FaInstagram,
-      href: "https://www.instagram.com/edu.us_/",
-      color: "hover:text-pink-400",
-      name: "Instagram",
-    },
-    {
-      icon: FaTiktok,
-      href: "https://www.tiktok.com/@edu.us_",
-      color: "hover:text-pink-400",
-      name: "TikTok",
-    },
-    {
-      icon: FaLinkedin,
-      href: "https://www.linkedin.com/company/eduus-latam/",
-      color: "hover:text-blue-400",
-      name: "LinkedIn",
-    },
-  ];
-
   return (
     <footer
       style={{
@@ -42,21 +40,14 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="lg:col-span-2 text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start group mb-6">
-              <GraduationCap
-                className="h-10 w-10 transition-all duration-300 group-hover:scale-110"
-                style={{ color: "#ED441D" }}
+              <img
+                src={logo}
+                alt="EDU-US"
+                className="h-10 w-auto object-contain"
               />
-              <span
-                className="ml-3 text-2xl font-bold bg-clip-text text-transparent"
-                style={{
-                  backgroundImage: `linear-gradient(to right, #ED441D, #4BBAAA)`,
-                }}
-              >
-                EDU-US
-              </span>
             </div>
 
-            <p className="text-gray-300 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+            <p className="text-secondary-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
               Capacitamos a jóvenes con herramientas blandas, técnicas y
               digitales para impulsar su potencial.
             </p>

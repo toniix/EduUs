@@ -193,7 +193,7 @@ const Opportunities = () => {
             {isSearching && (
               <div className="w-full md:w-auto flex-shrink-0 mt-1 md:mt-0">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5 inline-flex items-center">
-                  <span className="text-blue-800 text-sm font-medium">
+                  <span className="text-secondary text-sm font-medium">
                     {filteredOpportunities.length} resultado
                     {filteredOpportunities.length !== 1 ? "s" : ""}
                     {searchTerm && ` para "${searchTerm}"`}
