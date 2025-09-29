@@ -26,7 +26,7 @@ const Home = () => {
               digitales para impulsar su potencial.
             </p>
             <Link
-              to="/projects"
+              to="/proyectos"
               className="inline-flex items-center bg-primary text-light px-6 py-3 rounded-md hover:bg-opacity-90 hover:text-dark"
             >
               Explorar proyectos

@@ -55,7 +55,7 @@ const UserMenu = () => {
       {isMenuOpen && (
         <div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-md shadow-xl z-50">
           <Link
-            to="/profile"
+            to="/perfil"
             onClick={handleNavigation}
             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           >
@@ -64,7 +64,7 @@ const UserMenu = () => {
           </Link>
           {["admin", "editor"].includes(userRole) && (
             <Link
-              to="/admin"
+              to="/adminpanel"
               onClick={handleNavigation}
               className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             >
