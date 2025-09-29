@@ -196,7 +196,7 @@ const ProjectsSection = () => {
       </section>
 
       {/* Projects Details */}
-      <section className="py-10">
+      <section className="py-10 bg-secondary-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
           {projects.map((project, index) => {
             const IconComponent = project.icon;
@@ -228,10 +228,7 @@ const ProjectsSection = () => {
                       </h3>
                     </div>
 
-                    <p
-                      className="text-lg font-medium"
-                      style={{ color: "#ED441D" }}
-                    >
+                    <p className="text-lg text-gray-600 font-medium pb-2 shadow-[0_2px_0_0_#ED441D] hover:shadow-[0_4px_0_0_#ED441D] transition-all duration-200">
                       {project.description}
                     </p>
 
@@ -243,12 +240,9 @@ const ProjectsSection = () => {
                     </p>
 
                     <div className="space-y-4">
-                      <h3
-                        className="font-semibold"
-                        style={{ color: "#222222" }}
-                      >
+                      <h4 className="font-semibold text-xl pb-2 inline-block relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-24 after:h-1 after:bg-gradient-to-r after:from-primary after:to-[#4db9a9] after:rounded-full">
                         Objetivos:
-                      </h3>
+                      </h4>
                       <div className="flex flex-col gap-4">
                         {project.objectives.map((objective, objectiveIndex) => (
                           <div
@@ -289,10 +283,7 @@ const ProjectsSection = () => {
                     </div>
 
                     <div className="space-y-3">
-                      <h4
-                        className="font-semibold"
-                        style={{ color: "#222222" }}
-                      >
+                      <h4 className="font-semibold text-xl pb-2 inline-block relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-24 after:h-1 after:bg-gradient-to-r after:from-primary after:to-[#4db9a9] after:rounded-full">
                         Resultados obtenidos:
                       </h4>
                       <div className="flex flex-wrap gap-2">

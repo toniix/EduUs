@@ -4,9 +4,7 @@ import { opportunitySchema } from "../utils/validationSchemas";
 const initialState = {
   title: "",
   description: "",
-  type: "beca",
   modality: "presencial",
-  status: "draft",
   benefits: [],
   requirements: [],
   category_id: null,

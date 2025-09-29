@@ -31,7 +31,7 @@ export async function createOpportunity(data) {
       error: "No se pudo obtener el usuario autenticado.",
     };
   }
-  const userId = userData.user.id; // este será el created_by
+  const userId = userData.user.id;
 
   try {
     // 1. Procesar categoría
