@@ -3,7 +3,6 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { ChevronDown } from "lucide-react";
 import { projects } from "../data/projects";
 
 const ProjectsSection = () => {
@@ -303,32 +302,38 @@ const ProjectsSection = () => {
                     </div>
                   </div>
 
-                  <div className="w-full lg:flex-1 lg:max-w-lg">
-                    <div
-                      className="rounded-2xl overflow-hidden shadow-lg w-full"
-                      style={{ backgroundColor: "#FFFFFF" }}
-                    >
+                  <div className="w-full lg:flex-1 lg:max-w-lg ">
+                    <div className="rounded-2xl overflow-hidden shadow-lg w-full p-2 bg-white">
                       <Swiper
                         modules={[Navigation, Pagination, Autoplay]}
                         spaceBetween={0}
                         slidesPerView={1}
                         navigation
-                        pagination={{ clickable: true }}
+                        pagination={{
+                          clickable: true,
+                          dynamicBullets: true,
+                        }}
+                        style={{
+                          "--swiper-pagination-bottom": "5px",
+                          "--swiper-pagination-color": "#3b82f6",
+                          "--swiper-pagination-bullet-inactive-color":
+                            "#9ca3af",
+                        }}
                         autoplay={{
                           delay: 4000,
                           disableOnInteraction: false,
                         }}
-                        className="project-swiper"
+                        className="project-swiper h-full"
                       >
                         {project.images.map((image, imageIndex) => (
                           <SwiperSlide key={imageIndex}>
-                            <div className="relative aspect-[4/3] overflow-hidden">
+                            <div className="relative aspect-square overflow-hidden rounded-lg">
                               <img
                                 src={image}
                                 alt={`${project.name} - Imagen ${
                                   imageIndex + 1
                                 }`}
-                                // className="w-full h-full object-cover"
+                                className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                             </div>

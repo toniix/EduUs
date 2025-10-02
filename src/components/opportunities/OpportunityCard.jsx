@@ -17,8 +17,6 @@ export default function OpportunityCard({ opportunity }) {
     category,
   } = opportunity;
 
-  console.log(typeConfig);
-
   // Obtener la información del tipo basada en el nombre de la categoría
   const categoryName = category?.name?.toLowerCase() || "";
   const typeInfo = typeConfig[categoryName] || {

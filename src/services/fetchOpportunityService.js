@@ -288,13 +288,6 @@ class OpportunitiesService {
    */
   async getFilterOptions() {
     try {
-      // Obtener tipos únicos
-      const { data: types } = await supabase
-        .from("opportunities")
-        .select("type")
-        .not("type", "is", null)
-        .order("type", { ascending: true });
-
       // Obtener categorías únicas
       const { data: categories } = await supabase
         .from("categories")
@@ -316,7 +309,6 @@ class OpportunitiesService {
         .order("location", { ascending: true });
 
       return {
-        types: [...new Set(types.map((item) => item.type))],
         modalities: [...new Set(modalities.map((item) => item.modality))],
         categories,
         locations: [...new Set(locations.map((item) => item.location))],

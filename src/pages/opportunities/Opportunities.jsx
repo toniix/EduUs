@@ -7,6 +7,7 @@ import ResultsSummary from "../../components/opportunities/ResultsSummary";
 import InlineLoading from "../../components/ui/LoadingSpinner";
 import NotFoundOpportunities from "../../components/opportunities/NotFoundOpportunities";
 import { useOpportunities } from "../../hooks/useOpportunities";
+import { X } from "lucide-react";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -208,7 +209,7 @@ const Opportunities = () => {
         <div className="lg:hidden mb-6">
           <button
             type="button"
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-secundari hover:bg-gray-50"
             onClick={() => setShowMobileFilters(true)}
           >
             Filtros
@@ -232,68 +233,39 @@ const Opportunities = () => {
 
           {/* Mobile Filters */}
           {showMobileFilters && (
-            <div className="fixed inset-0 z-50 overflow-y-auto lg:hidden">
+            <section className="fixed inset-0 z-50 overflow-y-auto lg:hidden">
               <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <div
-                  className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                  className="fixed inset-0 bg-secondary-light bg-opacity-75 transition-opacity"
                   onClick={() => setShowMobileFilters(false)}
                 ></div>
-
-                <span
-                  className="hidden sm:inline-block sm:align-middle sm:h-screen"
-                  aria-hidden="true"
-                >
-                  &#8203;
-                </span>
 
                 <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
                   <div className="absolute top-0 right-0 pt-4 pr-4">
                     <button
                       type="button"
-                      className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
+                      className="bg-secondary rounded-md text-white"
                       onClick={() => setShowMobileFilters(false)}
                     >
-                      <span className="sr-only">Cerrar</span>
-                      <svg
-                        className="h-6 w-6"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
+                      <X className="h-6 w-6" />
                     </button>
                   </div>
 
-                  <div className="sm:flex sm:items-start">
-                    <div className="w-full">
-                      <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                        Filtros
-                      </h3>
-                      <div className="mt-2">
-                        <FiltersComponent
-                          onFilterChange={(filters) => {
-                            handleFilterChange(filters);
-                            setShowMobileFilters(false);
-                          }}
-                          filterOptions={filterOptions}
-                          clearFilters={handleClearFilters}
-                          localFilters={localFilters}
-                          setLocalFilters={setLocalFilters}
-                        />
-                      </div>
-                    </div>
+                  <div className="mt-6">
+                    <FiltersComponent
+                      onFilterChange={(filters) => {
+                        handleFilterChange(filters);
+                        setShowMobileFilters(false);
+                      }}
+                      filterOptions={filterOptions}
+                      clearFilters={clearFilters}
+                      localFilters={localFilters}
+                      setLocalFilters={setLocalFilters}
+                    />
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
           )}
 
           {/* Contenido Principal */}
