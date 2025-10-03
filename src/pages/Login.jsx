@@ -100,7 +100,7 @@ const Login = () => {
       );
       setShowResendButton(false);
     } catch (error) {
-      console.error("Error reenviando email:", error);
+      // console.error("Error reenviando email:", error);
       toast.error("Error al reenviar el email. Inténtalo más tarde.");
     } finally {
       setLoading(false);
@@ -108,115 +108,139 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-light py-12 px-4 sm:px-6 lg:px-8 pt-16">
-      <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-dark">Iniciar Sesión</h2>
-          <p className="mt-2 text-gray-600">
-            ¿No tienes una cuenta?{" "}
-            <Link to="/register" className="text-primary hover:text-primary/80">
-              Regístrate aquí
-            </Link>
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 ">
+      <div className="w-full max-w-md">
+        {/* Logo o título de la aplicación */}
+        <div className="text-center mb-10">
+          <div className="flex justify-center mb-4">
+            <img
+              src="/logo_1.png"
+              alt="Edu-Us Logo"
+              className="w-24 h-24 rounded-full object-cover shadow-md hover:shadow-lg transition-shadow duration-300"
+            />
+          </div>
         </div>
 
-        <div className="bg-white p-8 rounded-lg shadow-md">
-          {error && <AuthError error={error} />}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              label="Correo Electrónico"
-              icon={Mail}
-              required
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="tu@email.com"
-            />
-
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              label="Contraseña"
-              icon={Lock}
-              required
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-            />
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-700"
+        {/* Tarjeta de inicio de sesión */}
+        <div className="bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+          <div className="p-8">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Bienvenido de nuevo
+              </h2>
+              <p className="mt-2 text-gray-600">
+                ¿No tienes una cuenta?{" "}
+                <Link
+                  to="/register"
+                  className="text-secondary font-medium hover:text-secondary transition-colors"
                 >
-                  Recordarme
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <a href="#" className="text-primary hover:text-primary/80">
-                  ¿Olvidaste tu contraseña?
-                </a>
-              </div>
+                  Regístrate aquí
+                </Link>
+              </p>
             </div>
 
-            {/* Botón de reenviar confirmación */}
-            {showResendButton && (
-              <div className="text-center mb-4">
-                <button
-                  type="button"
-                  onClick={handleResendConfirmation}
-                  disabled={loading}
-                  className="text-blue-500 underline hover:text-blue-700"
-                >
-                  {loading ? "Reenviando..." : "Reenviar email de confirmación"}
-                </button>
-              </div>
-            )}
-            {/* Botón de iniciar sesión */}
-            <Button type="submit" disabled={loading} variant="primary">
-              {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
-            </Button>
+            {error && <AuthError error={error} className="mb-6" />}
 
-            <div className="mt-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-5">
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  label="Correo Electrónico"
+                  icon={Mail}
+                  // required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="tu@email.com"
+                  className="bg-gray-50 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                />
+
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  label="Contraseña"
+                  icon={Lock}
+                  // required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="bg-gray-50 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                />
+              </div>
+
+              {/* Botón de reenviar confirmación */}
+              {showResendButton && (
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    disabled={loading}
+                    className="text-sm text-indigo-600 hover:text-indigo-500 font-medium transition-colors"
+                  >
+                    {loading
+                      ? "Reenviando..."
+                      : "¿No recibiste el correo? Reenviar verificación"}
+                  </button>
+                </div>
+              )}
+
+              {/* Botón de iniciar sesión */}
+              <Button
+                type="submit"
+                disabled={loading}
+                variant="primary"
+                className="w-full py-3 text-base font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
+              >
+                {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
+              </Button>
+            </form>
+
+            <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
+                  <div className="w-full border-t border-gray-200"></div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
-                    O continuar con
+                <div className="relative flex justify-center">
+                  <span className="px-3 bg-white text-sm text-gray-500">
+                    O continúa con
                   </span>
                 </div>
               </div>
 
-              <Button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-                variant="secondary"
-                className="mt-4"
-              >
-                <img
-                  src="https://www.google.com/favicon.ico"
-                  alt="Google"
-                  className="w-5 h-5"
-                />
-                {loading ? "Iniciando sesión..." : "Iniciar sesión con Google"}
-              </Button>
+              <div className="mt-6 grid grid-cols-1 gap-4">
+                <Button
+                  type="button"
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  variant="outline"
+                  className="w-full py-2.5 text-gray-700 bg-white border-gray-300 hover:bg-gray-50 flex items-center justify-center space-x-2 transition-colors"
+                >
+                  <img
+                    src="https://www.google.com/favicon.ico"
+                    alt="Google"
+                    className="w-5 h-5"
+                  />
+                  <span>Google</span>
+                </Button>
+              </div>
             </div>
-          </form>
+          </div>
+
+          {/* Pie de página */}
+          {/* <div className="bg-gray-50 px-8 py-4 text-center">
+            <p className="text-xs text-gray-500">
+              Al continuar, aceptas nuestros{" "}
+              <a href="#" className="text-indigo-600 hover:underline">
+                Términos de servicio
+              </a>{" "}
+              y{" "}
+              <a href="#" className="text-indigo-600 hover:underline">
+                Política de privacidad
+              </a>
+            </p>
+          </div> */}
         </div>
       </div>
     </div>

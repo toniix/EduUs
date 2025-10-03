@@ -6,7 +6,7 @@ const PublicLayout = () => {
   const location = useLocation();
   const hideFooter =
     location.pathname === "/edutracker" ||
-    location.pathname.startsWith("/edutracker/opportunity/");
+    location.pathname.startsWith("/edutracker/oportunidad/");
 
   return (
     <>

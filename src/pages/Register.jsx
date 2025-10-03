@@ -104,135 +104,147 @@ const Register = () => {
       await signInWithGoogle();
     } catch (error) {
       setError(error.message);
-      toast.error("Error al iniciar sesión con Google");
     } finally {
       setLoading(false);
     }
   };
   return (
-    <div className="min-h-screen bg-light py-12 px-4 sm:px-6 lg:px-8 pt-16">
-      <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-dark">Crear una Cuenta</h2>
-          <p className="mt-2 text-gray-600">
-            ¿Ya tienes una cuenta?{" "}
-            <Link to="/login" className="text-primary hover:text-primary/80">
-              Inicia sesión aquí
-            </Link>
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <div className="flex justify-center mb-4">
+            <img
+              src="/logo_1.png"
+              alt="Edu-Us Logo"
+              className="w-24 h-24 rounded-full object-cover shadow-md hover:shadow-lg transition-shadow duration-300"
+            />
+          </div>
         </div>
 
-        <div className="bg-white p-8 rounded-lg shadow-md">
-          {error && <AuthError error={error} />}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              label="Nombre Completo"
-              icon={User}
-              required
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Juan Pérez"
-              error={fieldErrors.name}
-            />
-
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              label="Correo Electrónico"
-              icon={Mail}
-              required
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="tu@email.com"
-              error={fieldErrors.email}
-            />
-
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              label="Contraseña"
-              icon={Lock}
-              required
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              error={fieldErrors.password}
-            />
-
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              label="Confirmar Contraseña"
-              icon={Lock}
-              required
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="••••••••"
-              error={fieldErrors.confirmPassword}
-            />
-
-            <div className="flex items-center">
-              <input
-                id="terms"
-                name="terms"
-                type="checkbox"
-                required
-                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-              />
-              <label
-                htmlFor="terms"
-                className="ml-2 block text-sm text-gray-700"
-              >
-                Acepto los{" "}
-                <a href="#" className="text-primary hover:text-primary/80">
-                  términos y condiciones
-                </a>
-              </label>
+        {/* Tarjeta de registro */}
+        <div className="bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+          <div className="p-8">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Crea tu cuenta
+              </h2>
+              <p className="mt-2 text-gray-600">
+                ¿Ya tienes una cuenta?{" "}
+                <Link
+                  to="/login"
+                  className="text-secondary font-medium hover:text-secondary/80 transition-colors"
+                >
+                  Inicia sesión aquí
+                </Link>
+              </p>
             </div>
 
-            {/* Boton de enviar */}
-            <Button type="submit" disabled={loading} variante="primary">
-              {loading ? "Creando cuenta..." : "Crear Cuenta"}
-            </Button>
-            <div className="mt-6">
+            {error && <AuthError error={error} className="mb-6" />}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-5">
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  label="Nombre Completo"
+                  icon={User}
+                  // required
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Juan Pérez"
+                  error={fieldErrors.name}
+                  className="bg-gray-50 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                />
+
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  label="Correo Electrónico"
+                  icon={Mail}
+                  // required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="tu@email.com"
+                  error={fieldErrors.email}
+                  className="bg-gray-50 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                />
+
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  label="Contraseña"
+                  icon={Lock}
+                  // required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="•••••••"
+                  error={fieldErrors.password}
+                  className="bg-gray-50 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                />
+
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  label="Confirmar Contraseña"
+                  icon={Lock}
+                  // required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="•••••••"
+                  error={fieldErrors.confirmPassword}
+                  className="bg-gray-50 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                />
+              </div>
+
+              {/* Botón de registro */}
+              <Button
+                type="submit"
+                disabled={loading}
+                variant="primary"
+                className="w-full py-3 text-base font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
+              >
+                {loading ? "Creando cuenta..." : "Crear Cuenta"}
+              </Button>
+            </form>
+
+            <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
+                  <div className="w-full border-t border-gray-200"></div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
-                    O continuar con
+                <div className="relative flex justify-center">
+                  <span className="px-3 bg-white text-sm text-gray-500">
+                    O regístrate con
                   </span>
                 </div>
               </div>
 
-              {/* Boton de iniciar sesión con Google */}
-              <Button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-                variant="secondary"
-              >
-                <img
-                  src="https://www.google.com/favicon.ico"
-                  alt="Google"
-                  className="w-5 h-5"
-                />
-                {loading ? "Registrando..." : "Registrarse con Google"}
-              </Button>
+              <div className="mt-6 grid grid-cols-1 gap-4">
+                <Button
+                  type="button"
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  variant="outline"
+                  className="w-full py-2.5 text-gray-700 bg-white border-gray-300 hover:bg-gray-50 flex items-center justify-center space-x-2 transition-colors"
+                >
+                  <img
+                    src="https://www.google.com/favicon.ico"
+                    alt="Google"
+                    className="w-5 h-5"
+                  />
+                  <span>Google</span>
+                </Button>
+              </div>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
 export default Register;

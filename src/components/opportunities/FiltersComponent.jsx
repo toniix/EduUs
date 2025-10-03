@@ -42,7 +42,7 @@ const FiltersComponent = ({
         <button
           type="button"
           onClick={handleFilterReset}
-          className="text-sm text-primary hover:text-primary/80 transition-colors"
+          className="text-sm text-primary font-bold hover:bg-primary/20 px-4 py-2 rounded-md hover:text-primary/80 transition-colors"
         >
           Limpiar filtros
         </button>
