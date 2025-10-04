@@ -13,7 +13,6 @@ import { OpportunitiesProvider } from "./contexts/OpportunityContext";
 import OpportunityDetail from "./components/opportunities/OpportunityDetail";
 import ScrollToTop from "./components/ScrollToTop";
 import PublicLayout from "./components/layouts/PublicLayout";
-import PrivateLayout from "./components/layouts/PrivateLayout";
 import Profile from "./pages/Profile";
 import RoleGuard from "./components/admin/RoleGuard";
 import { RoleProvider } from "./contexts/RoleContext";
@@ -79,9 +78,7 @@ function App() {
                           requiredRoles={["admin", "editor"]}
                           fallback={<NoAccessFallback />}
                         >
-                          <PrivateLayout>
-                            <AdminPanel />
-                          </PrivateLayout>
+                          <AdminPanel />
                         </RoleGuard>
                       </ProtectedRoute>
                     }
