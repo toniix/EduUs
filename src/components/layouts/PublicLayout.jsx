@@ -6,7 +6,9 @@ const PublicLayout = () => {
   const location = useLocation();
   const hideFooter =
     location.pathname === "/edutracker" ||
-    location.pathname.startsWith("/edutracker/oportunidad/");
+    location.pathname.startsWith("/edutracker/oportunidad/") ||
+    location.pathname === "/login" ||
+    location.pathname === "/register";
 
   return (
     <>

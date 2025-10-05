@@ -35,18 +35,11 @@ const UserMenuMobile = ({ onItemClick }) => {
         </div>
       </div>
       <Link
-        to="/profile"
+        to="/perfil"
         onClick={onItemClick}
         className="flex items-center gap-2 px-4 py-3 rounded-lg text-dark hover:bg-gray-100 transition-colors"
       >
         <User className="w-5 h-5" /> Mi Perfil
-      </Link>
-      <Link
-        to="/settings"
-        onClick={onItemClick}
-        className="flex items-center gap-2 px-4 py-3 rounded-lg text-dark hover:bg-gray-100 transition-colors"
-      >
-        <Settings className="w-5 h-5" /> Configuración
       </Link>
       <button
         onClick={handleLogout}

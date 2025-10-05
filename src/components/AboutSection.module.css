@@ -1,0 +1,26 @@
+/* AboutSection.module.css */
+.perspective1000 {
+  perspective: 1000px;
+}
+
+.transformStylePreserve3d {
+  transform-style: preserve-3d;
+  transition: transform 0.7s;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.backfaceHidden {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotateY180 {
+  transform: rotateY(180deg);
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+}

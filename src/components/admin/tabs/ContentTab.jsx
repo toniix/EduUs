@@ -24,7 +24,7 @@ export default function ContentTab({
   const [showOpportunityForm, setShowOpportunityForm] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
 
-  console.log(opportunities);
+  // console.log(opportunities);
   const handleFormSubmit = async (formData) => {
     try {
       if (selectedOpportunity?.id) {
@@ -136,7 +136,7 @@ export default function ContentTab({
                     isDark ? "text-gray-300" : "text-gray-500"
                   }`}
                 >
-                  Fecha
+                  Fecha de cierre
                 </th>
                 <th
                   className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
@@ -218,7 +218,11 @@ export default function ContentTab({
                           {isExpired ? "Expirado" : "Activo"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-center ${
+                          isDark ? "text-gray-200" : "text-gray-900"
+                        }`}
+                      >
                         {formattedDeadline}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

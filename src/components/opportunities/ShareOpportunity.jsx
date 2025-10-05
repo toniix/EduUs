@@ -28,37 +28,44 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
     let shareUrl = "";
     const currentUrl = encodeURIComponent(window.location.href);
 
+    const title = "Oportunidad Educativa";
+    const hashtags = "educacion,oportunidades,aprendizaje";
+
     switch (selectedNetwork) {
       case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-          window.location.href
-        )}&quote=${encodeURIComponent(message)}`;
+        shareUrl = `https://www.facebook.com/sharer.php?u=${currentUrl}`;
         break;
       case "twitter":
         shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
           message
-        )}&url=${currentUrl}`;
+        )}&url=${currentUrl}&hashtags=${encodeURIComponent(hashtags)}`;
         break;
+
       case "whatsapp":
         shareUrl = `https://wa.me/?text=${encodeURIComponent(
-          message + " " + window.location.href
+          `${message} ${window.location.href}`
         )}`;
         break;
+
       case "telegram":
         shareUrl = `https://t.me/share/url?url=${currentUrl}&text=${encodeURIComponent(
-          message
+          `${message}\n\n${window.location.href}`
         )}`;
         break;
+
       case "linkedin":
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}`;
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}&title=${encodeURIComponent(
+          title
+        )}&summary=${encodeURIComponent(message)}&source=EduUs`;
         break;
+
       case "instagram":
         navigator.clipboard.writeText(window.location.href).then(() => {
           alert(
             "El enlace ha sido copiado. Puedes pegarlo en tu historia de Instagram."
           );
         });
-        return;
+        break;
       default:
         alert("Red social no soportada.");
         return;

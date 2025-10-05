@@ -1,71 +1,43 @@
-import { useEffect, useState } from "react";
-import { getCurrentUserProfile } from "../services/rolesService";
-import { signOut } from "../services/AuthService";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/ui/Buttom";
 import Input from "../components/ui/Input";
 import toast from "react-hot-toast";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
-import { useRole } from "../contexts/RoleContext";
 import SectionLoader from "../components/ui/LoadingSpinner";
+import { getRoleColor } from "../utils/getRoleColor";
 
 const Profile = () => {
-  const { user, signOut: signOutContext } = useAuth();
-  const [profile, setProfile] = useState(null);
-  const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ full_name: "", email: "" });
-  const [loading, setLoading] = useState(true);
+  const { user, role: userRole, loading } = useAuth();
+  // const [editing, setEditing] = useState(false);
+  // const [form, setForm] = useState({ full_name: "", email: "" });
   const navigate = useNavigate();
-  const { userRole } = useRole();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      try {
-        const data = await getCurrentUserProfile();
-        setProfile(data);
-        setForm({ full_name: data.full_name || "", email: data.email || "" });
-      } catch (e) {
-        toast.error("Error cargando perfil");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
-  }, []);
+  const userName = user?.user_metadata?.full_name;
+  const userEmail = user?.email;
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    // setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleEdit = () => setEditing(true);
-  const handleCancel = () => {
-    setEditing(false);
-    setForm({ full_name: profile.full_name, email: profile.email });
-  };
+  // const handleEdit = () => setEditing(true);
+  // const handleCancel = () => {
+  //   setEditing(false);
+  //   setForm({ full_name: userName, email: userEmail });
+  // };
 
   const handleSave = async () => {
     // Aquí deberías llamar a un servicio para actualizar el perfil
     // Por ahora, solo simula éxito
-    setProfile({ ...profile, full_name: form.full_name });
-    setEditing(false);
+    // setForm({ ...form, full_name: userName });
+    // setEditing(false);
     toast.success("Perfil actualizado");
-  };
-
-  // Cerrar sesión
-  const handleSignOut = async () => {
-    await signOut();
-    if (signOutContext) signOutContext();
   };
 
   if (loading) {
     return <SectionLoader message="Cargando datos de tu perfil..." />;
   }
-  console.log(userRole);
 
-  console.log(profile);
-
+  const roleColor = getRoleColor(userRole);
   return (
     <div className="min-h-screen bg-light pt-16">
       <div className="max-w-xl mx-auto bg-white rounded-lg shadow-lg p-8 mt-8 relative">
@@ -91,19 +63,16 @@ const Profile = () => {
           Volver
         </div>
         <div className="flex flex-col items-center mb-8">
-          {/* Espacio para futura foto de perfil */}
           <div className="w-24 h-24 bg-gray-200 rounded-full mb-4 flex items-center justify-center text-4xl text-primary">
-            {profile.full_name?.charAt(0) || "U"}
+            {userName?.charAt(0) || "U"}
           </div>
-          <h2 className="text-2xl font-bold text-dark mb-1">
-            {profile.full_name}
-          </h2>
-          <span className="text-primary font-semibold capitalize mb-2">
+          <h2 className="text-2xl font-bold text-dark mb-1">{userName}</h2>
+          <span className={roleColor}>
             {userRole === "admin" && "Administrador"}
             {userRole === "editor" && "Editor"}
             {userRole === "user" && "Usuario"}
           </span>
-          <span className="text-gray-600 text-sm">{profile.email}</span>
+          <span className="text-gray-600 text-sm">{userEmail}</span>
         </div>
 
         <div className="mb-6">
@@ -120,29 +89,29 @@ const Profile = () => {
             <Input
               label="Nombre completo"
               name="full_name"
-              value={form.full_name}
+              value={userName}
               onChange={handleChange}
-              disabled={!editing}
+              // disabled={!editing}
               required
             />
             <Input
               label="Correo electrónico"
               name="email"
-              value={form.email}
+              value={userEmail}
               disabled
             />
             <div className="flex gap-2 mt-4">
-              {!editing && (
-                <Button
-                  type="button"
-                  disabled={true}
-                  variante="primary"
-                  onClick={handleEdit}
-                >
-                  Editar
-                </Button>
-              )}
-              {editing && (
+              {/* {!editing && ( */}
+              <Button
+                type="button"
+                disabled={true}
+                variante="primary"
+                // onClick={handleEdit}
+              >
+                Editar
+              </Button>
+              {/* )} */}
+              {/* {editing && (
                 <>
                   <Button type="submit" variante="primary">
                     Guardar
@@ -155,7 +124,7 @@ const Profile = () => {
                     Cancelar
                   </Button>
                 </>
-              )}
+              )} */}
             </div>
           </form>
         </div>

@@ -159,11 +159,7 @@ const CategoriesTab = () => {
             setFormData({ name: "", description: "", color: "#3b82f6" });
             setIsModalOpen(true);
           }}
-          className={`flex items-center px-4 py-2 rounded-lg ${
-            isDark
-              ? "bg-blue-600 hover:bg-blue-700 text-white"
-              : "bg-primary hover:bg-primary/90 text-white"
-          } transition-colors`}
+          className="flex items-center px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white transition-colors"
           disabled={role !== "admin"}
         >
           <Plus className="h-4 w-4 mr-2" />
