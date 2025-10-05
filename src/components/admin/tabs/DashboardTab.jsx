@@ -81,7 +81,7 @@ const DashboardTab = () => {
   const [analytics, setAnalytics] = useState(initialAnalytics);
   const { isDark } = useContext(ThemeContext);
 
-  console.log("analytics", analytics);
+  // console.log("analytics", analytics);
   const fetchStats = async () => {
     setIsRefreshing(true);
     try {
@@ -101,7 +101,7 @@ const DashboardTab = () => {
           getExpiredOpportunitiesCount(),
         ]);
 
-      console.log("users", users);
+      // console.log("users", users);
       setAnalytics([
         {
           key: "users",

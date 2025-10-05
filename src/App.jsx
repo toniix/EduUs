@@ -70,9 +70,11 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+
                   <Route
                     path="/adminpanel"
                     element={
+                      // <ThemeProvider>
                       <ProtectedRoute>
                         <RoleGuard
                           requiredRoles={["admin", "editor"]}
@@ -81,8 +83,10 @@ function App() {
                           <AdminPanel />
                         </RoleGuard>
                       </ProtectedRoute>
+                      // </ThemeProvider>
                     }
                   />
+
                   <Route path="*" element={<NotFound />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
                 </Routes>

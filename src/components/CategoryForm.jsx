@@ -115,11 +115,7 @@ const CategoryForm = ({
             </button>
             <button
               type="submit"
-              className={`flex items-center justify-center px-4 py-2 rounded-lg w-32 ${
-                isDark
-                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                  : "bg-primary hover:bg-primary/90 text-white"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              className="flex items-center justify-center px-4 py-2 rounded-lg w-32 bg-primary hover:bg-primary/90 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
