@@ -4,6 +4,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { projects } from "../data/projects";
+import { ArrowRightIcon } from "lucide-react";
 
 const ProjectsSection = () => {
   const scrollToProject = (projectId) => {
@@ -147,34 +148,7 @@ const ProjectsSection = () => {
                         }}
                       >
                         Ver más
-                        <svg
-                          className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          style={{
-                            stroke: "url(#gradient)",
-                          }}
-                        >
-                          <defs>
-                            <linearGradient
-                              id="gradient"
-                              x1="0%"
-                              y1="0%"
-                              x2="100%"
-                              y2="0%"
-                            >
-                              <stop offset="0%" stopColor="#4db9a9" />
-                              <stop offset="100%" stopColor="#f5ba3c" />
-                            </linearGradient>
-                          </defs>
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M14 5l7 7m0 0l-7 7m7-7H3"
-                          />
-                        </svg>
+                        <ArrowRightIcon className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform fill-primary" />
                       </div>
                     </div>
                   </button>
