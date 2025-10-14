@@ -122,7 +122,7 @@ const AboutSection = () => {
 
                       <div className="flex-1 flex items-center min-h-0">
                         <p
-                          className="text-sm sm:text-base lg:text-lg leading-relaxed overflow-hidden text-secondary"
+                          className="text-sm sm:text-base lg:text-lg leading-relaxed overflow-hidden text-secondary-light"
                           style={{
                             WebkitLineClamp: window.innerWidth < 640 ? 4 : 3,
                             WebkitBoxOrient: "vertical",
