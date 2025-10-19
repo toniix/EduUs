@@ -43,6 +43,19 @@ export function getEmailTemplate(
     if (daysUntilDeadline === 1) return '¡SOLO QUEDA 1 DÍA!'
     return `QUEDAN ${daysUntilDeadline} DÍAS`
   }
+  
+  // Obtener el nombre de la categoría
+  const getCategoryName = () => {
+    if (!opportunity.category) return 'Oportunidad';
+    // Si category es un objeto, asumimos que tiene una propiedad 'name'
+    if (typeof opportunity.category === 'object' && opportunity.category !== null) {
+      return opportunity.category.name || 'Oportunidad';
+    }
+    // Si es un string, lo devolvemos directamente
+    return opportunity.category;
+  };
+
+  const categoryName = getCategoryName();
 
   return `
     <!DOCTYPE html>
@@ -160,7 +173,7 @@ export function getEmailTemplate(
                         Tipo
                       </p>
                       <p style="margin: 0; color: #1f2937; font-size: 13px; font-weight: 600; text-transform: capitalize;">
-                        ${opportunity.type}
+                        ${categoryName}
                       </p>
                     </div>
                   </div>
