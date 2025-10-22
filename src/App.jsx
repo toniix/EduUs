@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -25,6 +26,7 @@ import AuthCallback from "./routes/AuthCallback";
 function App() {
   return (
     <div className="min-h-screen flex flex-col">
+      <Analytics />
       <AuthProvider>
         <RoleProvider>
           <OpportunitiesProvider>
