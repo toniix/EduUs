@@ -5,6 +5,8 @@ export const projects = [
     name: "BOOTCAMP DE EMPLEABILIDAD JUVENIL",
     description: "Herramientas reales para el futuro laboral",
     icon: GraduationCap,
+    fondo:
+      "https://res.cloudinary.com/eduus/image/upload/f_auto,q_auto:best,w_600,c_fill,g_auto/v1761629489/bootcamp_vxcf1s.jpg",
     details:
       "El Bootcamp de Empleabilidad Juvenil de EDU-US fue un programa intensivo que fortaleció el perfil profesional de estudiantes y egresados mediante seis fases que iban del autoconocimiento a la conexión con el mercado laboral. Con talleres, asesorías y experiencias prácticas en alianza con especialistas y organizaciones, ofreció contenidos de valor alineados a las demandas reales del mercado.",
     objectives: [
@@ -30,6 +32,8 @@ export const projects = [
     name: "UN LIBRO, UNA SONRISA",
     description: "Promoviendo la lectura desde la solidaridad",
     icon: BookOpen,
+    fondo:
+      "https://res.cloudinary.com/eduus/image/upload/f_auto,q_auto:best,w_600,c_fill,g_auto/v1761629489/unlibro_rvnpo4.jpg",
     details:
       "Un libro, una sonrisa” fue una iniciativa de EDU-US que promovió la lectura en poblaciones vulnerables mediante donación de libros y actividades lúdicas en Piura, Lambayeque y Lima. Con apoyo de albergues, casas de reposo y voluntarios, se ofrecieron colecciones adaptadas y dinámicas para niños, adultos mayores y personas en situación de calle, impulsando la lectura como fuente de bienestar, desarrollo emocional y enriquecimiento cultural.",
     objectives: [
@@ -52,6 +56,8 @@ export const projects = [
     name: "TALLERES LIBRES",
     description: "Formación sin barreras para jóvenes con iniciativa",
     icon: Presentation,
+    fondo:
+      "https://res.cloudinary.com/eduus/image/upload/f_auto,q_auto:best,w_600,c_fill,g_auto/v1761629489/talleres_fpaqjk.jpg",
     details:
       "Los Talleres Libres de EDU-US nacieron en 2023 como una propuesta gratuita y flexible para jóvenes de diversas regiones del Perú, con el fin de reducir brechas en el acceso a formación práctica poco presente en la educación formal.",
     objectives: [
@@ -73,6 +79,8 @@ export const projects = [
     name: "EDUTRACKER",
     description: "Conectando Jóvenes con Oportunidades",
     icon: Search,
+    fondo:
+      "https://res.cloudinary.com/eduus/image/upload/f_auto,q_auto:best,w_600,c_fill,g_auto/v1761629489/edutracker_urgmp9.jpg",
     details:
       "EDUTRACKER, iniciativa de Oportunidades de EDU-US, acerca a jóvenes peruanos a becas, intercambios y programas de liderazgo mediante información, talleres en escuelas vulnerables y una plataforma digital con oportunidades vigentes. Con el trabajo de voluntarios y el alcance de redes sociales, conecta a jóvenes de distintos contextos y genera un impacto sostenible.",
     objectives: [

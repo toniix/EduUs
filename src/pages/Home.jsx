@@ -22,14 +22,14 @@ const Home = () => {
               Educación de Calidad para Todos
             </h1>
             <p className="text-xl mb-8">
-              Capacitamos a jóvenes con herramientas blandas, técnicas y
-              digitales para impulsar su potencial.
+              Acompañamos a jóvenes en el desarrollo de habilidades que les
+              permitan explorar su potencial y aprovechar nuevas oportunidades.
             </p>
             <Link
-              to="/proyectos"
+              to="/edutracker"
               className="inline-flex items-center bg-primary text-light px-6 py-3 rounded-md hover:bg-opacity-90 hover:text-dark"
             >
-              Explorar proyectos
+              Explora oportunidades aqui
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </div>
