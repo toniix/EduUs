@@ -163,7 +163,7 @@ const Header = () => {
               onClick={closeMenu}
               className="block font-heading font-medium text-dark hover:bg-gray-50 hover:text-primary px-4 py-3 rounded-lg transition-colors duration-200"
             >
-              EDUTRACKER
+              Oportunidades
             </Link>
           </nav>
           <div className="mt-auto px-4 pb-6">
