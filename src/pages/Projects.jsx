@@ -108,8 +108,11 @@ const ProjectsSection = () => {
                         behavior: "smooth",
                       });
                     }}
-                    className="group relative p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-gradient-to-br hover:from-white/10 hover:to-transparent transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+                    className="group relative p-6 rounded-2xl overflow-hidden bg-cover bg-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
                     style={{
+                      backgroundImage: project.fondo
+                        ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${project.fondo})`
+                        : "none",
                       "--tw-shadow-color": "rgba(77, 185, 169, 0.4)",
                       "--tw-shadow-colored":
                         "0 10px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color)",
@@ -119,34 +122,17 @@ const ProjectsSection = () => {
                       className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       style={{
                         background:
-                          "radial-gradient(circle at center, rgba(77,185,169,0.1) 0%, rgba(0,0,0,0) 70%)",
+                          "radial-gradient(circle at center, rgba(77,185,169,0.2) 0%, rgba(0,0,0,0.6) 90%)",
                       }}
                     ></div>
-                    <div className="relative z-10">
-                      <div
-                        className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 mx-auto"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #4db9a9 0%, #3da89a 100%)",
-                        }}
-                      >
-                        <IconComponent className="w-6 h-6 text-white" />
+                    <div className="relative z-10 h-full flex flex-col">
+                      <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 mx-auto bg-secondary">
+                        <IconComponent className="w-6 h-6" />
                       </div>
-                      <h3 className="text-lg font-semibold text-white mb-2">
+                      <h3 className="text-lg font-semibold text-white mb-2 text-center">
                         {project.name}
                       </h3>
-                      <p className="text-sm text-gray-300">
-                        {project.shortDescription}
-                      </p>
-                      <div
-                        className="mt-3 flex items-center justify-center text-xs font-medium"
-                        style={{
-                          background:
-                            "linear-gradient(90deg, #4db9a9, #f5ba3c)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                        }}
-                      >
+                      <div className="mt-3 flex items-center justify-center text-s  text-accent font-bold">
                         Ver más
                         <ArrowRightIcon className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform fill-primary" />
                       </div>

@@ -74,7 +74,7 @@ const Header = () => {
               to="/edutracker"
               className="font-heading font-medium text-dark hover:text-primary px-3 py-2 rounded-md"
             >
-              EDUTRACKER
+              Oportunidades
             </Link>
             {isAuthenticated ? (
               <UserMenu />

@@ -34,7 +34,7 @@ function App() {
               <Router>
                 <ScrollToTop />
                 <Routes>
-                  {/* 🌐 RUTAS PÚBLICAS */}
+                  {/*  RUTAS PÚBLICAS */}
                   <Route element={<PublicLayout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/nosotros" element={<About />} />
