@@ -1,31 +1,16 @@
 import { useAuth } from "../contexts/AuthContext";
-import Button from "../components/ui/Buttom";
+// import Button from "../components/ui/Buttom";
 import Input from "../components/ui/Input";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import SectionLoader from "../components/ui/LoadingSpinner";
 import { getRoleColor } from "../utils/getRoleColor";
-import { getCurrentUserProfile } from "../services/userService";
-import { useState, useEffect } from "react";
 
 const Profile = () => {
-  const { user, role: userRole, loading } = useAuth();
+  const { user, role: userRole, loading, profile } = useAuth();
   // const [editing, setEditing] = useState(false);
   // const [form, setForm] = useState({ full_name: "", email: "" });
   const navigate = useNavigate();
-  const [profile, setProfile] = useState(null);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const profileData = await getCurrentUserProfile();
-        setProfile(profileData);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      }
-    };
-    fetchProfile();
-  }, []);
 
   const userName = user?.user_metadata?.full_name || profile?.full_name;
   const userEmail = user?.email || profile?.email;
