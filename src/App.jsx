@@ -26,7 +26,7 @@ import AuthCallback from "./routes/AuthCallback";
 function App() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Analytics />
+      {/* <Analytics /> */}
       <AuthProvider>
         <RoleProvider>
           <OpportunitiesProvider>

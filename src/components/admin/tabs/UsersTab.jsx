@@ -3,6 +3,7 @@ import UserActionsMenu from "./UserActionsMenu";
 import { useRole } from "../../../contexts/RoleContext";
 import { ThemeContext } from "../../../contexts/ThemeContext";
 import InlineLoader from "../../ui/LoadingSpinner";
+import Pagination from "../../Pagination2";
 
 export default function UsersTab({
   users,

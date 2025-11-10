@@ -5,15 +5,30 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import SectionLoader from "../components/ui/LoadingSpinner";
 import { getRoleColor } from "../utils/getRoleColor";
+import { getCurrentUserProfile } from "../services/userService";
+import { useState, useEffect } from "react";
 
 const Profile = () => {
   const { user, role: userRole, loading } = useAuth();
   // const [editing, setEditing] = useState(false);
   // const [form, setForm] = useState({ full_name: "", email: "" });
   const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
 
-  const userName = user?.user_metadata?.full_name;
-  const userEmail = user?.email;
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profileData = await getCurrentUserProfile();
+        setProfile(profileData);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const userName = user?.user_metadata?.full_name || profile?.full_name;
+  const userEmail = user?.email || profile?.email;
 
   const handleChange = (e) => {
     // setForm({ ...form, [e.target.name]: e.target.value });
@@ -72,7 +87,6 @@ const Profile = () => {
             {userRole === "editor" && "Editor"}
             {userRole === "user" && "Usuario"}
           </span>
-          <span className="text-gray-600 text-sm">{userEmail}</span>
         </div>
 
         <div className="mb-6">
@@ -102,14 +116,14 @@ const Profile = () => {
             />
             <div className="flex gap-2 mt-4">
               {/* {!editing && ( */}
-              <Button
+              {/* <Button
                 type="button"
                 disabled={true}
                 variante="primary"
                 // onClick={handleEdit}
               >
                 Editar
-              </Button>
+              </Button> */}
               {/* )} */}
               {/* {editing && (
                 <>
