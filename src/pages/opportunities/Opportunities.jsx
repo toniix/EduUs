@@ -131,7 +131,7 @@ const Opportunities = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-12 pt-20 text-center">
+        <div className="container mx-auto px-4 py-12 text-center">
           <div className="bg-red-50 border-l-4 border-red-400 p-4">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -168,7 +168,7 @@ const Opportunities = () => {
 
   return (
     <section className="min-h-screen bg-gray-50">
-      <section className="container mx-auto px-4 py-8 pt-20">
+      <section className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-primary mb-3 bg-gradient-to-r from-primary to-blue-600 text-transparent bg-clip-text">

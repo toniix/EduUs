@@ -8,7 +8,7 @@ import { testimonials } from "../data/testimonials";
 
 const TestimonialsSection = () => {
   return (
-    <section className="pt-8 pb-8 sm:pt-12 lg:pt-8 px-4 sm:px-6 lg:px-8 bg-secondary-light">
+    <section className="py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-ligth">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16 max-w-4xl mx-auto">
@@ -23,6 +23,10 @@ const TestimonialsSection = () => {
 
         {/* Testimonials Slider */}
         <div className="relative max-w-5xl mx-auto">
+          {/* Gradiente izquierdo */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-white to-transparent z-10"></div>
+          {/* Gradiente derecho */}
+          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-white to-transparent z-10"></div>
           <Swiper
             modules={[Pagination, Autoplay]}
             spaceBetween={40}
@@ -56,7 +60,7 @@ const TestimonialsSection = () => {
           >
             {testimonials.map((testimonial) => (
               <SwiperSlide key={testimonial.id}>
-                <div className="bg-white rounded-xl shadow-md p-6 h-full flex flex-col mx-auto max-w-md">
+                <div className="bg-accent/10 rounded-xl shadow-lg p-6 h-full flex flex-col mx-auto max-w-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                   <div className="flex-grow">
                     <Quote className="w-8 h-8 text-blue-100 mb-4" />
                     <p className="text-gray-600 mb-6 italic">

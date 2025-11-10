@@ -6,7 +6,7 @@ const About = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - Mejorado */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary pt-20 pb-16">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary py-8">
         <div className="absolute inset-0 bg-dark/20"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-72 h-72 bg-light rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>

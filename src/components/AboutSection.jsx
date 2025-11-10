@@ -6,7 +6,7 @@ const AboutSection = () => {
   const [hoveredCard, setHoveredCard] = React.useState(null);
 
   return (
-    <section className="pt-8 sm:pt-12 lg:pt-16 px-4 sm:px-6 lg:px-8 bg-secondary-light">
+    <section className="py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-light">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16 max-w-4xl mx-auto">
@@ -86,7 +86,7 @@ const AboutSection = () => {
                         : "rotateY(-180deg)",
                     transition: "transform 0.7s",
                     background:
-                      "linear-gradient(135deg, #4BBAAA 0%, #ED441D 50%, #F4B63B 100%)",
+                      "linear-gradient(135deg, #fef2f2 0%, #f0fdfa 50%, #fef9e6 100%)",
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
                   }}
@@ -95,9 +95,8 @@ const AboutSection = () => {
                   <div className="relative z-10 max-w-xs sm:max-w-sm h-full flex flex-col justify-center">
                     <div className="flex-1 flex flex-col justify-center min-h-0">
                       <div
-                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 flex-shrink-0"
+                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 flex-shrink-0 bg-accent"
                         style={{
-                          backgroundColor: "rgba(244, 182, 59, 0.3)",
                           backdropFilter: "blur(10px)",
                         }}
                       >
@@ -116,13 +115,13 @@ const AboutSection = () => {
                         </svg>
                       </div>
 
-                      <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 flex-shrink-0 text-secondary-light">
+                      <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 flex-shrink-0 text-dark/500">
                         {item.title}
                       </h3>
 
                       <div className="flex-1 flex items-center min-h-0">
                         <p
-                          className="text-sm sm:text-base lg:text-lg leading-relaxed overflow-hidden text-secondary-light"
+                          className="text-sm sm:text-base lg:text-lg leading-relaxed overflow-hidden text-dark"
                           style={{
                             WebkitLineClamp: window.innerWidth < 640 ? 4 : 3,
                             WebkitBoxOrient: "vertical",

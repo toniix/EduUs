@@ -9,14 +9,14 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <section
-        className="w-full h-screen bg-center bg-cover"
+        className="w-full min-h-[calc(100vh-4rem)] bg-center bg-cover flex items-center justify-center"
         style={{
           backgroundImage:
             "url('https://res.cloudinary.com/eduus/image/upload/f_auto,q_auto,w_1920/Hero_zzriwy.jpg')",
         }}
       >
         <div className="absolute inset-0 bg-dark bg-opacity-60"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+        <div className="relative w-full max-w-7xl px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
           <div className="text-light max-w-3xl">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Educación de Calidad para Todos
