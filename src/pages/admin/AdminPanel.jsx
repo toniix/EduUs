@@ -3,7 +3,6 @@ import Sidebar from "../../components/admin/Sidebar";
 import AdminPanelHeader from "../../components/admin/AdminPanelHeader";
 import UsersTab from "../../components/admin/tabs/UsersTab";
 import ContentTab from "../../components/admin/tabs/ContentTab";
-// import AnalyticsTab from "../../components/admin/tabs/AnalyticsTab";
 import DashboardTab from "../../components/admin/tabs/DashboardTab";
 import DesktopOnlyWrapper from "../../components/layouts/wrappers/DesktopOnlyWrapper";
 import { paginate } from "../../utils/pagination";
@@ -54,7 +53,6 @@ const AdminPanel = () => {
 
     const fetchUsers = async () => {
       setLoadingUsers(true);
-      console.log("cargando usuarios...");
       setUsersError(null);
       try {
         const profiles = await getAllProfiles();
@@ -198,50 +196,44 @@ const AdminPanel = () => {
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // Clases para el tema oscuro solo en el panel de administración
-  const adminPanelClasses = `flex h-screen transition-colors duration-200`;
-  const mainContentClasses = `flex-1 flex flex-col min-h-0 overflow-y-auto`;
-
   return (
     <DesktopOnlyWrapper>
       <div
-        className={`${adminPanelClasses} ${
+        className={`flex h-screen ${
           isDark ? "bg-gray-900 text-white" : "bg-white text-gray-900"
         }`}
       >
-        <div className={mainContentClasses}>
-          <Sidebar
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            isCollapsed={isSidebarCollapsed}
+        {/* Sidebar - Fuera del contenedor principal */}
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          isCollapsed={isSidebarCollapsed}
+          setIsCollapsed={setIsSidebarCollapsed}
+        />
+
+        {/* Contenedor principal con scroll controlado */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header fijo */}
+          <AdminPanelHeader
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            handleSearch={handleSearch}
+            isSidebarCollapsed={isSidebarCollapsed}
             setIsCollapsed={setIsSidebarCollapsed}
+            activeTab={activeTab}
           />
 
-          <div className="flex-1 flex flex-col transition-all duration-300">
-            <AdminPanelHeader
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              handleSearch={handleSearch}
-              isSidebarCollapsed={isSidebarCollapsed}
-              isCollapsed={isSidebarCollapsed}
-              setIsCollapsed={setIsSidebarCollapsed}
-              activeTab={activeTab}
-            />
-
-            <main
-              className={`flex-1 pt-16 overflow-y-auto transition-all duration-300 ${
-                isDark ? "bg-gray-900" : "bg-white"
-              }`}
-              style={{
-                marginLeft: isSidebarCollapsed ? "5rem" : "16rem",
-                transition: "margin-left 0.3s ease-in-out",
-              }}
-            >
-              <div className="w-full max-w-full mx-auto px-4 h-full flex flex-col">
-                <div className="flex-1 min-h-0">{tabContent}</div>
-              </div>
-            </main>
-          </div>
+          {/* Área de contenido con scroll */}
+          <main
+            className={`flex-1 overflow-auto transition-all duration-300 pt-16 ${
+              isDark ? "bg-gray-900" : "bg-white"
+            }`}
+            style={{
+              marginLeft: isSidebarCollapsed ? "5rem" : "16rem",
+            }}
+          >
+            <div className="w-full mx-auto ">{tabContent}</div>
+          </main>
         </div>
       </div>
     </DesktopOnlyWrapper>

@@ -25,7 +25,7 @@ const AdminPanelHeader = ({
     }
   };
 
-  const headerClasses = `fixed top-0 right-0 left-0 z-10 transition-all duration-300 ${
+  const headerClasses = `fixed top-0 right-0 left-0 z-10 h-16 transition-all duration-300 ${
     isSidebarCollapsed ? "ml-20" : "ml-64"
   } ${isDark ? "bg-gray-900" : "bg-gray-100"}`;
 
@@ -37,7 +37,7 @@ const AdminPanelHeader = ({
 
   return (
     <header className={headerClasses}>
-      <div className="px-6 py-4 w-full flex items-center justify-between">
+      <div className="px-6 h-full w-full flex items-center justify-between">
         {/* Barra de búsqueda */}
         {activeTab === "content" ? (
           <div className="relative w-80">

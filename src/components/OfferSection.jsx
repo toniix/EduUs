@@ -2,7 +2,7 @@ import { offers } from "../data/Offers";
 
 const OfferSection = () => {
   return (
-    <section className="pt-8 pb-8 sm:pt-12 lg:pt-16 px-4 sm:px-6 lg:px-8 bg-secondary-light">
+    <section className="py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-secondary/10">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 lg:mb-16 max-w-4xl mx-auto">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">

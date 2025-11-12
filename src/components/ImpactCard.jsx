@@ -16,14 +16,6 @@ const ImpactCard = ({ item, isFeatured = false }) => {
     transition-all duration-300 ${shadow} hover:border-transparent
     flex flex-col justify-between overflow-hidden`}
     >
-      {/* Decorative element */}
-      <div
-        className={`absolute top-0 right-0 w-32 h-32 opacity-10 ${item.color.replace(
-          "text",
-          "bg"
-        )} rounded-full -mr-16 -mt-16`}
-      ></div>
-
       <div className="relative flex flex-col h-full z-10">
         {/* Number */}
         <div className="mb-2">
@@ -51,7 +43,7 @@ const ImpactCard = ({ item, isFeatured = false }) => {
         </div>
 
         {/* Icon */}
-        <div className="mt-6 flex justify-between items-center">
+        {/* <div className="mt-6 flex justify-between items-center">
           <div className="flex items-center">
             <div className={`p-2 rounded-lg ${item.color} bg-opacity-10`}>
               <item.icon
@@ -65,7 +57,7 @@ const ImpactCard = ({ item, isFeatured = false }) => {
               Destacado
             </span>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

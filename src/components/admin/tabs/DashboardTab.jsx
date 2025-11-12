@@ -145,7 +145,7 @@ const DashboardTab = () => {
   const handleRefresh = fetchStats;
 
   return (
-    <div className={`p-6 bg-gray-50 pt-24 ${isDark ? "bg-gray-900" : ""}`}>
+    <div className={`p-6 bg-gray-50 ${isDark ? "bg-gray-800" : ""}`}>
       <div className="flex justify-between items-center mb-6">
         <h1
           className={
@@ -175,7 +175,7 @@ const DashboardTab = () => {
           <div
             key={index}
             className={`rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200 ${
-              isDark ? "bg-gray-800" : "bg-white"
+              isDark ? "bg-gray-900" : "bg-white"
             }`}
           >
             <div className="flex justify-between items-start">

@@ -3,7 +3,7 @@ import ImpactCard from "./ImpactCard";
 
 const ImpactSection = () => {
   return (
-    <section className="pt-8 sm:pt-12 lg:pt-16 px-4 sm:px-6 lg:px-8 bg-secondary-light">
+    <section className="py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-secondary/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16 max-w-4xl mx-auto">
@@ -17,7 +17,7 @@ const ImpactSection = () => {
         </div>
 
         {/* Layout principal */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 mb-12">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Primer card - Destacado */}
           <div className="w-full lg:w-1/4 transform transition-all duration-500 hover:-translate-y-1">
             <ImpactCard item={impactData[0]} isFeatured={true} />

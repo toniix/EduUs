@@ -39,18 +39,18 @@ export default function Sidebar({
       } ${isDark ? "bg-gray-900 text-gray-200" : "bg-gray-100 text-gray-800"}`}
     >
       {/*  Header mejorado */}
-      <div
-        className={`flex items-center justify-between p-2 border-b ${
+      <header
+        className={`flex items-center justify-between p-4 h-16 border-b ${
           isDark
             ? "bg-gray-900 border-gray-700"
             : "border-gray-200 bg-gradient-to-l from-gray-100 to-white"
         }`}
       >
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <img
             src={logo}
             alt="EDU-US"
-            className="h-10 w-10 rounded-full shadow"
+            className="h-8 w-8 rounded-full shadow"
           />
           {!isCollapsed && (
             <div className="flex flex-col">
@@ -83,7 +83,7 @@ export default function Sidebar({
             <ChevronLeft className="h-5 w-5 text-gray-600" />
           )}
         </button>
-      </div>
+      </header>
 
       {/* Menú principal */}
       <nav className="p-4 space-y-2">

@@ -5,7 +5,11 @@ import {
   signInWithGoogle as authSignInWithGoogle,
   onAuthStateChange,
 } from "../services/AuthService";
-import { checkOrCreateProfile, updateLastLogin } from "../services/userService";
+import {
+  checkOrCreateProfile,
+  updateLastLogin,
+  getCurrentUserProfile,
+} from "../services/userService";
 import { getCurrentUserRole } from "../services/rolesService";
 
 const AuthContext = createContext({
@@ -23,64 +27,87 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [role, setRole] = useState(null);
+  const [profile, setProfile] = useState({
+    full_name: "",
+    email: "",
+  });
 
-  // Cargar sesión y rol actual al inicio
+  const initializeProfile = async (currentUser) => {
+    try {
+      const profileData = await getCurrentUserProfile();
+      setProfile({
+        full_name:
+          profileData?.full_name || currentUser?.user_metadata?.full_name || "",
+        email: profileData?.email || currentUser?.email || "",
+      });
+    } catch (error) {
+      console.error("Error cargando perfil:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchSessionAndRole = async () => {
-      const session = await getSession();
+    let isMounted = true;
+
+    // Esta función maneja tanto la carga inicial como los cambios
+    const handleAuthState = async (session) => {
       const currentUser = session?.user ?? null;
 
-      if (!currentUser || !currentUser.email_confirmed_at) {
+      if (!isMounted) return;
+
+      if (!currentUser?.email_confirmed_at) {
+        setUser(null);
+        setIsAuthenticated(false);
+        setRole(null);
+        setProfile(null);
         setLoading(false);
         return;
       }
 
-      setUser(currentUser);
-      setIsAuthenticated(true);
-      setLoading(false);
-
       try {
-        // Crear perfil si no existe
-        await checkOrCreateProfile(currentUser);
-        const role = await getCurrentUserRole();
-        // console.log(role);
-        // Actualizar last_login
-        await updateLastLogin(currentUser);
+        setUser(currentUser);
+        setIsAuthenticated(true);
+
+        // Ejecutar en paralelo
+        await Promise.allSettled([
+          checkOrCreateProfile(currentUser),
+          updateLastLogin(currentUser),
+          initializeProfile(currentUser),
+        ]);
+
+        if (isMounted) {
+          const role = await getCurrentUserRole();
+          setRole(role);
+        }
       } catch (error) {
-        console.error("Error creando perfil o obteniendo rol:", error.message);
+        console.error("Error en autenticación:", error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchSessionAndRole();
+    // 1. Cargar sesión actual (solo una vez al inicio)
+    getSession()
+      .then((session) => {
+        handleAuthState(session);
+      })
+      .catch((error) => {
+        console.error("Error obteniendo sesión:", error);
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
 
-    const {
-      data: { subscription },
-    } = onAuthStateChange(async (session) => {
-      const currentUser = session?.user ?? null;
+    // 2. Suscribirse a cambios futuros
+    const { data: { subscription } = {} } =
+      onAuthStateChange(handleAuthState) || {};
 
-      if (!currentUser || !currentUser.email_confirmed_at) {
-        setUser(null);
-        setIsAuthenticated(false);
-
-        setLoading(false);
-        return;
-      }
-
-      setUser(currentUser);
-      setIsAuthenticated(true);
-      setLoading(false);
-
-      try {
-        await checkOrCreateProfile(currentUser);
-        await updateLastLogin(currentUser);
-        const role = await getCurrentUserRole();
-        setRole(role);
-      } catch (error) {
-        console.error("Error creando perfil o obteniendo rol:", error.message);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    // Limpieza al desmontar
+    return () => {
+      isMounted = false;
+      subscription?.unsubscribe();
+    };
   }, []);
 
   // Función para cerrar sesión
@@ -102,6 +129,7 @@ export const AuthProvider = ({ children }) => {
     signOut,
     signInWithGoogle,
     role,
+    profile,
   };
 
   return (

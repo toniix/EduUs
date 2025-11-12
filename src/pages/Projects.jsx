@@ -70,9 +70,12 @@ const ProjectsSection = () => {
         </div>
 
         {/* Contenido principal */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 flex-1 flex flex-col">
+        <div
+          className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8
+        flex-1 flex flex-col"
+        >
           {/* Contenido superior */}
-          <div className="text-center mb-4 lg:mb-8">
+          <div className="text-center">
             <div className="inline-block relative">
               <div
                 className="absolute -inset-1 rounded-lg opacity-30 group-hover:opacity-50 transition duration-200"

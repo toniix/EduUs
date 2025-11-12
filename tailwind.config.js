@@ -5,12 +5,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#ED441D",
+        primary: "#ec451d",
         secondary: {
-          DEFAULT: "#4BBAAA",
+          DEFAULT: "#4db9a9",
           light: "#E0F2F0", // Lighter variant of secondary color
         },
-        accent: "#F4B63B",
+        accent: "#f5ba3c",
         light: "#FFFFFF",
         dark: "#222222",
         // Colores adicionales para el modo oscuro

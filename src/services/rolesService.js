@@ -19,23 +19,6 @@ export const getCurrentUserRole = async () => {
   return data?.role || "user";
 };
 
-// Obtener perfil completo del usuario actual
-export const getCurrentUserProfile = async () => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  if (error) throw error;
-  return data;
-};
-
 // Verificar si el usuario actual tiene un rol específico
 export const hasRole = async (requiredRole) => {
   try {

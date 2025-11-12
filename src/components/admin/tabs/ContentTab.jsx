@@ -87,12 +87,12 @@ export default function ContentTab({
         </h2>
 
         <div className="flex gap-3">
-          <Link
+          {/* <Link
             to="/edutracker"
             className="bg-secondary-light hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md flex items-center transition-colors"
           >
             Ir a Edutracker
-          </Link>
+          </Link> */}
           <button
             className="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 flex items-center"
             onClick={() => setShowOpportunityForm(true)}
@@ -240,14 +240,14 @@ export default function ContentTab({
               )}
             </tbody>
           </table>
-          <div className="mt-6">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
         </div>
+      </div>
+      <div className="mt-6">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );
