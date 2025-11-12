@@ -16,8 +16,8 @@ const Home = () => {
         }}
       >
         <div className="absolute inset-0 bg-dark bg-opacity-60"></div>
-        <div className="relative w-full max-w-7xl px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
-          <div className="text-light max-w-3xl">
+        <div className="relative w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex ">
+          <div className="text-light max-w-3xl lg:w-1/2">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Educación de Calidad para Todos
             </h1>
