@@ -1,4 +1,4 @@
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../utils/formatDate";
 import { typeConfig, modalityConfig } from "../../utils/opportunity";
@@ -49,7 +49,7 @@ export default function OpportunityCard({ opportunity }) {
 
       <div className="p-4">
         <h3 className="font-bold text-2xl mb-1 line-clamp-2">{title}</h3>
-        <p className="text-sm text-gray-600 mb-2 font-bold border-b border-accent">
+        <p className="text-sm text-gray-600 mb-3 font-bold pb-1 border-b border-accent w-full">
           {organization}
         </p>
 
@@ -67,26 +67,23 @@ export default function OpportunityCard({ opportunity }) {
           </div>
           {modality && modalityConfig[modality] && (
             <div className="flex items-center text-sm text-gray-600">
+              <MapPin className="h-4 w-4 mr-1" />
               <span className="font-bold text-secondary text-base">
                 Modalidad:
               </span>
-              <span className="mr-1">{modalityConfig[modality].icon}</span>
-              <span>{modalityConfig[modality].label}</span>
+              <span> {modalityConfig[modality].label}</span>
             </div>
           )}
           {country && (
             <div className="flex items-center text-sm text-gray-600">
-              <span className="mr-1">
-                <span className="font-bold text-secondary text-base">
-                  País:
-                </span>{" "}
-                {country}
-              </span>
+              <Globe className="h-4 w-4 mr-1" />
+              <span className="font-bold text-secondary text-base">País:</span>
+              <span> {country}</span>
             </div>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-1 mb-4">
+        {/* <div className="flex flex-wrap gap-1 mb-4">
           {tags.slice(0, 3).map((tag, index) => (
             <span
               key={index}
@@ -95,7 +92,7 @@ export default function OpportunityCard({ opportunity }) {
               {tag.name}
             </span>
           ))}
-        </div>
+        </div> */}
 
         <Link
           to={`/edutracker/oportunidad/${id}`}

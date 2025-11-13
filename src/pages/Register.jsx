@@ -27,6 +27,8 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [termsError, setTermsError] = useState("");
 
   // Handle form input change
   const handleChange = (e) => {
@@ -45,9 +47,17 @@ const Register = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validar términos y condiciones
+    if (!acceptedTerms) {
+      setTermsError("Debes aceptar los términos y condiciones");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setFieldErrors({});
+    setTermsError("");
 
     try {
       // 1. Validar datos del formulario
@@ -131,10 +141,7 @@ const Register = () => {
               </h2>
               <p className="mt-2 text-gray-600">
                 ¿Ya tienes una cuenta?{" "}
-                <Link
-                  to="/login"
-                  className="text-secondary font-medium hover:text-secondary/80 transition-colors"
-                >
+                <Link to="/login" className="text-primary transition-colors">
                   Inicia sesión aquí
                 </Link>
               </p>
@@ -202,6 +209,55 @@ const Register = () => {
               </div>
 
               {/* Botón de registro */}
+              {/* Términos y condiciones */}
+              <div className="mb-6">
+                <div className="flex items-start">
+                  <div className="flex items-center h-5">
+                    <input
+                      id="terms"
+                      name="terms"
+                      type="checkbox"
+                      checked={acceptedTerms}
+                      onChange={(e) => {
+                        setAcceptedTerms(e.target.checked);
+                        if (e.target.checked) {
+                          setTermsError("");
+                        }
+                      }}
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                    />
+                  </div>
+                  <div className="ml-3 text-sm">
+                    <label
+                      htmlFor="terms"
+                      className="font-medium text-gray-700"
+                    >
+                      Acepto los{" "}
+                      <a
+                        href="/terminos"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-primary/80 underline"
+                      >
+                        Términos y Condiciones
+                      </a>{" "}
+                      y la{" "}
+                      <a
+                        href="/privacidad"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-primary/80 underline"
+                      >
+                        Política de Privacidad
+                      </a>
+                    </label>
+                  </div>
+                </div>
+                {termsError && (
+                  <p className="mt-1 text-sm text-red-600">{termsError}</p>
+                )}
+              </div>
+
               <Button
                 type="submit"
                 disabled={loading}
