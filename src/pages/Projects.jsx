@@ -10,7 +10,7 @@ import { useEffect } from "react";
 const ProjectsSection = () => {
   useEffect(() => {
     // Precargar imágenes de fondo
-    projects.slice(0, 4).forEach(project => {
+    projects.slice(0, 4).forEach((project) => {
       if (project.fondo) {
         const img = new Image();
         img.src = project.fondo;
@@ -53,7 +53,7 @@ const ProjectsSection = () => {
 
         {/* Navigation - 70% */}
         <nav
-          className="relative flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8"
+          className="relative flex-1 flex flex-col items-center justify-center px-10 lg:px-8 py-12 sm:py-4"
           style={{
             background:
               "linear-gradient(90deg, rgba(14, 26, 14, 1) 0%, rgba(14, 26, 14, 0.9) 25%, rgba(25, 80, 75, 1) 50%, rgba(14, 26, 14, 0.9) 75%, rgba(14, 26, 14, 1) 100%)",
@@ -80,9 +80,9 @@ const ProjectsSection = () => {
                     backgroundImage: project.fondo
                       ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${project.fondo})`
                       : "none",
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
                     "--tw-shadow-color": "rgba(77, 185, 169, 0.4)",
                     "--tw-shadow-colored":
                       "0 10px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color)",
@@ -152,14 +152,14 @@ const ProjectsSection = () => {
                     </p>
 
                     <div className="space-y-4">
-                      <h4 className="font-semibold text-xl pb-2 inline-block relative">
+                      <h4 className="font-bold text-2xl pb-2 inline-block relative">
                         Objetivos:
                       </h4>
                       <div className="flex flex-col gap-4">
                         {project.objectives.map((objective, objectiveIndex) => (
                           <div
                             key={objectiveIndex}
-                            className="shadow-md rounded-lg px-4 py-3 flex items-center border-l-4 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group backdrop-blur-sm"
+                            className="shadow-md rounded-lg px-4 py-3 flex items-center  hover:scale-[1.02] hover:shadow-xl group backdrop-blur-sm"
                             style={{
                               background:
                                 "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(75,186,170,0.15) 100%)",

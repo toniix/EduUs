@@ -145,13 +145,13 @@ const About = () => {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Nuestros Ejes Estratégicos
             </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4 mb-4"></div>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Se alinean con los{" "}
               <span className="font-bold text-secundary">
                 Objetivos de Desarrollo Sostenible (ODS) 4 y 10
               </span>{" "}
             </p>
-            <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4"></div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
