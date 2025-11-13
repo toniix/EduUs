@@ -6,47 +6,53 @@ const About = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - Mejorado */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary py-8">
-        <div className="absolute inset-0 bg-dark/20"></div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-light rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-accent/30 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-700"></div>
-        </div>
+      <section
+        className="relative overflow-hidden py-16"
+        style={{
+          background:
+            "linear-gradient(90deg,rgba(165, 240, 232, 1) 0%, rgba(242, 216, 201, 1) 100%)",
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/40 to-transparent"></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center px-4 py-2 bg-light/10 backdrop-blur-sm rounded-full text-light/90 text-sm font-medium mb-8 border border-light/20">
-            <Lightbulb className="w-4 h-4 mr-2 text-accent" />
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center px-5 py-2.5 bg-white/80 backdrop-blur-sm rounded-full text-primary text-sm font-semibold mb-10 border border-primary/10 shadow-md hover:shadow-lg transition-shadow duration-300">
+            <Lightbulb className="w-4 h-4 mr-2.5 text-accent" />
             Transformando el futuro educativo
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
-            Sobre
-            <span className="bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent">
-              {" "}
-              EDU-US
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            Conoce sobre{" "}
+            <span className="relative">
+              <span className="relative z-10 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                EDU-US
+              </span>
+              <span className="absolute -bottom-2 left-0 w-full h-1.5 bg-gradient-to-r from-primary/60 to-secondary/60 rounded-full"></span>
             </span>
           </h1>
 
-          <p className="text-xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-12">
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-12">
             Capacitamos a jóvenes con herramientas blandas, técnicas y digitales
             para{" "}
-            <span className="text-accent font-medium">
-              impulsar su potencial
+            <span className="relative font-semibold text-primary">
+              <span className="relative z-10">impulsar su potencial</span>
+              <span className="absolute bottom-0 left-0 w-full h-1.5 bg-accent/30 -z-0"></span>
             </span>
           </p>
         </div>
+
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
           <div className="animate-bounce">
-            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
+            <div className="w-8 h-12 border-2 border-primary/30 rounded-full flex justify-center hover:border-primary/50 transition-colors">
+              <div className="w-1 h-3 bg-gradient-to-b from-primary to-secondary rounded-full mt-2.5 animate-pulse"></div>
             </div>
           </div>
         </div>
       </section>
       {/* <Hero /> */}
       {/* Mission and Vision - Rediseñado */}
-      <section className="py-20 bg-white bg-[url('https://www.transparenttextures.com/patterns/wavecut.png')]">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -63,8 +69,9 @@ const About = () => {
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 mx-auto">
                   <Target className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-bold text-center text-gray-900 mb-4">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 relative inline-block text-center w-full">
                   Misión
+                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-red-500 rounded-full group-hover:w-24 transition-all duration-300"></span>
                 </h3>
                 <p className="text-gray-600 leading-relaxed text-center mb-4">
                   Empoderar a jóvenes en situación de desventaja a través de
@@ -72,7 +79,6 @@ const About = () => {
                   personales y profesionales, conectándolos con oportunidades
                   reales en el mercado laboral.
                 </p>
-                <div className="w-16 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full group-hover:w-24 transition-all duration-300"></div>
               </div>
             </div>
 
@@ -83,8 +89,9 @@ const About = () => {
                 <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6 mx-auto">
                   <Globe className="w-8 h-8 text-secondary" />
                 </div>
-                <h3 className="text-2xl font-bold text-center text-gray-900 mb-4">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 relative inline-block text-center w-full">
                   Visión
+                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full group-hover:w-24 transition-all duration-300"></span>
                 </h3>
                 <p className="text-gray-600 leading-relaxed text-center mb-4">
                   Ser una organización sostenible, innovadora y referente en
@@ -92,7 +99,6 @@ const About = () => {
                   estructurales, conectar talento joven con el mercado y generar
                   impacto medible en la empleabilidad juvenil.
                 </p>
-                <div className="w-16 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full group-hover:w-24 transition-all duration-300"></div>
               </div>
             </div>
           </div>
@@ -100,7 +106,7 @@ const About = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-gradient-to-r from-gray-50 to-white">
+      <section className="py-20 bg-secondary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -139,16 +145,16 @@ const About = () => {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Nuestros Ejes Estratégicos
             </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4 mb-4"></div>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Se alinean con los{" "}
               <span className="font-bold text-secundary">
                 Objetivos de Desarrollo Sostenible (ODS) 4 y 10
               </span>{" "}
             </p>
-            <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Fila 1 - Col 1: Eje 1 Texto */}
             <div className="relative p-8 flex flex-col justify-center bg-gradient-to-b from-white to-gray-50">
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary"></div>
@@ -161,22 +167,20 @@ const About = () => {
               </p>
             </div>
 
-            {/* Fila 1 - Col 2: Imagen Eje 1 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center p-4">
-              <svg
-                className="w-32 h-32 text-primary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                ></path>
-              </svg>
+            {/* Fila 1 - Col 2: Imagen Eje 3 */}
+            <div className="hidden sm:block bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center p-4 h-full">
+              <img
+                src="https://res.cloudinary.com/eduus/image/upload/v1762959587/125822_qsdxzb.jpg"
+                alt="Empleabilidad"
+                className="w-full h-48 object-cover rounded-lg"
+              />
+            </div>
+            <div className="md:hidden bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center p-4 h-full">
+              <img
+                src="https://res.cloudinary.com/eduus/image/upload/v1762959587/2310_pdfuvo.jpg"
+                alt="Tecnologías emergentes"
+                className="w-full h-48 object-cover rounded-lg"
+              />
             </div>
 
             {/* Fila 1 - Col 3: Eje 2 Texto */}
@@ -191,25 +195,23 @@ const About = () => {
               </p>
             </div>
 
-            {/* Fila 2 - Col 1: Imagen Eje 3 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center p-4 md:col-start-1">
-              <svg
-                className="w-32 h-32 text-green-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                ></path>
-              </svg>
+            {/* Fila 2 - Col 1: Imagen Eje 1 */}
+            <div className="hidden sm:block bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center p-4 h-full md:col-start-1">
+              <img
+                src="https://res.cloudinary.com/eduus/image/upload/v1762959587/2310_pdfuvo.jpg"
+                alt="Tecnologías emergentes"
+                className="w-full h-48 object-cover rounded-lg"
+              />
+            </div>
+            <div className="md:hidden bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center p-4 h-full">
+              <img
+                src="https://res.cloudinary.com/eduus/image/upload/v1762959587/2613_vacbit.jpg"
+                alt="Asociatividad"
+                className="w-full h-48 object-cover rounded-lg"
+              />
             </div>
 
-            {/* Fila 2 - Col 2: Eje 3 Texto */}
+            {/* Fila 2 - Col 2: Eje 2 Texto */}
             <div className="relative p-8 flex flex-col justify-center bg-gradient-to-t from-white to-gray-50">
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-green-600"></div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
@@ -223,28 +225,26 @@ const About = () => {
             </div>
 
             {/* Fila 2 - Col 3: Imagen Eje 2 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center p-4">
-              <svg
-                className="w-32 h-32 text-secondary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                ></path>
-              </svg>
+            <div className="hidden sm:block bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center p-4 h-full">
+              <img
+                src="https://res.cloudinary.com/eduus/image/upload/v1762959587/2613_vacbit.jpg"
+                alt="Asociatividad"
+                className="w-full h-48 object-cover rounded-lg"
+              />
+            </div>
+            <div className="md:hidden bg-white rounded-xl shadow-md overflow-hidden flex items-center justify-center p-4 h-full">
+              <img
+                src="https://res.cloudinary.com/eduus/image/upload/v1762959587/125822_qsdxzb.jpg"
+                alt="Empleabilidad"
+                className="w-full h-48 object-cover rounded-lg"
+              />
             </div>
           </div>
         </div>
       </section>
 
       {/* Team Section - Minimalista */}
-      <section className="py-20 bg-gradient-to-l from-gray-50 to-white">
+      <section className="py-20 bg-secondary/10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">

@@ -130,10 +130,7 @@ const Login = () => {
               </h2>
               <p className="mt-2 text-gray-600">
                 ¿No tienes una cuenta?{" "}
-                <Link
-                  to="/register"
-                  className="text-secondary font-medium hover:text-secondary transition-colors"
-                >
+                <Link to="/register" className="text-primary transition-colors">
                   Regístrate aquí
                 </Link>
               </p>

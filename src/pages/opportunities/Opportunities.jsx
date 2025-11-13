@@ -167,12 +167,12 @@ const Opportunities = () => {
   }
 
   return (
-    <section className="min-h-screen bg-gray-50">
+    <section className="min-h-screen bg-secondary/10">
       <section className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-primary mb-3 bg-gradient-to-r from-primary to-blue-600 text-transparent bg-clip-text">
-            ¡Descubre las mejores oportunidades para jóvenes!
+            Edutracker: oportunidades seguras en un solo lugar.
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-6">
             Explora becas, talleres y experiencias únicas para tu futuro.

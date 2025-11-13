@@ -5,8 +5,18 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { projects } from "../data/projects";
 import { ArrowRightIcon } from "lucide-react";
+import { useEffect } from "react";
 
 const ProjectsSection = () => {
+  useEffect(() => {
+    // Precargar imágenes de fondo
+    projects.slice(0, 4).forEach((project) => {
+      if (project.fondo) {
+        const img = new Image();
+        img.src = project.fondo;
+      }
+    });
+  }, []);
   const scrollToProject = (projectId) => {
     const element = document.getElementById(projectId);
     if (element) {
@@ -15,67 +25,12 @@ const ProjectsSection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section
-        className="relative text-white min-h-screen flex flex-col"
-        style={{
-          background: `linear-gradient(135deg, #0c2b2a 0%, #1a3d3b 100%)`,
-        }}
-      >
-        {/* Fondo con textura sutil */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='2' fill='%23ffffff' fill-opacity='0.03'/%3E%3C/svg%3E")
-      `,
-            backgroundColor: "#0c2b2a",
-          }}
-        ></div>
-
-        {/* Efecto de partículas con los colores de la marca */}
-        <div className="absolute inset-0 overflow-hidden opacity-70">
-          {/* Verde agua principal (#4db9a9) más intenso */}
-          <div
-            className="absolute -top-20 -right-20 w-[600px] h-[600px] rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(77,185,169,0.25) 0%, rgba(12,43,42,0) 70%)",
-              filter: "blur(80px)",
-            }}
-          ></div>
-
-          {/* Naranja (#f5ba3c) más sutil */}
-          <div
-            className="absolute top-1/4 -left-20 w-[500px] h-[500px] rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(245,186,60,0.15) 0%, rgba(12,43,42,0) 70%)",
-              filter: "blur(80px)",
-              animation: "float 25s ease-in-out infinite",
-            }}
-          ></div>
-
-          {/* Rojo (#ec451d) más sutil */}
-          <div
-            className="absolute bottom-0 right-1/4 w-[550px] h-[550px] rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(236,69,29,0.1) 0%, rgba(12,43,42,0) 70%)",
-              filter: "blur(80px)",
-              animation: "float 30s ease-in-out infinite 5s",
-            }}
-          ></div>
-        </div>
-
-        {/* Contenido principal */}
-        <div
-          className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8
-        flex-1 flex flex-col"
-        >
-          {/* Contenido superior */}
-          <div className="text-center">
+      <section className="relative text-white min-h-screen flex flex-col">
+        {/* Header - 30% */}
+        <header className="relative h-[30vh] flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 bg-[#0b2826]">
+          <div className="max-w-3xl">
             <div className="inline-block relative">
               <div
                 className="absolute -inset-1 rounded-lg opacity-30 group-hover:opacity-50 transition duration-200"
@@ -85,80 +40,75 @@ const ProjectsSection = () => {
                   filter: "blur(15px)",
                 }}
               ></div>
-              <h1 className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#4db9a9] via-[#f5ba3c] to-[#ec451d]">
-                  Proyectos de EDU-US
-                </span>
+              <h1 className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-100">
+                Proyectos de EDU-US
               </h1>
             </div>
-            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light mb-8 mt-8">
+            <p className="text-lg md:text-xl text-gray-200 mx-auto leading-relaxed font-light mt-8">
               Iniciativas enfocadas en generar cambios positivos y desarrollo
               sostenible en nuestras comunidades de jóvenes
             </p>
           </div>
+        </header>
 
-          {/* Navegación de proyectos integrada */}
-          <div className="mt-auto mb-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-              {projects.slice(0, 4).map((project) => {
-                const IconComponent = project.icon;
-                return (
-                  <button
-                    key={project.id}
-                    onClick={() => {
-                      scrollToProject(project.id);
-                      document.getElementById(project.id)?.scrollIntoView({
-                        behavior: "smooth",
-                      });
-                    }}
-                    className="group relative p-6 rounded-2xl overflow-hidden bg-cover bg-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
-                    style={{
-                      backgroundImage: project.fondo
-                        ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${project.fondo})`
-                        : "none",
-                      "--tw-shadow-color": "rgba(77, 185, 169, 0.4)",
-                      "--tw-shadow-colored":
-                        "0 10px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color)",
-                    }}
-                  >
-                    <div
-                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{
-                        background:
-                          "radial-gradient(circle at center, rgba(77,185,169,0.2) 0%, rgba(0,0,0,0.6) 90%)",
-                      }}
-                    ></div>
-                    <div className="relative z-10 h-full flex flex-col">
-                      <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 mx-auto bg-secondary">
-                        <IconComponent className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-white mb-2 text-center">
-                        {project.name}
-                      </h3>
-                      <div className="mt-3 flex items-center justify-center text-s  text-accent font-bold">
-                        Ver más
-                        <ArrowRightIcon className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform fill-primary" />
-                      </div>
+        {/* Navigation - 70% */}
+        <nav
+          className="relative flex-1 flex flex-col items-center justify-center px-10 lg:px-8 py-12 sm:py-4"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(14, 26, 14, 1) 0%, rgba(14, 26, 14, 0.9) 25%, rgba(25, 80, 75, 1) 50%, rgba(14, 26, 14, 0.9) 75%, rgba(14, 26, 14, 1) 100%)",
+          }}
+        >
+          {/* Fades for the blurred border effect */}
+          <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-[#0b2826] to-transparent pointer-events-none backdrop-blur-sm"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[hsl(175,55%,15%)] to-transparent pointer-events-none backdrop-blur-sm"></div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl w-full">
+            {projects.slice(0, 4).map((project) => {
+              const IconComponent = project.icon;
+              return (
+                <button
+                  key={project.id}
+                  onClick={() => {
+                    scrollToProject(project.id);
+                    document.getElementById(project.id)?.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                  }}
+                  className="group relative p-6 rounded-2xl overflow-hidden bg-cover bg-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-gray-800/50"
+                  style={{
+                    backgroundImage: project.fondo
+                      ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${project.fondo})`
+                      : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    "--tw-shadow-color": "rgba(77, 185, 169, 0.4)",
+                    "--tw-shadow-colored":
+                      "0 10px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color)",
+                  }}
+                >
+                  <div className="relative z-10 h-full flex flex-col">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 mx-auto bg-secondary">
+                      <IconComponent className="w-6 h-6" />
                     </div>
-                  </button>
-                );
-              })}
-            </div>
+                    <h3 className="text-lg font-semibold text-white mb-2 text-center">
+                      {project.name}
+                    </h3>
+                    <div className="mt-3 flex items-center justify-center text-s  text-accent font-bold">
+                      Ver más
+                      <ArrowRightIcon className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform fill-primary" />
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
-
-          {/* Indicador de scroll */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            <div className="animate-bounce">
-              <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-                <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </nav>
       </section>
 
       {/* Projects Details */}
-      <section className="py-10 bg-secondary-light">
+      <section className="py-10 bg-secondary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
           {projects.map((project, index) => {
             const IconComponent = project.icon;
@@ -189,10 +139,10 @@ const ProjectsSection = () => {
                         {project.name}
                       </h3>
                     </div>
-
+                    {/* 
                     <p className="text-lg text-gray-600 font-medium pb-2 shadow-[0_2px_0_0_#ED441D] hover:shadow-[0_4px_0_0_#ED441D] transition-all duration-200">
                       {project.description}
-                    </p>
+                    </p> */}
 
                     <p
                       className="leading-relaxed text-lg"
@@ -202,14 +152,14 @@ const ProjectsSection = () => {
                     </p>
 
                     <div className="space-y-4">
-                      <h4 className="font-semibold text-xl pb-2 inline-block relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-24 after:h-1 after:bg-gradient-to-r after:from-primary after:to-[#4db9a9] after:rounded-full">
+                      <h4 className="font-bold text-2xl pb-2 inline-block relative">
                         Objetivos:
                       </h4>
                       <div className="flex flex-col gap-4">
                         {project.objectives.map((objective, objectiveIndex) => (
                           <div
                             key={objectiveIndex}
-                            className="shadow-md rounded-lg px-4 py-3 flex items-center border-l-4 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group backdrop-blur-sm"
+                            className="shadow-md rounded-lg px-4 py-3 flex items-center  hover:scale-[1.02] hover:shadow-xl group backdrop-blur-sm"
                             style={{
                               background:
                                 "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(75,186,170,0.15) 100%)",
@@ -244,22 +194,25 @@ const ProjectsSection = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-3">
-                      <h4 className="font-semibold text-xl pb-2 inline-block relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-24 after:h-1 after:bg-gradient-to-r after:from-primary after:to-[#4db9a9] after:rounded-full">
-                        Resultados obtenidos:
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
+                    <div className="space-y-3 bg-gradient-to-br from-secondary to-[#0b2826] p-6 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
+                      <div className="flex items-center space-x-3 mb-6">
+                        <h4 className="text-2xl font-bold text-white">
+                          Resultados
+                        </h4>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {project.results.map((result, resultIndex) => (
-                          <span
+                          <div
                             key={resultIndex}
-                            className="px-3 py-1 rounded-full text-sm font-medium"
-                            style={{
-                              backgroundColor: "#f0f0f0",
-                              color: "#222222",
-                            }}
+                            className="flex items-start space-x-3 p-4 bg-gradient-to-br from-white/5 to-white/0 rounded-xl border border-white/10 hover:border-primary/40 transition-all duration-300 group hover:shadow-md hover:shadow-primary/10"
                           >
-                            {result}
-                          </span>
+                            <div className="flex-shrink-0 mt-0.5">
+                              <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(77,185,169,0.5)]"></div>
+                            </div>
+                            <span className="text-gray-100 group-hover:text-white transition-colors duration-300 font-medium">
+                              {result}
+                            </span>
+                          </div>
                         ))}
                       </div>
                     </div>

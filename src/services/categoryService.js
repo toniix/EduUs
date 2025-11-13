@@ -26,8 +26,10 @@ class CategoryService {
    * @returns {Promise<object>} La categoría creada
    */
   async createCategory(categoryData, userRole) {
-    if (userRole !== "admin") {
-      throw new Error("Solo los administradores pueden crear categorías.");
+    if (userRole !== "admin" && userRole !== "editor") {
+      throw new Error(
+        "Solo los administradores y editores pueden crear categorías."
+      );
     }
     try {
       const { data, error } = await supabase
@@ -74,8 +76,10 @@ class CategoryService {
    * @returns {Promise<object>} La categoría actualizada
    */
   async updateCategory(categoryId, updates, userRole) {
-    if (userRole !== "admin") {
-      throw new Error("Solo los administradores pueden actualizar categorías.");
+    if (userRole !== "admin" && userRole !== "editor") {
+      throw new Error(
+        "Solo los administradores y editores pueden actualizar categorías."
+      );
     }
     try {
       const { data, error } = await supabase

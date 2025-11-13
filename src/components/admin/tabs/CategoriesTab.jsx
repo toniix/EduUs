@@ -160,7 +160,6 @@ const CategoriesTab = () => {
             setIsModalOpen(true);
           }}
           className="flex items-center px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white transition-colors"
-          disabled={role !== "admin"}
         >
           <Plus className="h-4 w-4 mr-2" />
           Nueva Categoría
@@ -241,7 +240,6 @@ const CategoriesTab = () => {
                             ? "text-blue-400 hover:bg-blue-900/30"
                             : "text-blue-600 hover:bg-blue-50"
                         }`}
-                        disabled={role !== "admin"}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>

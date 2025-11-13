@@ -7,6 +7,8 @@ import Projects from "./pages/Projects";
 import Opportunities from "./pages/opportunities/Opportunities";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 import AdminPanel from "./pages/admin/AdminPanel";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -44,6 +46,8 @@ function App() {
                       element={<OpportunityDetail />}
                     />
                     <Route path="/edutracker" element={<Opportunities />} />
+                    <Route path="/terminos" element={<TermsPage />} />
+                    <Route path="/privacidad" element={<PrivacyPage />} />
 
                     <Route
                       path="/login"

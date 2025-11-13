@@ -1,9 +1,11 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import ImpactSection from "../components/ImpactSection";
 import AboutSection from "../components/AboutSection";
 import OfferSection from "../components/OfferSection";
 import TestimonialsSection from "../components/TestimonialsSection";
+import { useState, useEffect } from "react";
+import CallToAction from "../components/CallToAction";
 
 const Home = () => {
   return (
@@ -39,6 +41,7 @@ const Home = () => {
       <AboutSection />
       <OfferSection />
       <TestimonialsSection />
+      <CallToAction />
     </div>
   );
 };

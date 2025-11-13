@@ -1,4 +1,10 @@
-import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok } from "react-icons/fa6";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaLinkedin,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa6";
 import logo from "../assets/logo_3.png";
 const socialLinks = [
   {
@@ -21,9 +27,15 @@ const socialLinks = [
   },
   {
     icon: FaLinkedin,
-    href: "https://www.linkedin.com/company/eduus-latam/",
+    href: "https://www.linkedin.com/company/edu-us/",
     color: "hover:text-blue-400",
     name: "LinkedIn",
+  },
+  {
+    icon: FaYoutube,
+    href: "https://www.youtube.com/@eduus-",
+    color: "hover:text-red-400",
+    name: "Youtube",
   },
 ];
 const Footer = () => {
