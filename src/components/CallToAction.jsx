@@ -77,7 +77,7 @@ export default function ImprovedCTA() {
 
             {/* Trust badge */}
             <p className="text-white/70 text-sm mt-6">
-              ✓ Sin spam · ✓ Contenido de valor · ✓ Cancela cuando quieras
+              ✓ Sin spam · ✓ Contenido de valor
             </p>
           </div>
         </div>
