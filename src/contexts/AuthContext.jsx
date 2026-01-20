@@ -13,7 +13,7 @@ import {
 import { getCurrentUserRole } from "../services/rolesService";
 
 const AuthContext = createContext({
-  user: null,
+  profile: null,
   loading: true,
   isAuthenticated: false,
   signOut: async () => {},
@@ -23,60 +23,85 @@ const AuthContext = createContext({
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState(null);
-  const [profile, setProfile] = useState({
-    full_name: "",
-    email: "",
-  });
 
-  const initializeProfile = async (currentUser) => {
+  // Función para inicializar el perfil del usuario
+  const initializeProfile = async (currentUser, profileData = null) => {
     try {
-      const profileData = await getCurrentUserProfile();
+      // Si ya tenemos el profileData, usarlo directamente
+      const data = profileData || (await getCurrentUserProfile());
+
+      // Si no existe, usa los datos de Auth
+      if (!data) {
+        setProfile({
+          id: currentUser.id,
+          full_name: currentUser?.user_metadata?.full_name || "",
+          email: currentUser?.email || "",
+          role: "user",
+        });
+        return;
+      }
+      // Si existe, usa los datos de BD
       setProfile({
+        id: currentUser.id,
         full_name:
-          profileData?.full_name || currentUser?.user_metadata?.full_name || "",
-        email: profileData?.email || currentUser?.email || "",
+          data?.full_name || currentUser?.user_metadata?.full_name || "",
+        email: data?.email || currentUser?.email || "",
+        avatar_url: data?.avatar_url || currentUser?.user_metadata?.avatar_url,
+        role: data?.role || "user",
+        last_login: data?.last_login || null,
       });
     } catch (error) {
       console.error("Error cargando perfil:", error);
     }
   };
 
+  // Esta useEffect maneja la autenticación y el estado del usuario
   useEffect(() => {
     let isMounted = true;
+    let lastAuthState = null;
 
-    // Esta función maneja tanto la carga inicial como los cambios
-    const handleAuthState = async (session) => {
+    // Función para procesar autenticación completa (primera carga)
+    const handleInitialAuth = async (session) => {
       const currentUser = session?.user ?? null;
-
+      console.log(session);
       if (!isMounted) return;
 
       if (!currentUser?.email_confirmed_at) {
-        setUser(null);
-        setIsAuthenticated(false);
-        setRole(null);
         setProfile(null);
+        setIsAuthenticated(false);
         setLoading(false);
         return;
       }
 
       try {
-        setUser(currentUser);
         setIsAuthenticated(true);
 
-        // Ejecutar en paralelo
-        await Promise.allSettled([
+        // Ejecutar checkOrCreateProfile y updateLastLogin en paralelo
+        const [profileResult] = await Promise.allSettled([
           checkOrCreateProfile(currentUser),
           updateLastLogin(currentUser),
-          initializeProfile(currentUser),
         ]);
 
+        // Usar el perfil retornado por checkOrCreateProfile
+        const profileData =
+          profileResult.status === "fulfilled"
+            ? profileResult.value?.profile
+            : null;
+
+        // Obtener el rol del usuario
+        const userRole = await getCurrentUserRole(currentUser.id);
+
+        await initializeProfile(currentUser, profileData);
+
+        // Actualizar el perfil con el rol
         if (isMounted) {
-          const role = await getCurrentUserRole();
-          setRole(role);
+          setProfile((prev) => ({
+            ...prev,
+            role: userRole,
+          }));
         }
       } catch (error) {
         console.error("Error en autenticación:", error);
@@ -87,10 +112,37 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
+    // Función para detectar cambios de autenticación (solo logout/cambios reales)
+    const handleAuthStateChange = (session) => {
+      const currentUser = session?.user ?? null;
+
+      // Si estaba autenticado y sigue autenticado → NO hacer nada (evita reprocesamiento)
+      if (lastAuthState?.user?.id === currentUser?.id && currentUser) {
+        console.log("✅ Usuario sigue autenticado, sin cambios innecesarios");
+        return;
+      }
+
+      // Si hubo cambio real (logout o cambio de usuario)
+      if (!currentUser) {
+        console.log("🔴 Logout detectado");
+        if (isMounted) {
+          setProfile(null);
+          setIsAuthenticated(false);
+        }
+      } else if (!lastAuthState?.user && currentUser) {
+        // Usuario se acaba de loguear (nuevo inicio de sesión)
+        console.log("🟢 Login detectado, procesando autenticación");
+        handleInitialAuth(session);
+      }
+
+      lastAuthState = session;
+    };
+
     // 1. Cargar sesión actual (solo una vez al inicio)
     getSession()
       .then((session) => {
-        handleAuthState(session);
+        lastAuthState = session;
+        handleInitialAuth(session);
       })
       .catch((error) => {
         console.error("Error obteniendo sesión:", error);
@@ -99,9 +151,9 @@ export const AuthProvider = ({ children }) => {
         }
       });
 
-    // 2. Suscribirse a cambios futuros
+    // 2. Suscribirse a cambios futuros (solo detecta cambios reales)
     const { data: { subscription } = {} } =
-      onAuthStateChange(handleAuthState) || {};
+      onAuthStateChange(handleAuthStateChange) || {};
 
     // Limpieza al desmontar
     return () => {
@@ -114,7 +166,7 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     await authSignOut();
     setIsAuthenticated(false);
-    setUser(null);
+    setProfile(null);
   };
 
   // Función para iniciar sesión con Google
@@ -122,14 +174,13 @@ export const AuthProvider = ({ children }) => {
     return await authSignInWithGoogle();
   };
 
+  // console.log(profile);
   const value = {
-    user,
+    profile,
     loading,
     isAuthenticated,
     signOut,
     signInWithGoogle,
-    role,
-    profile,
   };
 
   return (

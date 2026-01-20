@@ -25,7 +25,7 @@ export default function Sidebar({
   setIsCollapsed,
 }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { profile } = useAuth();
   const { isDark } = useTheme();
 
   const handleItemClick = (item) => {
@@ -54,18 +54,14 @@ export default function Sidebar({
           />
           {!isCollapsed && (
             <div className="flex flex-col">
-              {user && (
+              {profile && (
                 <span
                   className={`text-xs ${
                     isDark ? "text-gray-200" : "text-gray-700"
                   }`}
                 >
                   Bienvenido,{" "}
-                  <span className="font-semibold">
-                    {user.user_metadata.full_name ||
-                      user.user_metadata.name ||
-                      user.email}
-                  </span>
+                  <span className="font-semibold">{profile.full_name}</span>
                 </span>
               )}
             </div>

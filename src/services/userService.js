@@ -1,17 +1,14 @@
 import { supabase } from "../lib/supabase";
+import { formatDatePeruTime } from "../utils/formatDate";
 
 export const checkOrCreateProfile = async (user) => {
+  // console.log("---------------------------CHEKING PROFILE");
   if (!user || !user.id) throw new Error("Usuario inválido");
-  // Verificar si el perfil ya existe
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("id", user.id)
-    .single();
 
-  if (profileError && profileError.code === "PGRST116") {
-    // Si no existe, crearlo
-    const { error: upsertError } = await supabase.from("profiles").upsert(
+  // Usar upsert directamente - más eficiente que verificar primero
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert(
       {
         id: user.id,
         full_name:
@@ -20,13 +17,18 @@ export const checkOrCreateProfile = async (user) => {
           "Sin nombre",
         email: user.email,
       },
-      { onConflict: "id" }
-    );
-    if (upsertError) throw upsertError;
-    return { created: true };
-  }
-  if (profileError) throw profileError;
-  return { created: false };
+      { onConflict: "id" },
+    )
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  // Retornar el perfil completo para evitar otra consulta
+  return {
+    created: true,
+    profile: data,
+  };
 };
 
 // Obtener todos los perfiles
@@ -43,44 +45,20 @@ export const deleteUser = async (userId) => {
   return true;
 };
 
-// export const updateLastLogin = async (user) => {
-//   if (!user || !user.id || !user.last_sign_in_at) return;
-
-//   try {
-//     const { error } = await supabase
-//       .from("profiles")
-//       .update({ last_login: user.last_sign_in_at })
-//       .eq("id", user.id);
-
-//     if (error) throw error;
-//   } catch (err) {
-//     console.error("❌ Error al actualizar last_login:", err.message);
-//   }
-// };
-
 export const updateLastLogin = async (user) => {
+  // console.log("Actualizando el last login");
   if (!user?.id || !user?.last_sign_in_at) return;
 
   try {
-    // Crear fecha en la zona horaria de Perú
-    const peruTime = new Date(user.last_sign_in_at).toLocaleString("es-PE", {
-      timeZone: "America/Lima",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false, // Usar formato 24 horas
-    });
+    // Usar la función centralizada para formatear la fecha en zona horaria de Perú
+    const formattedDate = formatDatePeruTime(user.last_sign_in_at);
 
-    // Formato: YYYY-MM-DD HH:MM:SS
-    const [date, time] = peruTime.split(", ");
-    const [day, month, year] = date.split("/");
-    const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
-      2,
-      "0"
-    )} ${time}`;
+    console.log("Fecha formateada para last_login:", formattedDate);
+
+    if (!formattedDate) {
+      console.error("❌ No se pudo formatear la fecha de last_login");
+      return;
+    }
 
     const { error } = await supabase
       .from("profiles")

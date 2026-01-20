@@ -1,18 +1,24 @@
-// src/services/RolesService.js
-
 import { supabase } from "../lib/supabase";
 
 // Obtener el rol del usuario actual
-export const getCurrentUserRole = async () => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+export const getCurrentUserRole = async (userId = null) => {
+  // console.log("-------------GETTING USER ROLE");
+  // Si se proporciona el userId, usarlo directamente (más eficiente)
+  let userIdToUse = userId;
+
+  if (!userIdToUse) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    userIdToUse = user?.id;
+  }
+
+  if (!userIdToUse) return null;
 
   const { data, error } = await supabase
     .from("profiles")
     .select("role")
-    .eq("id", user.id)
+    .eq("id", userIdToUse)
     .single();
 
   if (error) throw error;

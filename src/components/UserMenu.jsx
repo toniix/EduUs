@@ -2,16 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronDown, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { useRole } from "../contexts/RoleContext";
 
 const UserMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { signOut, user } = useAuth();
+  const { signOut, profile } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef(null);
-  const { userRole } = useRole();
-  const userName = user?.user_metadata?.full_name || user?.user_metadata?.name;
-  const userImage = user?.user_metadata?.avatar_url;
+  const userName = profile?.full_name;
+  const userImage = profile?.avatar_url;
+  const userRole = profile?.role;
 
   useEffect(() => {
     const handleClickOutside = (event) => {

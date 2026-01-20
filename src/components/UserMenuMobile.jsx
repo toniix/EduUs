@@ -3,10 +3,12 @@ import { User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 
 const UserMenuMobile = ({ onItemClick }) => {
-  const { user, signOut, role } = useAuth();
+  const { profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const userName = user?.user_metadata?.full_name || user?.user_metadata?.name;
-  const userImage = user?.user_metadata?.avatar_url;
+  const userName = profile?.full_name;
+  const userImage = profile?.avatar_url;
+  const userRole = profile?.role;
+
   const handleLogout = async () => {
     await signOut();
     if (onItemClick) onItemClick();
@@ -30,7 +32,7 @@ const UserMenuMobile = ({ onItemClick }) => {
             {userName}
           </div>
           <div className="text-xs text-gray-500 line-clamp-1">
-            {role || "Usuario"}
+            {userRole || "Usuario"}
           </div>
         </div>
       </div>

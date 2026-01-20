@@ -111,6 +111,7 @@ export const signOut = async () => {
 
 // Obtener sesión actual
 export const getSession = async () => {
+  // console.log("--------------OBTENIENDO SESSION");
   const {
     data: { session },
     error,
@@ -122,6 +123,7 @@ export const getSession = async () => {
 // Suscribirse a cambios en la autenticación
 export const onAuthStateChange = (callback) => {
   return supabase.auth.onAuthStateChange((_event, session) => {
+    // console.log("Auth event:", _event);
     callback(session);
   });
 };

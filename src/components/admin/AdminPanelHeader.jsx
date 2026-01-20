@@ -1,7 +1,6 @@
 import { Search, Bell, User, ChevronDown, Sun, Moon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useRole } from "../../contexts/RoleContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 
@@ -14,8 +13,7 @@ const AdminPanelHeader = ({
 }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { isDark, toggleDarkMode } = useTheme();
-  const { userRole } = useRole();
-  const { signOut } = useAuth();
+  const { signOut, profile } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -105,7 +103,7 @@ const AdminPanelHeader = ({
                   isDark ? "text-secondary-light" : "text-gray-800"
                 }`}
               >
-                {userRole}
+                {profile?.role}
               </span>
               <ChevronDown
                 className={`h-4 w-4 text-gray-500 transition-transform ${

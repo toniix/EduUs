@@ -5,12 +5,12 @@ import InlineLoader from "../components/ui/LoadingSpinner";
 
 const PublicRoute = ({ children }) => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { profile, loading: authLoading } = useAuth();
 
   useEffect(() => {
     if (authLoading) return;
 
-    if (user) {
+    if (profile) {
       // Obtener la URL guardada o usar "/" como fallback
       const redirectTo = sessionStorage.getItem("redirectAfterLogin") || "/";
 
@@ -20,7 +20,7 @@ const PublicRoute = ({ children }) => {
       // Redirigir
       navigate(redirectTo, { replace: true });
     }
-  }, [user, authLoading, navigate]);
+  }, [profile, authLoading, navigate]);
 
   // Mostrar loading mientras se cargan los datos
   if (authLoading) {
@@ -28,7 +28,7 @@ const PublicRoute = ({ children }) => {
   }
 
   // Solo mostrar el contenido si no hay usuario autenticado
-  return !user ? children : null;
+  return !profile ? children : null;
 };
 
 export default PublicRoute;
