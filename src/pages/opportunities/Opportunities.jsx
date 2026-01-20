@@ -9,7 +9,7 @@ import NotFoundOpportunities from "../../components/opportunities/NotFoundOpport
 import { useOpportunities } from "../../hooks/useOpportunities";
 import { X } from "lucide-react";
 
-const ITEMS_PER_PAGE = 9;
+const ITEMS_PER_PAGE = 12;
 
 const Opportunities = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,13 +62,13 @@ const Opportunities = () => {
         opp.title.toLowerCase().includes(searchLower) ||
         opp.description.toLowerCase().includes(searchLower) ||
         opp.location.toLowerCase().includes(searchLower) ||
-        opp.tags?.some((tag) => tag.name.toLowerCase().includes(searchLower))
+        opp.tags?.some((tag) => tag.name.toLowerCase().includes(searchLower)),
     );
   }, []);
 
   const filteredOpportunities = useMemo(
     () => searchOpportunities(searchTerm, allOpportunities),
-    [searchTerm, allOpportunities, searchOpportunities]
+    [searchTerm, allOpportunities, searchOpportunities],
   );
 
   // Determinar si estamos en modo búsqueda
@@ -87,7 +87,7 @@ const Opportunities = () => {
   // Calcular páginas para vista normal
   const totalPages = useMemo(
     () => Math.ceil(allOpportunities.length / ITEMS_PER_PAGE),
-    [allOpportunities.length]
+    [allOpportunities.length],
   );
 
   // Handlers
@@ -107,7 +107,7 @@ const Opportunities = () => {
       updateFilters(newFilters);
       setCurrentPage(1);
     },
-    [updateFilters]
+    [updateFilters],
   );
 
   const handleClearFilters = useCallback(() => {

@@ -23,7 +23,7 @@ class OpportunitiesService {
         category:categories(id, name),
         creator:profiles!opportunities_created_by_fkey(id, full_name),
         opportunity_tags(tag:tags(id, name))`,
-        { count: "exact" }
+        { count: "exact" },
       );
 
       const exactFilters = {
@@ -52,15 +52,15 @@ class OpportunitiesService {
       if (error) throw error;
 
       const transformedData = this.transformOpportunityData(data || []);
+      const sortedData = this.sortByDeadline(transformedData);
 
       return {
-        data: transformedData,
+        data: sortedData,
         total: count || 0,
         page,
         totalPages: Math.ceil((count || 0) / limit),
         limit,
       };
-      console.log(data);
     } catch (error) {
       console.error("Error fetching opportunities with filters:", error);
       throw error;
@@ -84,7 +84,7 @@ class OpportunitiesService {
           `*,
         category:categories(id, name),
         creator:profiles!opportunities_created_by_fkey(id, full_name),
-        opportunity_tags(tag:tags(id, name))`
+        opportunity_tags(tag:tags(id, name))`,
         )
         .order("created_at", { ascending: false });
 
@@ -93,7 +93,8 @@ class OpportunitiesService {
       }
 
       // Transformar los datos para aplanar las relaciones many-to-many
-      return this.transformOpportunityData(data || []);
+      const transformedData = this.transformOpportunityData(data || []);
+      return this.sortByDeadline(transformedData);
     } catch (error) {
       console.error("Error in getAllOpportunities:", error);
       throw error;
@@ -126,7 +127,7 @@ class OpportunitiesService {
               name
             )
           )
-        `
+        `,
         )
         .eq("id", id)
         .single();
@@ -175,7 +176,7 @@ class OpportunitiesService {
   async searchOpportunities(searchTerm, filters = {}, pagination = {}) {
     return this.getOpportunities(
       { ...filters, search: searchTerm },
-      pagination
+      pagination,
     );
   }
 
@@ -263,7 +264,7 @@ class OpportunitiesService {
               color
             )
           )
-        `
+        `,
         )
         .eq("status", "active")
         .order("created_at", { ascending: false })
@@ -271,11 +272,12 @@ class OpportunitiesService {
 
       if (error) {
         throw new Error(
-          `Error fetching recent opportunities: ${error.message}`
+          `Error fetching recent opportunities: ${error.message}`,
         );
       }
 
-      return this.transformOpportunityData(data || []);
+      const transformedData = this.transformOpportunityData(data || []);
+      return this.sortByDeadline(transformedData);
     } catch (error) {
       console.error("Error in getRecentOpportunities:", error);
       throw error;
@@ -361,6 +363,39 @@ class OpportunitiesService {
       // Removemos la relación intermedia ya que ya tenemos los tags
       opportunity_tags: undefined,
     };
+  }
+
+  /**
+   * Ordena oportunidades por deadline (activas primero, vencidas después)
+   * Las activas se ordenan por fecha más cercana primero
+   * Las vencidas se ordenan por fecha más reciente primero
+   * @param {Array} opportunities - Array de oportunidades a ordenar
+   * @returns {Array} Array ordenado
+   */
+  sortByDeadline(opportunities) {
+    const now = new Date();
+
+    const active = [];
+    const expired = [];
+
+    // Separar activas de vencidas
+    opportunities.forEach((opp) => {
+      const deadline = new Date(opp.deadline);
+      if (deadline >= now) {
+        active.push(opp);
+      } else {
+        expired.push(opp);
+      }
+    });
+
+    // Ordenar activas por fecha más cercana (ascending)
+    active.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+    // Ordenar vencidas por fecha más reciente (descending)
+    expired.sort((a, b) => new Date(b.deadline) - new Date(a.deadline));
+
+    // Combinar: activas primero, vencidas después
+    return [...active, ...expired];
   }
 }
 

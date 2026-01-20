@@ -1,7 +1,8 @@
-import { Calendar, MapPin, Globe } from "lucide-react";
+import { Calendar, MapPin, Globe, CheckCircle, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-import { formatDate } from "../../utils/formatDate";
+import { formatDate, isDateInPast } from "../../utils/formatDate";
 import { typeConfig, modalityConfig } from "../../utils/opportunity";
+import { useMemo } from "react";
 
 export default function OpportunityCard({ opportunity }) {
   const {
@@ -17,6 +18,10 @@ export default function OpportunityCard({ opportunity }) {
     category,
   } = opportunity;
 
+  const isFinished = useMemo(() => {
+    return deadline ? isDateInPast(new Date(deadline)) : false;
+  }, [deadline]);
+
   // Obtener la información del tipo basada en el nombre de la categoría
   const categoryName = category?.name?.toLowerCase() || "";
   const typeInfo = typeConfig[categoryName] || {
@@ -28,6 +33,7 @@ export default function OpportunityCard({ opportunity }) {
   const typeKey =
     Object.keys(typeConfig).find((key) => categoryName.includes(key)) || "";
   const matchedType = typeConfig[typeKey] || typeInfo;
+
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
       <div className="relative h-40 w-full">
@@ -44,6 +50,30 @@ export default function OpportunityCard({ opportunity }) {
           >
             {matchedType.label || categoryName || "Oportunidad"}
           </span>
+        </div>
+
+        {/* Status Badge */}
+        <div className="absolute top-3 right-3">
+          <div
+            className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 ${
+              // Mejor opción
+              isFinished
+                ? "bg-slate-600 text-white"
+                : "bg-emerald-500 text-white"
+            } shadow-md`}
+          >
+            {isFinished ? (
+              <>
+                <CheckCircle className="h-3.5 w-3.5" />
+                <span>FINALIZADO</span>
+              </>
+            ) : (
+              <>
+                <Clock className="h-3.5 w-3.5" />
+                <span>ACTIVO</span>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -96,7 +126,7 @@ export default function OpportunityCard({ opportunity }) {
 
         <Link
           to={`/edutracker/oportunidad/${id}`}
-          className="block w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-opacity-80 transition-colors text-center"
+          className="block w-full px-4 py-3 bg-primary text-white rounded-lg font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 text-center"
         >
           Ver detalles
         </Link>
