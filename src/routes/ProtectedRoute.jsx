@@ -3,13 +3,13 @@ import { useAuth } from "../contexts/AuthContext";
 import InlineLoader from "../components/ui/LoadingSpinner";
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { profile, loading } = useAuth();
 
   if (loading) {
     return <InlineLoader />;
   }
 
-  if (!user) {
+  if (!profile) {
     return <Navigate to="/login" />;
   }
 

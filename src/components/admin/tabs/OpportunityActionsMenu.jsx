@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useContext } from "react";
 import ModalConfirmacion from "../../ModalConfirmacion";
 import { deleteOpportunity } from "../../../services/opportunityService";
@@ -14,7 +13,7 @@ const OpportunityActionsMenu = ({
   setSelectedOpportunity,
   fetchOpportunities,
 }) => {
-  const { role, user } = useAuth();
+  const { profile } = useAuth();
   const { isDark } = useContext(ThemeContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [opportunityToDelete, setOpportunityToDelete] = useState(null);
@@ -45,7 +44,10 @@ const OpportunityActionsMenu = ({
     try {
       setIsDeleting(true);
 
-      const result = await deleteOpportunity(opportunityToDelete.id, role);
+      const result = await deleteOpportunity(
+        opportunityToDelete.id,
+        profile?.role,
+      );
 
       if (result && result.success) {
         toast.success("Oportunidad eliminada correctamente");
@@ -89,7 +91,7 @@ const OpportunityActionsMenu = ({
     }`;
   };
 
-  const isOwner = user.id === opportunity.created_by;
+  const isOwner = profile?.id === opportunity.created_by;
   const editButtonClasses = getButtonClasses(!isOwner);
   const deleteButtonClasses = getButtonClasses(isDeleting, true);
 

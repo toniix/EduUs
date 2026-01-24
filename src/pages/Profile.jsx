@@ -7,13 +7,15 @@ import SectionLoader from "../components/ui/LoadingSpinner";
 import { getRoleColor } from "../utils/getRoleColor";
 
 const Profile = () => {
-  const { user, role: userRole, loading, profile } = useAuth();
+  const { profile, loading } = useAuth();
+  // console.log(profile);
   // const [editing, setEditing] = useState(false);
   // const [form, setForm] = useState({ full_name: "", email: "" });
   const navigate = useNavigate();
 
-  const userName = user?.user_metadata?.full_name || profile?.full_name;
-  const userEmail = user?.email || profile?.email;
+  const userName = profile?.full_name;
+  const userEmail = profile?.email;
+  const userRole = profile?.role;
 
   const handleChange = (e) => {
     // setForm({ ...form, [e.target.name]: e.target.value });
@@ -37,7 +39,7 @@ const Profile = () => {
     return <SectionLoader message="Cargando datos de tu perfil..." />;
   }
 
-  const roleColor = getRoleColor(userRole);
+  const roleColor = getRoleColor(profile?.role);
   return (
     <div className="min-h-screen bg-light pt-16">
       <div className="max-w-xl mx-auto bg-white rounded-lg shadow-lg p-8 mt-8 relative">

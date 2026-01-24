@@ -9,8 +9,9 @@ const RoleGuard = ({
   fallback = null,
   inverse = false,
 }) => {
-  const { role, loading } = useAuth();
+  const { profile, loading } = useAuth();
 
+  const role = profile?.role;
   // Verificar si el usuario tiene acceso basado en el rol
   // console.log("verificando permisos...");
 

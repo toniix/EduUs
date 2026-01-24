@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { profile, loading: authLoading } = useAuth();
   const [localLoading, setLocalLoading] = useState(true);
   const processedRef = useRef(false);
 
@@ -23,7 +23,7 @@ const AuthCallback = () => {
       // console.log("Procesando callback con AuthContext");
       // console.log("Usuario:", user);
 
-      if (user) {
+      if (profile) {
         // Usuario autenticado exitosamente
         const redirectUrl = sessionStorage.getItem("redirectAfterLogin");
         // console.log("URL guardada:", redirectUrl);
@@ -46,8 +46,7 @@ const AuthCallback = () => {
     };
 
     handleCallback();
-  }, [user, authLoading, navigate]);
-
+  }, [profile, authLoading, navigate]);
   if (authLoading || localLoading) {
     return <InlineLoader />;
   }
