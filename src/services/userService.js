@@ -53,7 +53,7 @@ export const updateLastLogin = async (user) => {
     // Usar la función centralizada para formatear la fecha en zona horaria de Perú
     const formattedDate = formatDatePeruTime(user.last_sign_in_at);
 
-    console.log("Fecha formateada para last_login:", formattedDate);
+    // console.log("Fecha formateada para last_login:", formattedDate);
 
     if (!formattedDate) {
       console.error("❌ No se pudo formatear la fecha de last_login");
