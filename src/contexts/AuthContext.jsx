@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     // Función para procesar autenticación completa (primera carga)
     const handleInitialAuth = async (session) => {
       const currentUser = session?.user ?? null;
-      console.log(session);
+      // console.log(session);
       if (!isMounted) return;
 
       if (!currentUser?.email_confirmed_at) {

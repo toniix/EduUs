@@ -34,7 +34,7 @@ const TestimonialsSection = () => {
             loop={true}
             autoplay={{
               delay: 4000,
-              disableOnInteraction: false,
+              disableOnInteraction: true,
             }}
             pagination={{
               clickable: true,

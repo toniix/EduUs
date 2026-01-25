@@ -56,6 +56,7 @@ const Footer = () => {
                 src={logo}
                 alt="EDU-US"
                 className="h-10 w-auto object-contain"
+                loading="lazy"
               />
             </div>
 

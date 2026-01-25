@@ -32,7 +32,7 @@ export const formatDatePeruTime = (dateString) => {
     });
 
     const parts = formatter.formatToParts(date);
-    console.log(parts);
+    // console.log(parts);
     const values = Object.fromEntries(parts.map((p) => [p.type, p.value]));
 
     return `${values.year}-${values.month}-${values.day} ${values.hour}:${values.minute}:${values.second}`;

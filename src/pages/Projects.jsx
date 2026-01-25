@@ -227,7 +227,7 @@ const ProjectsSection = () => {
                         navigation
                         pagination={{
                           clickable: true,
-                          dynamicBullets: true,
+                          dynamicBullets: false,
                         }}
                         style={{
                           "--swiper-pagination-bottom": "5px",
@@ -237,7 +237,7 @@ const ProjectsSection = () => {
                         }}
                         autoplay={{
                           delay: 4000,
-                          disableOnInteraction: false,
+                          disableOnInteraction: true,
                         }}
                         className="project-swiper h-full"
                       >
