@@ -28,7 +28,7 @@ import AuthCallback from "./routes/AuthCallback";
 function App() {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* <Analytics /> */}
+      <Analytics />
       <AuthProvider>
         <RoleProvider>
           <OpportunitiesProvider>
@@ -80,7 +80,6 @@ function App() {
                   <Route
                     path="/adminpanel"
                     element={
-                      // <ThemeProvider>
                       <ProtectedRoute>
                         <RoleGuard
                           requiredRoles={["admin", "editor"]}
@@ -89,14 +88,12 @@ function App() {
                           <AdminPanel />
                         </RoleGuard>
                       </ProtectedRoute>
-                      // </ThemeProvider>
                     }
                   />
 
                   <Route path="*" element={<NotFound />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
                 </Routes>
-                {/* </main> */}
 
                 <Toaster position="bottom-right" />
               </Router>
