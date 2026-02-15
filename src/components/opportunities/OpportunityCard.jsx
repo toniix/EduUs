@@ -1,8 +1,16 @@
-import { Calendar, MapPin, Globe, CheckCircle, Clock } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Globe,
+  CheckCircle,
+  Clock,
+  Share2,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatDate, isDateInPast } from "../../utils/formatDate";
 import { typeConfig, modalityConfig } from "../../utils/opportunity";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import ShareOpportunity from "./ShareOpportunity";
 
 export default function OpportunityCard({ opportunity }) {
   const {
@@ -33,6 +41,16 @@ export default function OpportunityCard({ opportunity }) {
   const typeKey =
     Object.keys(typeConfig).find((key) => categoryName.includes(key)) || "";
   const matchedType = typeConfig[typeKey] || typeInfo;
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openShareModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeShareModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
@@ -113,24 +131,29 @@ export default function OpportunityCard({ opportunity }) {
           )}
         </div>
 
-        {/* <div className="flex flex-wrap gap-1 mb-4">
-          {tags.slice(0, 3).map((tag, index) => (
-            <span
-              key={index}
-              className="px-2 py-1 text-xs rounded-full border border-gray-200 text-gray-600"
-            >
-              {tag.name}
-            </span>
-          ))}
-        </div> */}
+        <div className="flex gap-3">
+          <Link
+            to={`/edutracker/oportunidad/${id}`}
+            className="flex-1 flex items-center justify-center px-4 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:bg-primary/90 active:scale-[0.98] transition-all duration-300"
+          >
+            Ver detalles
+          </Link>
 
-        <Link
-          to={`/edutracker/oportunidad/${id}`}
-          className="block w-full px-4 py-3 bg-primary text-white rounded-lg font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 text-center"
-        >
-          Ver detalles
-        </Link>
+          <button
+            onClick={openShareModal}
+            className="flex items-center justify-center px-4 py-3 bg-white border-2 border-primary text-primary rounded-xl font-semibold shadow-md hover:shadow-lg hover:bg-primary/5"
+          >
+            <Share2 className="w-5 h-5" />
+          </button>
+        </div>
       </div>
+      {/* Modal de compartir */}
+      {isModalOpen && (
+        <ShareOpportunity
+          opportunity={opportunity}
+          closeModal={closeShareModal}
+        />
+      )}
     </div>
   );
 }

@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 const ShareOpportunity = ({ opportunity, closeModal }) => {
   const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [shareMessage, setShareMessage] = useState(
-    "¡Mira esta increíble oportunidad que encontré!"
+    "¡Mira esta increíble oportunidad que encontré!",
   );
 
   const selectSocialNetwork = (network) => {
@@ -25,49 +25,45 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
 
     const message =
       shareMessage || "¡Mira esta increíble oportunidad que encontré!";
-    let shareUrl = "";
-    const currentUrl = encodeURIComponent(window.location.href);
 
-    const title = "Oportunidad Educativa";
+    const opportunityUrl = `${window.location.origin}/edutracker/oportunidad/${opportunity.id}`;
+    const encodedUrl = encodeURIComponent(opportunityUrl);
+
+    let shareUrl = "";
+
+    const title = opportunity.title;
     const hashtags = "educacion,oportunidades,aprendizaje";
 
     switch (selectedNetwork) {
       case "facebook":
-        shareUrl = `https://www.facebook.com/sharer.php?u=${currentUrl}`;
+        shareUrl = `https://www.facebook.com/sharer.php?u=${encodedUrl}`;
         break;
+
       case "twitter":
         shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          message
-        )}&url=${currentUrl}&hashtags=${encodeURIComponent(hashtags)}`;
+          message,
+        )}&url=${encodedUrl}&hashtags=${encodeURIComponent(hashtags)}`;
         break;
 
       case "whatsapp":
         shareUrl = `https://wa.me/?text=${encodeURIComponent(
-          `${message} ${window.location.href}`
-        )}`;
-        break;
-
-      case "telegram":
-        shareUrl = `https://t.me/share/url?url=${currentUrl}&text=${encodeURIComponent(
-          `${message}\n\n${window.location.href}`
+          `${message} ${opportunityUrl}`,
         )}`;
         break;
 
       case "linkedin":
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}&title=${encodeURIComponent(
-          title
-        )}&summary=${encodeURIComponent(message)}&source=EduUs`;
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
         break;
 
       case "instagram":
-        navigator.clipboard.writeText(window.location.href).then(() => {
+        navigator.clipboard.writeText(opportunityUrl).then(() => {
           alert(
-            "El enlace ha sido copiado. Puedes pegarlo en tu historia de Instagram."
+            "El enlace ha sido copiado. Puedes pegarlo en tu historia de Instagram.",
           );
         });
-        break;
+        return;
+
       default:
-        alert("Red social no soportada.");
         return;
     }
 
@@ -90,7 +86,7 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
     >
       <div
         className={`w-12 h-12 rounded-2xl flex justify-center items-center text-white mb-2 shadow-md transition-all ${getSocialColor(
-          network
+          network,
         )} ${
           selectedNetwork === network
             ? "ring-2 ring-offset-2 ring-[#f5ba3c]"
