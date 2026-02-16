@@ -282,6 +282,38 @@ const OpportunityForm = ({
                 )}
               </div>
             </div>
+
+            {/* Quienes pueden postular */}
+            <div className="mt-12 pt-8 border-t border-primary/20">
+              <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                ¿Quienes pueden postular?
+              </h3>
+              <div className="grid grid-cols-1 gap-8">
+                <div>
+                  <label
+                    htmlFor="audience"
+                    className="block text-sm font-semibold text-dark mb-1"
+                  >
+                    Audiencia <span className="text-primary">*</span>
+                  </label>
+                  <textarea
+                    name="audience"
+                    id="audience"
+                    rows="4"
+                    className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400 resize-none"
+                    placeholder="Ej: Estudiantes universitarios de últimos semestres, profesionales con experiencia en tecnología, etc."
+                    value={formData.audience || ""}
+                    onChange={handleChange}
+                  />
+                  {errors?.audience && (
+                    <div className="text-xs text-red-600 mt-1 font-semibold">
+                      {errors.audience}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* Contacto de la oportunidad */}
             <div className="mt-12 pt-8 border-t border-primary/20">
               <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">

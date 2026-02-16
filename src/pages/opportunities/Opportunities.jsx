@@ -8,6 +8,7 @@ import InlineLoading from "../../components/ui/LoadingSpinner";
 import NotFoundOpportunities from "../../components/opportunities/NotFoundOpportunities";
 import { useOpportunities } from "../../hooks/useOpportunities";
 import { X } from "lucide-react";
+import SEO from "../../components/SEO";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -167,173 +168,179 @@ const Opportunities = () => {
   }
 
   return (
-    <section className="min-h-screen bg-secondary/10">
-      <section className="container mx-auto px-4 py-8">
-        {/* Header Section */}
-        <header className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-primary mb-3 bg-gradient-to-r from-primary to-blue-600 text-transparent bg-clip-text">
-            Edutracker: oportunidades seguras en un solo lugar.
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-6">
-            Explora becas, talleres y experiencias únicas para tu futuro.
-          </p>
-        </header>
+    <>
+      <SEO
+        title="Edutracker: oportunidades seguras en un solo lugar"
+        description="Explora becas, talleres y experiencias únicas para tu futuro."
+      />
+      <section className="min-h-screen bg-secondary/10">
+        <section className="container mx-auto px-4 py-8">
+          {/* Header Section */}
+          <header className="mb-8 text-center">
+            <h1 className="text-4xl font-bold text-primary mb-3 bg-gradient-to-r from-primary to-blue-600 text-transparent bg-clip-text">
+              Edutracker: oportunidades seguras en un solo lugar.
+            </h1>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-6">
+              Explora becas, talleres y experiencias únicas para tu futuro.
+            </p>
+          </header>
 
-        {/* Barra de búsqueda con contador */}
-        <div className="relative mb-6 max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
-            <div className="w-full md:flex-1">
-              <SearchHeader
-                searchTerm={searchTerm}
-                onSearchChange={handleSearch}
-                onClearSearch={() => setSearchTerm("")}
-                loading={loading}
-              />
-            </div>
-
-            {isSearching && (
-              <div className="w-full md:w-auto flex-shrink-0 mt-1 md:mt-0">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5 inline-flex items-center">
-                  <span className="text-secondary text-sm font-medium">
-                    {filteredOpportunities.length} resultado
-                    {filteredOpportunities.length !== 1 ? "s" : ""}
-                    {searchTerm && ` para "${searchTerm}"`}
-                  </span>
-                </div>
+          {/* Barra de búsqueda con contador */}
+          <div className="relative mb-6 max-w-5xl mx-auto">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
+              <div className="w-full md:flex-1">
+                <SearchHeader
+                  searchTerm={searchTerm}
+                  onSearchChange={handleSearch}
+                  onClearSearch={() => setSearchTerm("")}
+                  loading={loading}
+                />
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* Mobile filter dialog */}
-        <div className="lg:hidden mb-6">
-          <button
-            type="button"
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-secundari hover:bg-gray-50"
-            onClick={() => setShowMobileFilters(true)}
-          >
-            Filtros
-          </button>
-        </div>
-
-        {/* Sección de filtros y resultados */}
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filtros - Sticky */}
-          <section className="hidden lg:block lg:w-1/4">
-            <div className="sticky top-24 bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
-              <FiltersComponent
-                onFilterChange={handleFilterChange}
-                filterOptions={filterOptions}
-                clearFilters={clearFilters}
-                localFilters={localFilters}
-                setLocalFilters={setLocalFilters}
-              />
-            </div>
-          </section>
-
-          {/* Mobile Filters */}
-          {showMobileFilters && (
-            <section className="fixed inset-0 z-50 overflow-y-auto lg:hidden">
-              <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div
-                  className="fixed inset-0 bg-secondary-light bg-opacity-75 transition-opacity"
-                  onClick={() => setShowMobileFilters(false)}
-                ></div>
-
-                <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                  <div className="absolute top-0 right-0 pt-4 pr-4">
-                    <button
-                      type="button"
-                      className="bg-secondary rounded-md text-white"
-                      onClick={() => setShowMobileFilters(false)}
-                    >
-                      <X className="h-6 w-6" />
-                    </button>
-                  </div>
-
-                  <div className="mt-6">
-                    <FiltersComponent
-                      onFilterChange={(filters) => {
-                        handleFilterChange(filters);
-                        setShowMobileFilters(false);
-                      }}
-                      filterOptions={filterOptions}
-                      clearFilters={clearFilters}
-                      localFilters={localFilters}
-                      setLocalFilters={setLocalFilters}
-                    />
+              {isSearching && (
+                <div className="w-full md:w-auto flex-shrink-0 mt-1 md:mt-0">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5 inline-flex items-center">
+                    <span className="text-secondary text-sm font-medium">
+                      {filteredOpportunities.length} resultado
+                      {filteredOpportunities.length !== 1 ? "s" : ""}
+                      {searchTerm && ` para "${searchTerm}"`}
+                    </span>
                   </div>
                 </div>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile filter dialog */}
+          <div className="lg:hidden mb-6">
+            <button
+              type="button"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-secundari hover:bg-gray-50"
+              onClick={() => setShowMobileFilters(true)}
+            >
+              Filtros
+            </button>
+          </div>
+
+          {/* Sección de filtros y resultados */}
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Filtros - Sticky */}
+            <section className="hidden lg:block lg:w-1/4">
+              <div className="sticky top-24 bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
+                <FiltersComponent
+                  onFilterChange={handleFilterChange}
+                  filterOptions={filterOptions}
+                  clearFilters={clearFilters}
+                  localFilters={localFilters}
+                  setLocalFilters={setLocalFilters}
+                />
               </div>
             </section>
-          )}
 
-          {/* Contenido Principal */}
-          <main className="flex-1">
-            {loading && allOpportunities.length === 0 ? (
-              <InlineLoading message="Cargando oportunidades..." />
-            ) : (
-              <>
-                {/* Resumen de resultados */}
-                <ResultsSummary
-                  totalCount={totalCount}
-                  filteredCount={displayOpportunities.length}
-                  onClearFilters={handleClearFilters}
-                  hasActiveFilters={
-                    Object.keys(globalFilters).length > 0 || isSearching
-                  }
-                  isSearching={isSearching}
-                  searchTerm={searchTerm}
-                />
+            {/* Mobile Filters */}
+            {showMobileFilters && (
+              <section className="fixed inset-0 z-50 overflow-y-auto lg:hidden">
+                <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                  <div
+                    className="fixed inset-0 bg-secondary-light bg-opacity-75 transition-opacity"
+                    onClick={() => setShowMobileFilters(false)}
+                  ></div>
 
-                {/* Lista de oportunidades */}
-                <section className="mt-6">
-                  {displayOpportunities.length > 0 ? (
-                    <>
-                      <OpportunityList
-                        opportunities={displayOpportunities}
-                        onRetry={refetch}
+                  <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div className="absolute top-0 right-0 pt-4 pr-4">
+                      <button
+                        type="button"
+                        className="bg-secondary rounded-md text-white"
+                        onClick={() => setShowMobileFilters(false)}
+                      >
+                        <X className="h-6 w-6" />
+                      </button>
+                    </div>
+
+                    <div className="mt-6">
+                      <FiltersComponent
+                        onFilterChange={(filters) => {
+                          handleFilterChange(filters);
+                          setShowMobileFilters(false);
+                        }}
+                        filterOptions={filterOptions}
+                        clearFilters={clearFilters}
+                        localFilters={localFilters}
+                        setLocalFilters={setLocalFilters}
                       />
-
-                      {/* Paginación: SOLO mostrar si NO estamos buscando */}
-                      {!isSearching && totalPages > 1 && (
-                        <div className="mt-8">
-                          <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            totalItems={allOpportunities.length}
-                            onPageChange={handlePageChange}
-                            itemsPerPage={ITEMS_PER_PAGE}
-                          />
-                        </div>
-                      )}
-
-                      {/* Mensaje informativo para búsqueda */}
-                      {isSearching && (
-                        <div className="mt-8 text-center">
-                          <p className="text-gray-600 text-sm">
-                            Mostrando todos los resultados de búsqueda (
-                            {filteredOpportunities.length} de{" "}
-                            {allOpportunities.length} oportunidades)
-                          </p>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <NotFoundOpportunities
-                      isSearching={isSearching}
-                      searchTerm={searchTerm}
-                      handleClearFilters={handleClearFilters}
-                      setSearchTerm={setSearchTerm}
-                    />
-                  )}
-                </section>
-              </>
+                    </div>
+                  </div>
+                </div>
+              </section>
             )}
-          </main>
-        </div>
+
+            {/* Contenido Principal */}
+            <main className="flex-1">
+              {loading && allOpportunities.length === 0 ? (
+                <InlineLoading message="Cargando oportunidades..." />
+              ) : (
+                <>
+                  {/* Resumen de resultados */}
+                  <ResultsSummary
+                    totalCount={totalCount}
+                    filteredCount={displayOpportunities.length}
+                    onClearFilters={handleClearFilters}
+                    hasActiveFilters={
+                      Object.keys(globalFilters).length > 0 || isSearching
+                    }
+                    isSearching={isSearching}
+                    searchTerm={searchTerm}
+                  />
+
+                  {/* Lista de oportunidades */}
+                  <section className="mt-6">
+                    {displayOpportunities.length > 0 ? (
+                      <>
+                        <OpportunityList
+                          opportunities={displayOpportunities}
+                          onRetry={refetch}
+                        />
+
+                        {/* Paginación: SOLO mostrar si NO estamos buscando */}
+                        {!isSearching && totalPages > 1 && (
+                          <div className="mt-8">
+                            <Pagination
+                              currentPage={currentPage}
+                              totalPages={totalPages}
+                              totalItems={allOpportunities.length}
+                              onPageChange={handlePageChange}
+                              itemsPerPage={ITEMS_PER_PAGE}
+                            />
+                          </div>
+                        )}
+
+                        {/* Mensaje informativo para búsqueda */}
+                        {isSearching && (
+                          <div className="mt-8 text-center">
+                            <p className="text-gray-600 text-sm">
+                              Mostrando todos los resultados de búsqueda (
+                              {filteredOpportunities.length} de{" "}
+                              {allOpportunities.length} oportunidades)
+                            </p>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <NotFoundOpportunities
+                        isSearching={isSearching}
+                        searchTerm={searchTerm}
+                        handleClearFilters={handleClearFilters}
+                        setSearchTerm={setSearchTerm}
+                      />
+                    )}
+                  </section>
+                </>
+              )}
+            </main>
+          </div>
+        </section>
       </section>
-    </section>
+    </>
   );
 };
 

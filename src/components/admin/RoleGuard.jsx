@@ -28,8 +28,6 @@ const RoleGuard = ({
     return inverse ? !hasRequiredRole : hasRequiredRole;
   }, [role, requiredRoles, inverse]);
 
-  // console.log("hasAccess:", hasAccess);
-
   // Mostrar spinner mientras se carga la autenticación
   if (loading) {
     return <LoadingSpinner message="Verificando permisos..." size="lg" />;

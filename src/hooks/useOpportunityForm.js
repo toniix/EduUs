@@ -13,6 +13,7 @@ const initialState = {
   location: "Nacional",
   deadline: "",
   image_url: "",
+  audience: "",
   contact: { website: "" },
   tags: [],
 };

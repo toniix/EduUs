@@ -15,7 +15,7 @@ export const registerSchema = z
       .max(50, "El nombre no puede exceder 50 caracteres")
       .regex(
         /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
-        "El nombre solo puede contener letras"
+        "El nombre solo puede contener letras",
       ),
 
     email: z.string().email("Correo electrónico inválido").toLowerCase(),
@@ -129,6 +129,9 @@ export const opportunitySchema = z.object({
     }),
   category: z.string().optional(),
   category_id: z.string().min(1, "La categoría es obligatoria"),
+  audience: z
+    .string()
+    .min(1, "El campo 'Quienes pueden postular' es obligatorio."),
   benefits: z.array(z.string()).min(1, "Al menos un beneficio es obligatorio."),
   requirements: z
     .array(z.string())
