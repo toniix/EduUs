@@ -27,6 +27,7 @@ import OpportunityError from "./OpportunityError";
 import OpportunityNotFound from "./OpportunityNotFound";
 import OpportunitySidebar from "./OpportunitySidebar";
 import ShareOpportunity from "./ShareOpportunity";
+import SEO from "../SEO";
 
 const categoryIcons = {
   taller: <BookOpen className="h-5 w-5" />,
@@ -104,8 +105,10 @@ const OpportunityDetail = () => {
     benefits,
     contact,
     modality,
+    audience,
   } = opportunity;
 
+  // console.log("oportunity:", opportunity);
   // Supón que data.requirements viene como un string JSON
   const parsedRequirements =
     typeof requirements === "string" ? JSON.parse(requirements) : requirements;
@@ -128,59 +131,66 @@ const OpportunityDetail = () => {
     : null;
 
   return (
-    <div className="min-h-screen bg-secondary/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6">
-          <Link
-            to="/edutracker"
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary hover:text-white border border-primary hover:bg-primary rounded-lg transition-all duration-200 ease-in-out group"
-          >
-            <ChevronLeft className="h-4 w-4 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200" />
-            <span>Volver a oportunidades</span>
-          </Link>
-        </nav>
+    <>
+      <SEO
+        title={`${opportunity.title} en ${opportunity.country} – Postulación abierta | EDU-US`}
+        description={`Postula a ${opportunity.title} en ${opportunity.country}. Conoce requisitos, beneficios y fecha límite. Convocatoria abierta.`}
+      />
+      <div className="min-h-screen bg-secondary/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Breadcrumb */}
+          <nav className="mb-6">
+            <Link
+              to="/edutracker"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary hover:text-white border border-primary hover:bg-primary rounded-lg transition-all duration-200 ease-in-out group"
+            >
+              <ChevronLeft className="h-4 w-4 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200" />
+              <span>Volver a oportunidades</span>
+            </Link>
+          </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contenido Principal */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Header Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              {/* Imagen */}
-              {image_url && (
-                <div className="h-64 overflow-hidden">
-                  <img
-                    src={image_url}
-                    alt={title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Contenido Principal */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Header Card */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                {/* Imagen */}
+                {image_url && (
+                  <div className="h-64 overflow-hidden">
+                    <img
+                      src={image_url}
+                      alt={title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
 
-              <div className="p-6">
-                {/* Status y Tipo */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusConfig.bg} ${statusConfig.text}`}
-                    >
-                      <StatusIcon className="h-4 w-4 mr-1" />
-                      {status === "active"
-                        ? "Activa"
-                        : status === "inactive"
-                        ? "Inactiva"
-                        : "Inactiva"}
-                    </div>
-
-                    {category && (
-                      <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {categoryIcons[category.name]}
-                        <span className="ml-1 capitalize">{category.name}</span>
-                      </div>
-                    )}
-                    {modality && (
+                <div className="p-6">
+                  {/* Status y Tipo */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
                       <div
-                        className={`
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusConfig.bg} ${statusConfig.text}`}
+                      >
+                        <StatusIcon className="h-4 w-4 mr-1" />
+                        {status === "active"
+                          ? "Activa"
+                          : status === "inactive"
+                            ? "Inactiva"
+                            : "Inactiva"}
+                      </div>
+
+                      {category && (
+                        <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                          {categoryIcons[category.name]}
+                          <span className="ml-1 capitalize">
+                            {category.name}
+                          </span>
+                        </div>
+                      )}
+                      {modality && (
+                        <div
+                          className={`
                           inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border
                           ${
                             modalityStyles[modality] ||
@@ -188,15 +198,15 @@ const OpportunityDetail = () => {
                           }
                           transition-colors duration-200 hover:shadow-sm
                         `}
-                      >
-                        {modalityIcons[modality]}
-                        <span className="ml-1 capitalize">{modality}</span>
-                      </div>
-                    )}
-                  </div>
+                        >
+                          {modalityIcons[modality]}
+                          <span className="ml-1 capitalize">{modality}</span>
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="flex items-center space-x-2">
-                    {/* <button
+                    <div className="flex items-center space-x-2">
+                      {/* <button
                       onClick={handleBookmark}
                       className={`p-2 rounded-full transition-colors ${
                         isBookmarked
@@ -210,132 +220,143 @@ const OpportunityDetail = () => {
                         }`}
                       />
                     </button> */}
-                    <button
-                      onClick={openShareModal}
-                      className="p-2 rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 transition-colors"
-                    >
-                      <Share2 className="h-5 w-5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Título */}
-                <h1 className="text-3xl font-bold text-gray-900 mb-4 leading-tight">
-                  {title}
-                </h1>
-
-                {/* Información básica */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                  {organization && (
-                    <div className="flex items-center">
-                      <Building className="h-4 w-4 mr-2 text-gray-400" />
-                      <span>{organization}</span>
-                    </div>
-                  )}
-
-                  {location && (
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-                      <span>{location}</span>
-                    </div>
-                  )}
-
-                  {country && (
-                    <div className="flex items-center">
-                      <Globe className="h-4 w-4 mr-2 text-gray-400" />
-                      <span>{country}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Tags */}
-                {tags && tags.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {tags.map((tag) => (
-                      <span
-                        key={tag.id}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                        style={{
-                          backgroundColor: tag.color
-                            ? `${tag.color}20`
-                            : "#f3f4f6",
-                          color: tag.color || "#6b7280",
-                        }}
+                      <button
+                        onClick={openShareModal}
+                        className="p-2 rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 transition-colors"
                       >
-                        {tag.name}
-                      </span>
-                    ))}
+                        <Share2 className="h-5 w-5" />
+                      </button>
+                    </div>
                   </div>
-                )}
+
+                  {/* Título */}
+                  <h1 className="text-3xl font-bold text-gray-900 mb-4 leading-tight">
+                    {title}
+                  </h1>
+
+                  {/* Información básica */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    {organization && (
+                      <div className="flex items-center">
+                        <Building className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>{organization}</span>
+                      </div>
+                    )}
+
+                    {location && (
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>{location}</span>
+                      </div>
+                    )}
+
+                    {country && (
+                      <div className="flex items-center">
+                        <Globe className="h-4 w-4 mr-2 text-gray-400" />
+                        <span>{country}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tags */}
+                  {tags && tags.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {tags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                          style={{
+                            backgroundColor: tag.color
+                              ? `${tag.color}20`
+                              : "#f3f4f6",
+                            color: tag.color || "#6b7280",
+                          }}
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
+
+              {/* Descripción */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  Descripción
+                </h2>
+                <div className="prose prose-gray max-w-none">
+                  <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                    {description}
+                  </p>
+                </div>
+              </div>
+
+              {/* ¿Quiénes pueden postular? */}
+              {audience && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    ¿Quiénes pueden postular?
+                  </h2>
+                  <p className="text-gray-600 leading-relaxed">{audience}</p>
+                </div>
+              )}
+
+              {/* Requisitos */}
+              {parsedRequirements && parsedRequirements.length > 0 && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                    <CheckCircle className="h-5 w-5 mr-2 text-green-500" />
+                    Requisitos
+                  </h2>
+                  <ul className="space-y-2">
+                    {parsedRequirements.map((req, index) => (
+                      <li key={index} className="flex items-start">
+                        <div className="h-1.5 w-1.5 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                        <span className="text-gray-600">{req}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Beneficios */}
+              {parsedBenefits && parsedBenefits.length > 0 && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
+                    Beneficios
+                  </h2>
+                  <ul className="space-y-2">
+                    {parsedBenefits.map((benefit, index) => (
+                      <li key={index} className="flex items-start">
+                        <div className="h-1.5 w-1.5 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                        <span className="text-gray-600">{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
-            {/* Descripción */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Descripción
-              </h2>
-              <div className="prose prose-gray max-w-none">
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-                  {description}
-                </p>
-              </div>
-            </div>
-
-            {/* Requisitos */}
-            {parsedRequirements && parsedRequirements.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <CheckCircle className="h-5 w-5 mr-2 text-green-500" />
-                  Requisitos
-                </h2>
-                <ul className="space-y-2">
-                  {parsedRequirements.map((req, index) => (
-                    <li key={index} className="flex items-start">
-                      <div className="h-1.5 w-1.5 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                      <span className="text-gray-600">{req}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Beneficios */}
-            {parsedBenefits && parsedBenefits.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                  Beneficios
-                </h2>
-                <ul className="space-y-2">
-                  {parsedBenefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start">
-                      <div className="h-1.5 w-1.5 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                      <span className="text-gray-600">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <OpportunitySidebar
+              deadline={deadline}
+              contact={contact}
+              opportunityId={opportunityId}
+              isExpired={isExpired}
+              daysUntilDeadline={daysUntilDeadline}
+            />
           </div>
-
-          <OpportunitySidebar
-            deadline={deadline}
-            contact={contact}
-            opportunityId={opportunityId}
-            isExpired={isExpired}
-            daysUntilDeadline={daysUntilDeadline}
-          />
         </div>
+        {/* Modal de compartir */}
+        {isModalOpen && (
+          <ShareOpportunity
+            opportunity={opportunity}
+            closeModal={closeShareModal}
+          />
+        )}
       </div>
-      {/* Modal de compartir */}
-      {isModalOpen && (
-        <ShareOpportunity
-          opportunity={opportunity}
-          closeModal={closeShareModal}
-        />
-      )}
-    </div>
+    </>
   );
 };
 

@@ -11,9 +11,9 @@ export default function UserActionsMenu({
   onUserUpdated,
   onUserDeleted,
 }) {
-  const { user: currentUser } = useAuth();
+  const { profile: currentUser } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState(null); // "role" o "delete"
+  const [modalType, setModalType] = useState(null);
   const [selectedRole, setSelectedRole] = useState(user.role);
   const [loading, setLoading] = useState(false);
 

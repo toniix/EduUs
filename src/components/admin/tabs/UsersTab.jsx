@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import UserActionsMenu from "./UserActionsMenu";
-import { useRole } from "../../../contexts/RoleContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { ThemeContext } from "../../../contexts/ThemeContext";
 import InlineLoader from "../../ui/LoadingSpinner";
 import Pagination from "../../Pagination2";
@@ -16,7 +16,8 @@ export default function UsersTab({
   onUserDelete,
   loading = false,
 }) {
-  const { userRole } = useRole();
+  const { profile } = useAuth();
+  const userRole = profile?.role;
   const { isDark } = useContext(ThemeContext);
   if (userRole !== "admin") {
     return (
@@ -101,7 +102,7 @@ export default function UsersTab({
                   >
                     {header}
                   </th>
-                )
+                ),
               )}
             </tr>
           </thead>
@@ -123,12 +124,12 @@ export default function UsersTab({
                   {roleFilter === "all"
                     ? "No hay usuarios"
                     : roleFilter === "admin"
-                    ? "No hay usuarios administradores"
-                    : roleFilter === "editor"
-                    ? "No hay usuarios editores"
-                    : roleFilter === "user"
-                    ? "No hay usuarios estándar"
-                    : "No hay usuarios para este filtro"}
+                      ? "No hay usuarios administradores"
+                      : roleFilter === "editor"
+                        ? "No hay usuarios editores"
+                        : roleFilter === "user"
+                          ? "No hay usuarios estándar"
+                          : "No hay usuarios para este filtro"}
                 </td>
               </tr>
             ) : (
