@@ -15,7 +15,8 @@ const CategoriesTab = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
   const { isDark } = useContext(ThemeContext);
-  const { role } = useAuth();
+  const { profile } = useAuth();
+  const role = profile?.role;
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -59,24 +60,25 @@ const CategoriesTab = () => {
         const updatedCategory = await categoryService.updateCategory(
           currentCategory.id,
           formData,
-          role
+          role,
         );
         setCategories((prev) =>
           prev.map((cat) =>
-            cat.id === currentCategory.id ? updatedCategory : cat
-          )
+            cat.id === currentCategory.id ? updatedCategory : cat,
+          ),
         );
         toast.success("Categoría actualizada con éxito");
       } else {
         const newCategory = await categoryService.createCategory(
           formData,
-          role
+          role,
         );
         setCategories((prev) => [...prev, newCategory]);
         toast.success("Categoría creada con éxito");
       }
       resetForm();
     } catch (err) {
+      console.error("Error creating category:", err);
       toast.error("Ocurrió un error. Por favor, inténtalo de nuevo.");
     } finally {
       setIsSubmitting(false);
