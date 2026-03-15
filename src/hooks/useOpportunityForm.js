@@ -16,6 +16,8 @@ const initialState = {
   audience: "",
   contact: { website: "" },
   tags: [],
+  is_featured: false,
+  featured_order: null,
 };
 
 export function useOpportunityForm(initial = {}, categories = []) {
@@ -29,9 +31,20 @@ export function useOpportunityForm(initial = {}, categories = []) {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    const { name, type, files, value } = e.target;
+    const { name, type, files, value, checked } = e.target;
     if (type === "file" && files && files[0]) {
       setFormData((prev) => ({ ...prev, [name]: files[0] }));
+    } else if (type === "checkbox") {
+      // Si se desmarca featured, limpiar featured_order
+      if (name === "is_featured" && !checked) {
+        setFormData((prev) => ({
+          ...prev,
+          is_featured: checked,
+          featured_order: null,
+        }));
+      } else {
+        setFormData((prev) => ({ ...prev, [name]: checked }));
+      }
     } else {
       // Si es el campo category_id, también actualizamos el category con el nombre correspondiente
       if (name === "category_id") {
@@ -40,6 +53,11 @@ export function useOpportunityForm(initial = {}, categories = []) {
           ...prev,
           category_id: value,
           category: selectedCategory ? selectedCategory.name : "",
+        }));
+      } else if (name === "featured_order") {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value ? parseInt(value) : null,
         }));
       } else {
         setFormData((prev) => ({ ...prev, [name]: value }));

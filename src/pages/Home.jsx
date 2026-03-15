@@ -5,6 +5,7 @@ import ImpactSection from "../components/ImpactSection";
 import AboutSection from "../components/AboutSection";
 import OfferSection from "../components/OfferSection";
 import SEO from "../components/SEO";
+import FeaturedOpportunities from "../components/opportunities/FeaturedOpportunities";
 
 const TestimonialsSection = lazy(
   () => import("../components/TestimonialsSection"),
@@ -60,6 +61,7 @@ const Home = () => {
         <ImpactSection />
         <AboutSection />
         <OfferSection />
+        <FeaturedOpportunities />
         <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
           <TestimonialsSection />
         </Suspense>

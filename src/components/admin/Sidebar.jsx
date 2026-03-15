@@ -118,7 +118,7 @@ export default function Sidebar({
       <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
         <div className="space-y-2">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/edutracker")}
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
             } px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 hover:text-primary transition-all duration-300 ${
@@ -127,7 +127,7 @@ export default function Sidebar({
           >
             <Home className="h-5 w-5" />
             {!isCollapsed && (
-              <span className="ml-3 font-medium">Salir al Inicio</span>
+              <span className="ml-3 font-medium">Salir a Edutracker</span>
             )}
           </button>
         </div>

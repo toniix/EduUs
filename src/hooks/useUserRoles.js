@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCurrentUserRoles } from "../services/rolesService";
+import { getCurrentUserRole } from "../services/rolesService";
 
 export const useUserRoles = () => {
   const [roles, setRoles] = useState([]);
@@ -10,7 +10,7 @@ export const useUserRoles = () => {
     const fetchRoles = async () => {
       try {
         setLoading(true);
-        const userRoles = await getCurrentUserRoles();
+        const userRoles = await getCurrentUserRole();
         setRoles(userRoles);
       } catch (err) {
         setError(err.message);

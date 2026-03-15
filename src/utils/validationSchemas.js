@@ -142,4 +142,6 @@ export const opportunitySchema = z.object({
     .min(1, "Al menos una etiqueta es obligatoria.")
     .max(5, "Solo se permiten 5 etiquetas."),
   contact: z.object({ website: z.string().optional() }).optional(),
+  is_featured: z.boolean().optional().default(false),
+  featured_order: z.number().min(1).max(4).nullable().optional(),
 });
