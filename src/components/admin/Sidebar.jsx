@@ -5,6 +5,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Tag,
+  Calendar,
+  ClipboardList,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -12,10 +14,12 @@ import { useTheme } from "../../contexts/ThemeContext";
 import logo from "../../assets/logo_1.png";
 
 const menuItems = [
-  { icon: <Home />, label: "Dashboard", value: "dashboard" },
-  { icon: <Users />, label: "Usuarios", value: "users" },
-  { icon: <FileText />, label: "Oportunidades", value: "content" },
-  { icon: <Tag />, label: "Categorías", value: "categories" },
+  { icon: <Home />,          label: "Dashboard",     value: "dashboard" },
+  { icon: <Users />,         label: "Usuarios",      value: "users" },
+  { icon: <FileText />,      label: "Oportunidades", value: "content" },
+  { icon: <Tag />,           label: "Categorías",    value: "categories" },
+  { icon: <Calendar />,      label: "Eventos",       value: "events" },
+  { icon: <ClipboardList />, label: "Inscripciones", value: "registrations" },
 ];
 
 export default function Sidebar({

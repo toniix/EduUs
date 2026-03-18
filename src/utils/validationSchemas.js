@@ -143,3 +143,35 @@ export const opportunitySchema = z.object({
     .max(5, "Solo se permiten 5 etiquetas."),
   contact: z.object({ website: z.string().optional() }).optional(),
 });
+
+// Esquema de validación para eventos
+export const eventSchema = z.object({
+  title: z
+    .string()
+    .min(3, "El título debe tener al menos 3 caracteres.")
+    .max(150, "El título no puede exceder 150 caracteres."),
+  category: z.string().min(1, "La categoría es obligatoria."),
+  modality: z.string().min(1, "La modalidad es obligatoria."),
+  starts_at: z.string().min(1, "La fecha de inicio es obligatoria."),
+  slug: z.string().optional(),
+  description: z.string().optional(),
+  location: z.string().optional(),
+  banner_url: z
+    .string()
+    .url("La URL del banner no es válida.")
+    .optional()
+    .or(z.literal(""))
+    .or(z.null()),
+  ends_at: z.string().optional(),
+  capacity: z.number().positive("La capacidad debe ser mayor a 0.").nullable().optional(),
+  price: z.number().min(0, "El precio no puede ser negativo.").nullable().optional(),
+  promo_modal: z.boolean().optional(),
+  registration_url: z
+    .string()
+    .url("La URL de inscripción no es válida.")
+    .optional()
+    .or(z.literal(""))
+    .or(z.null()),
+  status: z.enum(["draft", "published", "cancelled", "finished"]).optional(),
+});
+

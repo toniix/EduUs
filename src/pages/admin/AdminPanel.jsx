@@ -10,6 +10,8 @@ import { getAllProfiles } from "../../services/userService";
 import { opportunitiesService } from "../../services/fetchOpportunityService";
 import { useTheme } from "../../contexts/ThemeContext";
 import CategoriesTab from "../../components/admin/tabs/CategoriesTab";
+import EventsAdminTab from "../../components/admin/tabs/EventsAdminTab";
+import RegistrationsTab from "../../components/admin/tabs/RegistrationsTab";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -176,6 +178,10 @@ const AdminPanel = () => {
         );
       case "categories":
         return <CategoriesTab />;
+      case "events":
+        return <EventsAdminTab />;
+      case "registrations":
+        return <RegistrationsTab />;
       default:
         return <div>Pestaña no encontrada</div>;
     }

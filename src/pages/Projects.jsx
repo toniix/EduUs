@@ -6,6 +6,7 @@ import "swiper/css/pagination";
 import { projects } from "../data/projects";
 import { ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
+import EventsSection from "../components/events/Events";
 
 const ProjectsSection = () => {
   useEffect(() => {
@@ -107,6 +108,8 @@ const ProjectsSection = () => {
         </nav>
       </section>
 
+      <EventsSection />
+
       {/* Projects Details */}
       <section className="py-10 bg-secondary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
@@ -117,9 +120,8 @@ const ProjectsSection = () => {
             return (
               <div key={project.id} id={project.id} className="scroll-mt-20">
                 <div
-                  className={`flex flex-col ${
-                    isEven ? "lg:flex-row" : "lg:flex-row-reverse"
-                  } items-center gap-12 lg:gap-16`}
+                  className={`flex flex-col ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"
+                    } items-center gap-12 lg:gap-16`}
                 >
                   <div className="flex-1 space-y-6">
                     <div className="flex items-center space-x-4">
@@ -246,9 +248,8 @@ const ProjectsSection = () => {
                             <div className="relative aspect-square overflow-hidden rounded-lg">
                               <img
                                 src={image}
-                                alt={`${project.name} - Imagen ${
-                                  imageIndex + 1
-                                }`}
+                                alt={`${project.name} - Imagen ${imageIndex + 1
+                                  }`}
                                 className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>

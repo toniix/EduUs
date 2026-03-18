@@ -5,6 +5,8 @@ import ImpactSection from "../components/ImpactSection";
 import AboutSection from "../components/AboutSection";
 import OfferSection from "../components/OfferSection";
 import SEO from "../components/SEO";
+import EventsSection from "../components/events/EventsSection";
+import PromoModal from "../components/events/PromoModal";
 
 const TestimonialsSection = lazy(
   () => import("../components/TestimonialsSection"),
@@ -21,6 +23,8 @@ const Home = () => {
         title="EDU-US | Becas y oportunidades internacionales 2026"
         description="Encuentra becas, voluntariados y oportunidades académicas internacionales actualizadas cada semana."
       />
+      {/* PromoModal se auto-controla con usePromoModal */}
+      <PromoModal />
       <div className="flex flex-col min-h-screen">
         <section className="w-full min-h-[calc(100vh-4rem)] bg-center bg-cover flex items-center justify-center relative overflow-hidden">
           <img
@@ -60,6 +64,7 @@ const Home = () => {
         <ImpactSection />
         <AboutSection />
         <OfferSection />
+        <EventsSection />
         <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
           <TestimonialsSection />
         </Suspense>
