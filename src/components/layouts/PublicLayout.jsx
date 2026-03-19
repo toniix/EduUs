@@ -13,7 +13,7 @@ const PublicLayout = () => {
   return (
     <>
       <HeaderWrapper />
-      <main>
+      <main className="pt-16">
         <Outlet />
       </main>
       {!hideFooter && <FooterWrapper />}

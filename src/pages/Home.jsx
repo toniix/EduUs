@@ -53,10 +53,10 @@ const Home = () => {
               </p>
               <Link
                 to="/edutracker"
-                className="inline-flex items-center bg-primary text-light px-6 py-3 rounded-md hover:bg-opacity-90 hover:text-dark"
+                className="group inline-flex items-center gap-3 bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all duration-300 hover:bg-primary/95 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 active:scale-[0.98]"
               >
-                Explora oportunidades aqui
-                <ArrowRight className="ml-2 h-5 w-5" />
+                Explora oportunidades aquí
+                <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1.5" />
               </Link>
             </div>
           </div>
