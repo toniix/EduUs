@@ -1,6 +1,7 @@
 import React from "react";
 import { AboutItems } from "../data/aboutData";
 import styles from "./AboutSection.module.css";
+import { motion } from "framer-motion";
 
 const AboutSection = () => {
   const [hoveredCard, setHoveredCard] = React.useState(null);
@@ -13,13 +14,20 @@ const AboutSection = () => {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             <span className="relative inline-block">Lo que hacemos hoy</span>
           </h2>
+          <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto mt-4 px-4">
+            Nuestra labor principal es conectar a jovenes peruanos con las mejores oportunidades académicas y de desarrollo.
+          </p>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 mx-auto mt-6 rounded-full"></div>
         </div>
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {AboutItems.map((item) => (
-            <div
+          {AboutItems.map((item, index) => (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
               key={item.id}
               className={`relative w-full h-96 sm:h-80 lg:h-96 cursor-pointer ${styles.perspective1000}`}
               onMouseEnter={() => setHoveredCard(item.id)}
@@ -135,7 +143,7 @@ const AboutSection = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

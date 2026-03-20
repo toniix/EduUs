@@ -1,6 +1,7 @@
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { lazy, Suspense } from "react";
+import { motion } from "framer-motion";
 import ImpactSection from "../components/ImpactSection";
 import AboutSection from "../components/AboutSection";
 import OfferSection from "../components/OfferSection";
@@ -42,23 +43,28 @@ const Home = () => {
           />
           <div className="absolute inset-0 bg-dark bg-opacity-60"></div>
           <div className="relative w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex ">
-            <div className="text-light max-w-3xl lg:w-1/2">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-light max-w-3xl lg:w-1/2 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 sm:p-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)]"
+            >
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                 Educación de Calidad para Todos
               </h1>
-              <p className="text-xl mb-8">
+              <p className="text-lg sm:text-xl mb-8 text-white/90">
                 Acompañamos a jóvenes en el desarrollo de habilidades que les
                 permitan explorar su potencial y aprovechar nuevas
                 oportunidades.
               </p>
               <Link
                 to="/edutracker"
-                className="group inline-flex items-center gap-3 bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all duration-300 hover:bg-primary/95 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 active:scale-[0.98]"
+                className="group inline-flex items-center gap-3 bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all duration-300 hover:bg-primary/95 hover:scale-[1.05] hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98]"
               >
                 Explora oportunidades aquí
                 <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1.5" />
               </Link>
-            </div>
+            </motion.div>
           </div>
         </section>
         <ImpactSection />
