@@ -181,6 +181,7 @@ export default function EventForm({ event = null, onClose, onSave }) {
     setSaving(true);
     try {
       const payload = buildPayload(false);
+      console.log(payload);
       if (bannerFile) {
         payload.banner_url = await uploadImageToCloudinary(bannerFile);
       }
@@ -199,6 +200,7 @@ export default function EventForm({ event = null, onClose, onSave }) {
     setSaving(true);
     try {
       const payload = buildPayload(true);
+      console.log(payload);
       if (bannerFile) {
         payload.banner_url = await uploadImageToCloudinary(bannerFile);
       }
@@ -292,7 +294,7 @@ export default function EventForm({ event = null, onClose, onSave }) {
           </div>
 
           {/* Descripción */}
-          <Field label="Descripción">
+          <Field label="Descripción" required error={errors.description}>
             <div className="relative">
               <textarea
                 name="description"
@@ -300,7 +302,7 @@ export default function EventForm({ event = null, onClose, onSave }) {
                 onChange={handleChange}
                 rows={3}
                 placeholder="Describe el evento..."
-                className={`${inputClass()} resize-none`}
+                className={`${inputClass(errors.description)} resize-none`}
               />
               <span className="absolute bottom-2 right-3 text-[10px] text-gray-400">
                 {form.description?.length} caracteres

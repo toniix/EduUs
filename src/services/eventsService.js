@@ -25,9 +25,6 @@ function transformEvent(row) {
 }
 
 class EventsService {
-  // ─────────────────────────────────────────────
-  // LECTURA
-  // ─────────────────────────────────────────────
 
   /**
    * Eventos públicos: solo los publicados, ordenados por fecha de inicio.
@@ -148,8 +145,25 @@ class EventsService {
   async updateEvent(id, formData) {
     console.log(formData);
     try {
-      // Si este evento se marca como promo, desmarcar cualquier otro
+      // Validar que el evento esté publicado antes de marcarlo como promo
       if (formData.promo_modal === true) {
+        const { data: current, error: fetchError } = await supabase
+          .from("events")
+          .select("status")
+          .eq("id", id)
+          .single();
+
+        if (fetchError) throw new Error(fetchError.message);
+
+        if (current.status !== "published") {
+          return {
+            success: false,
+            data: null,
+            error: "El evento debe estar publicado para marcarlo como destacado.",
+          };
+        }
+
+        // Desmarcar cualquier otro evento promo
         await supabase
           .from("events")
           .update({ promo_modal: false })

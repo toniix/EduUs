@@ -193,7 +193,7 @@ export default function EventsSection() {
                       {formatEventDate(event.starts_at)}
                     </span>
                   )}
-                  {event.location && (
+                  {event.location && event.modality !== 'virtual' && (
                     <span className="flex items-center gap-1.5">
                       <MapPin
                         className="w-4 h-4 flex-shrink-0"

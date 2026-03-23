@@ -13,13 +13,13 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import logo from "../../assets/logo_1.png";
 
-const menuItems = [
-  { icon: <Home />,          label: "Dashboard",     value: "dashboard" },
-  { icon: <Users />,         label: "Usuarios",      value: "users" },
-  { icon: <FileText />,      label: "Oportunidades", value: "content" },
-  { icon: <Tag />,           label: "Categorías",    value: "categories" },
-  { icon: <Calendar />,      label: "Eventos",       value: "events" },
-  { icon: <ClipboardList />, label: "Inscripciones", value: "registrations" },
+const ALL_MENU_ITEMS = [
+  { icon: <Home />,          label: "Dashboard",     value: "dashboard",     adminOnly: false },
+  { icon: <Users />,         label: "Usuarios",      value: "users",         adminOnly: true },
+  { icon: <FileText />,      label: "Oportunidades", value: "content",       adminOnly: false },
+  { icon: <Tag />,           label: "Categorías",    value: "categories",    adminOnly: false },
+  { icon: <Calendar />,      label: "Eventos",       value: "events",        adminOnly: true },
+  { icon: <ClipboardList />, label: "Inscripciones", value: "registrations", adminOnly: true },
 ];
 
 export default function Sidebar({
@@ -87,7 +87,7 @@ export default function Sidebar({
 
       {/* Menú principal */}
       <nav className="p-4 space-y-2">
-        {menuItems.map((item) => (
+        {ALL_MENU_ITEMS.filter(item => !item.adminOnly || profile?.role === "admin").map((item) => (
           <div key={item.value}>
             <button
               onClick={() => handleItemClick(item)}

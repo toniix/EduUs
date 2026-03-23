@@ -154,7 +154,7 @@ export const eventSchema = z.object({
   modality: z.string().min(1, "La modalidad es obligatoria."),
   starts_at: z.string().min(1, "La fecha de inicio es obligatoria."),
   slug: z.string().optional(),
-  description: z.string().optional(),
+  description: z.string().min(1, "La descripción es obligatoria."),
   location: z.string().optional(),
   banner_url: z
     .string()

@@ -100,6 +100,11 @@ export default function EventsAdminTab() {
   };
 
   const handleMarkAsPromo = async (event) => {
+    if (event.status !== "published") {
+      toast.error("Debes publicar el evento antes de marcarlo como destacado.");
+      return;
+    }
+
     const confirmed = window.confirm(
       `¿Deseas marcar "${event.title}" como el modal promocional? Esto reemplazará el evento promo actual.`
     );
