@@ -117,13 +117,108 @@ async function relateTagsToOpportunity(opportunityId, tags) {
 }
 
 /**
+ * Valida y obtiene la cantidad actual de oportunidades destacadas
+ * @param {string} excludeOpportunityId - ID de la oportunidad a excluir del conteo
+ * @returns {Promise<number>} Número de oportunidades destacadas
+ */
+export async function getCountOfFeaturedOpportunities(
+  excludeOpportunityId = null,
+) {
+  let query = supabase
+    .from("opportunities")
+    .select("id", { count: "exact", head: true })
+    .eq("is_featured", true);
+  // .eq("status", "active");
+
+  if (excludeOpportunityId) {
+    query = query.neq("id", excludeOpportunityId);
+  }
+
+  const { count, error } = await query;
+
+  if (error) {
+    throw new Error(
+      `Error contando oportunidades destacadas: ${error.message}`,
+    );
+  }
+
+  return count || 0;
+}
+
+/**
+ * Valida que no exista otra oportunidad con el mismo featured_order
+ * @param {number} featuredOrder - El orden a validar
+ * @param {string} excludeOpportunityId - ID de la oportunidad a excluir del search
+ * @returns {Promise<Object|null>} Oportunidad conflictiva o null si no existe
+ */
+async function findOpportunityByFeaturedOrder(
+  featuredOrder,
+  excludeOpportunityId = null,
+) {
+  let query = supabase
+    .from("opportunities")
+    .select("id, title, featured_order")
+    .eq("featured_order", featuredOrder)
+    .eq("is_featured", true)
+    // .eq("status", "active")
+    .single();
+
+  try {
+    const { data } = await query;
+
+    // Si existe una oportunidad con este orden
+    if (data && data.id !== excludeOpportunityId) {
+      return data;
+    }
+    return null;
+  } catch (error) {
+    // Si no se encontró nada, retornar null
+    if (error.code === "PGRST116") {
+      return null;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Reorganiza los órdenes destacados después de eliminar o cambiar uno
+ * @param {number} removedOrder - El orden que fue removido
+ */
+async function reorganizeFeaturedOrders(removedOrder) {
+  // Obtener todas las oportunidades destacadas ordenadas por featured_order
+  const { data: featured, error } = await supabase
+    .from("opportunities")
+    .select("id, featured_order")
+    .eq("is_featured", true)
+    // .eq("status", "active")
+    .gt("featured_order", removedOrder)
+    .order("featured_order", { ascending: true });
+
+  if (error) {
+    console.warn("Error reorganizando órdenes:", error);
+    return;
+  }
+
+  // Decrementar en 1 cada orden mayor al removido
+  if (featured && featured.length > 0) {
+    for (const opp of featured) {
+      await supabase
+        .from("opportunities")
+        .update({ featured_order: opp.featured_order - 1 })
+        .eq("id", opp.id);
+    }
+  }
+}
+
+/**
  * Actualiza una oportunidad existente
  * @param {string} id - ID de la oportunidad a actualizar
  * @param {Object} data - Datos actualizados de la oportunidad
  * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
  */
-export async function updateOpportunity(id, data) {
+export async function updateOpportunity(id, data, userRole = null) {
   console.log(data);
+  console.log(userRole);
   try {
     // Verificar autenticación
     const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -150,16 +245,99 @@ export async function updateOpportunity(id, data) {
       };
     }
 
-    // Verificar que el usuario autenticado sea el creador de la oportunidad
-    if (existingOpportunity.created_by !== userData.user.id) {
+    // Verificar que el usuario autenticado sea el creador de la oportunidad o un admin
+    console.log("verificando permisos para usuario:", userData.user.id);
+    if (
+      existingOpportunity.created_by !== userData.user.id &&
+      userRole !== "admin"
+    ) {
       return {
         success: false,
         error:
-          "No tienes permiso para editar esta oportunidad. Solo el creador puede modificarla.",
+          "No tienes permiso para editar esta oportunidad. Solo el creador o un administrador puede modificarla.",
       };
     }
 
     console.log("Opportunity fetched successfully");
+
+    // ========== VALIDACIONES DE DESTACADO ==========
+    const isMarkingAsFeatured = data.is_featured === true;
+    const wasAlreadyFeatured = existingOpportunity.is_featured === true;
+    const isUnmarkingAsFeatured =
+      data.is_featured === false && wasAlreadyFeatured;
+
+    if (isMarkingAsFeatured) {
+      // 1. Validar que no se exceda el máximo de 4 destacadas
+      const featuredCount = await getCountOfFeaturedOpportunities(id);
+      if (featuredCount >= 4) {
+        return {
+          success: false,
+          error: "Ya hay 4 oportunidades destacadas. No se pueden agregar más.",
+        };
+      }
+
+      // 2. Validar que featured_order sea válido y no esté duplicado
+      if (data.featured_order) {
+        const featuredOrder = parseInt(data.featured_order);
+
+        // Validar rango 1-4
+        if (featuredOrder < 1 || featuredOrder > 4) {
+          return {
+            success: false,
+            error: "La posición destacada debe estar entre 1 y 4.",
+          };
+        }
+
+        // Verificar si otro ya tiene este orden
+        const conflictingOpportunity = await findOpportunityByFeaturedOrder(
+          featuredOrder,
+          id,
+        );
+
+        if (conflictingOpportunity) {
+          // Reasignar automáticamente el orden anterior al conflictivo
+          console.log(
+            `Reasignando orden ${featuredOrder} de ${conflictingOpportunity.title}`,
+          );
+
+          // Buscar un orden disponible
+          let newOrder = 1;
+          while (newOrder <= 4) {
+            const occupied = await findOpportunityByFeaturedOrder(newOrder, id);
+            if (!occupied) break;
+            newOrder++;
+          }
+
+          if (newOrder > 4) {
+            return {
+              success: false,
+              error:
+                "No hay posiciones disponibles. Intenta liberar una primero.",
+            };
+          }
+
+          // Actualizar la oportunidad conflictiva
+          await supabase
+            .from("opportunities")
+            .update({ featured_order: newOrder })
+            .eq("id", conflictingOpportunity.id);
+
+          console.log(
+            `Orden reasignado: ${conflictingOpportunity.id} → posición ${newOrder}`,
+          );
+        }
+      }
+    }
+
+    // Si se desmarca como destacada y tenía un orden, reorganizar
+    if (isUnmarkingAsFeatured && existingOpportunity.featured_order) {
+      await reorganizeFeaturedOrders(existingOpportunity.featured_order);
+      console.log(
+        `Órdenes reorganizados después de remover posición ${existingOpportunity.featured_order}`,
+      );
+    }
+
+    // ========== FIN VALIDACIONES DE DESTACADO ==========
 
     // Procesar categoría si se proporciona
     let categoryId = existingOpportunity.category_id;
@@ -242,7 +420,7 @@ export async function updateOpportunity(id, data) {
         *,
         category:categories(*),
         opportunity_tags(tag:tags(*))
-      `
+      `,
       )
       .eq("id", id)
       .single();
@@ -288,7 +466,7 @@ export async function deleteOpportunity(id, userRole = null) {
     // 2. Obtener la oportunidad y verificar permisos
     const { data: opportunity, error: fetchError } = await supabase
       .from("opportunities")
-      .select("created_by, image_url")
+      .select("created_by, image_url, is_featured, featured_order")
       .eq("id", id)
       .single();
 
@@ -306,7 +484,15 @@ export async function deleteOpportunity(id, userRole = null) {
       };
     }
 
-    // 3. Eliminar la imagen de Cloudinary si existe
+    // 3. Si es una oportunidad destacada, reorganizar órdenes
+    if (opportunity.is_featured && opportunity.featured_order) {
+      await reorganizeFeaturedOrders(opportunity.featured_order);
+      console.log(
+        `Órdenes reorganizados después de eliminar posición ${opportunity.featured_order}`,
+      );
+    }
+
+    // 4. Eliminar la imagen de Cloudinary si existe
     console.log("Deleting image from Cloudinary...");
     console.log("Image URL:", opportunity.image_url);
     if (opportunity.image_url) {
@@ -317,14 +503,14 @@ export async function deleteOpportunity(id, userRole = null) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ imageUrl: opportunity.image_url }),
-          }
+          },
         );
 
         const result = await response.json();
 
         if (!response.ok || !result.success) {
           console.warn(
-            `Warning: Could not delete image from Cloudinary: ${result.error}`
+            `Warning: Could not delete image from Cloudinary: ${result.error}`,
           );
         }
       } catch (error) {
@@ -332,7 +518,7 @@ export async function deleteOpportunity(id, userRole = null) {
       }
     }
 
-    // 4. Eliminar relaciones de tags
+    // 5. Eliminar relaciones de tags
     const { error: deleteTagsError } = await supabase
       .from("opportunity_tags")
       .delete()
@@ -342,7 +528,7 @@ export async function deleteOpportunity(id, userRole = null) {
       console.warn("Warning deleting tag relations:", deleteTagsError);
     }
 
-    // 5. Eliminar la oportunidad de Supabase
+    // 6. Eliminar la oportunidad de Supabase
     const { error: deleteOppError } = await supabase
       .from("opportunities")
       .delete()

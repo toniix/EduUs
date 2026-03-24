@@ -6,6 +6,7 @@ import ImpactSection from "../components/ImpactSection";
 import AboutSection from "../components/AboutSection";
 import OfferSection from "../components/OfferSection";
 import SEO from "../components/SEO";
+import FeaturedOpportunities from "../components/opportunities/FeaturedOpportunities";
 import EventsSection from "../components/events/EventsSection";
 import PromoModal from "../components/events/PromoModal";
 
@@ -43,7 +44,7 @@ const Home = () => {
           />
           <div className="absolute inset-0 bg-dark bg-opacity-60"></div>
           <div className="relative w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex ">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
@@ -70,6 +71,7 @@ const Home = () => {
         <ImpactSection />
         <AboutSection />
         <OfferSection />
+        <FeaturedOpportunities />
         <EventsSection />
         <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
           <TestimonialsSection />

@@ -1,23 +1,37 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import ModalConfirmacion from "../../ModalConfirmacion";
-import { deleteOpportunity } from "../../../services/opportunityService";
+import {
+  deleteOpportunity,
+  updateOpportunity,
+} from "../../../services/opportunityService";
 import { toast } from "react-hot-toast";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Star } from "lucide-react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ThemeContext } from "../../../contexts/ThemeContext";
 import DeletionLoader from "../../ui/DeletionLoader";
+import FeaturedModal from "../../opportunities/FeaturedModal";
 
 const OpportunityActionsMenu = ({
   opportunity,
   setShowOpportunityForm,
   setSelectedOpportunity,
   fetchOpportunities,
+  featuredCount,
 }) => {
   const { profile } = useAuth();
   const { isDark } = useContext(ThemeContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [opportunityToDelete, setOpportunityToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showFeaturedModal, setShowFeaturedModal] = useState(false);
+  const [featuredForm, setFeaturedForm] = useState({
+    is_featured: opportunity.is_featured || false,
+    featured_order: opportunity.featured_order || null,
+  });
+  const [isSavingFeatured, setIsSavingFeatured] = useState(false);
+
+  // Calcular si se puede marcar como destacada basado en el contador recibido
+  const canMarkAsFeatured = featuredCount < 4 || opportunity.is_featured;
 
   const handleEdit = (opportunity) => {
     const opportunityData = {
@@ -91,9 +105,84 @@ const OpportunityActionsMenu = ({
     }`;
   };
 
+  // Abrir modal de destacado
+  const handleFeaturedClick = () => {
+    setFeaturedForm({
+      is_featured: opportunity.is_featured || false,
+      featured_order: opportunity.featured_order || null,
+    });
+    setShowFeaturedModal(true);
+  };
+
+  // Cambiar valor de destacado
+  const handleFeaturedChange = (field, value) => {
+    if (field === "is_featured" && !value) {
+      // Si se desmarca featured, limpiar featured_order
+      setFeaturedForm({
+        is_featured: false,
+        featured_order: null,
+      });
+    } else if (field === "featured_order") {
+      setFeaturedForm((prev) => ({
+        ...prev,
+        featured_order: value ? parseInt(value) : null,
+      }));
+    } else {
+      setFeaturedForm((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
+  };
+
+  // Guardar cambios de destacado
+  const handleFeaturedSave = async () => {
+    try {
+      if (featuredForm.is_featured && !featuredForm.featured_order) {
+        toast.error(
+          "Debes seleccionar una posición para destacar la oportunidad",
+        );
+        return;
+      }
+
+      setIsSavingFeatured(true);
+      const { success, error } = await updateOpportunity(
+        opportunity.id,
+        {
+          is_featured: featuredForm.is_featured,
+          featured_order: featuredForm.is_featured
+            ? parseInt(featuredForm.featured_order)
+            : null,
+        },
+        profile?.role,
+      );
+
+      if (!success) {
+        toast.error(error || "Error al actualizar destacado");
+        return;
+      }
+
+      toast.success("Estado de destacado actualizado correctamente");
+      setShowFeaturedModal(false);
+      await fetchOpportunities();
+    } catch (error) {
+      console.error("Error al guardar destacado:", error);
+      toast.error(error.message || "Error al actualizar destacado");
+    } finally {
+      setIsSavingFeatured(false);
+    }
+  };
+
   const isOwner = profile?.id === opportunity.created_by;
   const editButtonClasses = getButtonClasses(!isOwner);
   const deleteButtonClasses = getButtonClasses(isDeleting, true);
+
+  // acciones para destacar
+  const featuredButtonDisabled = !canMarkAsFeatured;
+  const featuredButtonTitle =
+    featuredButtonDisabled && !opportunity.is_featured
+      ? `Ya hay 4 oportunidades destacadas (${featuredCount}). Libera un espacio para agregar más.`
+      : "Marcar como destacado";
 
   if (isDeleting) {
     return (
@@ -114,6 +203,16 @@ const OpportunityActionsMenu = ({
         disabled={!isOwner}
       >
         <Edit className="h-4 w-4" />
+      </button>
+      <button
+        className={getButtonClasses(featuredButtonDisabled)}
+        title={featuredButtonTitle}
+        onClick={handleFeaturedClick}
+        disabled={featuredButtonDisabled}
+      >
+        <Star
+          className={`h-4 w-4 ${opportunity.is_featured ? "fill-current" : ""}`}
+        />
       </button>
       <button
         className={deleteButtonClasses}
@@ -138,6 +237,17 @@ const OpportunityActionsMenu = ({
         confirmText="Eliminar"
         cancelText="Cancelar"
       />
+      {/* Modal para marcar como destacado */}
+      {showFeaturedModal && (
+        <FeaturedModal
+          showFeaturedModal={showFeaturedModal}
+          setShowFeaturedModal={setShowFeaturedModal}
+          featuredForm={featuredForm}
+          handleFeaturedChange={handleFeaturedChange}
+          handleFeaturedSave={handleFeaturedSave}
+          isSavingFeatured={isSavingFeatured}
+        />
+      )}
     </div>
   );
 };

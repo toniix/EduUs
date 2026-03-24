@@ -1,7 +1,6 @@
 import { Plus } from "lucide-react";
-import { Link } from "react-router-dom";
 import OpportunityForm from "../../opportunities/OpportunityForm";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { ThemeContext } from "../../../contexts/ThemeContext";
 import {
   updateOpportunity,
@@ -11,6 +10,8 @@ import InlineLoader from "../../ui/LoadingSpinner";
 import { toast } from "react-hot-toast";
 import OpportunityActionsMenu from "../../admin/tabs/OpportunityActionsMenu";
 import Pagination from "../../Pagination2";
+import { useAuth } from "../../../contexts/AuthContext";
+import { getCountOfFeaturedOpportunities } from "../../../services/opportunityService";
 
 export default function ContentTab({
   opportunities,
@@ -20,17 +21,27 @@ export default function ContentTab({
   loading,
   fetchOpportunities,
 }) {
+  const { profile } = useAuth();
   const { isDark } = useContext(ThemeContext);
   const [showOpportunityForm, setShowOpportunityForm] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [totalFeaturedCount, setTotalFeaturedCount] = useState(0);
 
-  // console.log(opportunities);
+  // Contar oportunidades destacadas de la PÁGINA ACTUAL (para mostrar visualmente)
+  const featuredCountInPage = opportunities.filter(
+    (opp) => opp.is_featured,
+  ).length;
+
+  console.log(opportunities);
+  console.log(opportunities.map((opp) => opp.featured_order));
+
   const handleFormSubmit = async (formData) => {
     try {
       if (selectedOpportunity?.id) {
         const { success, error } = await updateOpportunity(
           selectedOpportunity.id,
-          formData
+          formData,
+          profile?.role,
         );
         if (!success) throw new Error(error);
         toast.success("Oportunidad actualizada correctamente");
@@ -55,6 +66,19 @@ export default function ContentTab({
     setShowOpportunityForm(false);
     setSelectedOpportunity(null);
   };
+
+  useEffect(() => {
+    const countAllFeatured = async () => {
+      try {
+        const count = await getCountOfFeaturedOpportunities(); // Sin parámetros
+        setTotalFeaturedCount(count);
+      } catch (err) {
+        console.error("Error contando destacadas totales:", err);
+      }
+    };
+
+    countAllFeatured();
+  }, [opportunities]); // Recontar cada vez que cambian las oportunidades
 
   return (
     <div
@@ -175,7 +199,7 @@ export default function ContentTab({
                       day: "2-digit",
                       month: "2-digit",
                       year: "numeric",
-                    }
+                    },
                   );
 
                   return (
@@ -211,8 +235,8 @@ export default function ContentTab({
                                 ? "bg-red-900 text-red-200"
                                 : "bg-red-100 text-red-800"
                               : isDark
-                              ? "bg-green-900 text-green-200"
-                              : "bg-green-100 text-green-800"
+                                ? "bg-green-900 text-green-200"
+                                : "bg-green-100 text-green-800"
                           }`}
                         >
                           {isExpired ? "Expirado" : "Activo"}
@@ -232,6 +256,7 @@ export default function ContentTab({
                           setSelectedOpportunity={setSelectedOpportunity}
                           fetchOpportunities={fetchOpportunities}
                           isDark={isDark}
+                          featuredCount={totalFeaturedCount}
                         />
                       </td>
                     </tr>
