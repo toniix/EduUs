@@ -50,14 +50,22 @@ const Home = () => {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="text-light max-w-3xl lg:w-1/2 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 sm:p-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)]"
             >
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                Educación de Calidad para Todos
-              </h1>
-              <p className="text-lg sm:text-xl mb-8 text-white/90">
-                Acompañamos a jóvenes en el desarrollo de habilidades que les
-                permitan explorar su potencial y aprovechar nuevas
-                oportunidades.
-              </p>
+              <motion.h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                {"Educación de Calidad para Todos".split("").map((char, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.8 + i * 0.06,
+                      duration: 0.3,
+                      ease: "easeOut",
+                    }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </motion.h1>
               <Link
                 to="/edutracker"
                 className="group inline-flex items-center gap-3 bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all duration-300 hover:bg-primary/95 hover:scale-[1.05] hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98]"
