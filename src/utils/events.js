@@ -127,6 +127,6 @@ export const EVENT_FILTERS = [
   { value: "all", label: "Todos" },
   { value: "taller", label: "Talleres" },
   { value: "charla", label: "Charlas" },
-  { value: "networking", label: "Networking" },
-  { value: "campamento", label: "Campamentos" },
+  // { value: "networking", label: "Networking" },
+  // { value: "campamento", label: "Campamentos" },
 ];
