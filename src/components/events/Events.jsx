@@ -208,7 +208,7 @@ export default function EventsSection() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a
-                href="https://wa.me/message/XXXXXXXXX"
+                href="https://www.whatsapp.com/channel/0029VbBbJtWAzNc3WLlNXR3H"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
@@ -224,7 +224,7 @@ export default function EventsSection() {
               </a>
 
               <a
-                href="/opportunities"
+                href="/edutracker"
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-orange-700 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
               >
                 <svg

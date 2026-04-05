@@ -44,43 +44,60 @@ const ProjectsSection = () => {
             </p>
           </div>
           {/* Grid de proyectos destacados */}
-          <div className="w-full flex flex-col gap-4">
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {projects.slice(0, 4).map((project) => {
+          <div className="w-full flex flex-col gap-6 mt-8 md:mt-0">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {projects.slice(0, 4).map((project, index) => {
                 const IconComponent = project.icon;
                 return (
                   <button
                     key={project.id}
                     onClick={() => scrollToProject(project.id)}
-                    className="group relative p-5 rounded-2xl overflow-hidden bg-cover bg-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-gray-800/60 border border-secondary/30"
-                    style={{
-                      backgroundImage: project.fondo
-                        ? `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${project.fondo})`
-                        : "none",
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      backgroundRepeat: "no-repeat",
-                    }}
+                    className="group relative h-48 sm:h-56 w-full rounded-[2rem] overflow-hidden transition-all duration-500 hover:shadow-[0_15px_35px_rgb(0,0,0,0.6)] hover:-translate-y-2 border border-white/5 bg-[#0b1716] hover:border-secondary/50 focus:outline-none focus:ring-4 focus:ring-secondary/20"
                   >
-                    <div className="relative z-10 h-full flex flex-col items-center justify-center">
-                      <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-2 bg-secondary">
-                        <IconComponent className="w-6 h-6" />
+                    {/* Animated Background Image Container */}
+                    <div 
+                       className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-110 opacity-30 group-hover:opacity-50"
+                       style={{ backgroundImage: project.fondo ? `url(${project.fondo})` : "none" }}
+                    />
+                    
+                    {/* Glowing Effect Inside */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    {/* Dark gradient for text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+                    {/* Content Container */}
+                    <div className="relative z-10 h-full flex flex-col items-center justify-between p-4 sm:p-5">
+                      <div className="w-full flex justify-center mt-3 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]">
+                        <div className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] group-hover:border-secondary/40 group-hover:bg-secondary/20 group-hover:shadow-[0_0_20px_rgba(77,185,169,0.3)] transition-all duration-300">
+                          <IconComponent className="w-7 h-7 sm:w-8 sm:h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+                        </div>
                       </div>
-                      <h3 className="text-base font-semibold text-white mb-1 text-center">
-                        {project.name}
-                      </h3>
-                      <div className="flex items-center justify-center text-xs text-accent font-bold">
-                        Ver más
-                        <ArrowRightIcon className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform fill-primary" />
+
+                      <div className="flex flex-col items-center w-full">
+                        <h3 className="text-sm sm:text-base font-bold text-white mb-1 text-center leading-snug group-hover:-translate-y-1 transition-transform duration-300">
+                          {project.name}
+                        </h3>
+                        
+                        {/* Animated Text on Hover */}
+                        <div className="overflow-hidden h-5 flex items-center justify-center w-full">
+                           <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-secondary font-bold tracking-wider uppercase transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out">
+                             Explorar
+                             <ArrowRightIcon className="w-3.5 h-3.5 transform group-hover:translate-x-1.5 transition-transform duration-300" />
+                           </div>
+                        </div>
                       </div>
                     </div>
                   </button>
                 );
               })}
             </div>
-            <span className="block text-xs text-gray-300 mt-2 text-center md:text-right">
-              Haz click en un proyecto para ver detalles
-            </span>
+            <div className="flex justify-end px-2 opacity-70 hover:opacity-100 transition-opacity">
+              <span className="flex items-center text-xs text-gray-300 tracking-wide font-light">
+                <span className="w-6 h-[1px] bg-secondary/80 mr-3"></span>
+                Haz click en un proyecto para ver los detalles
+              </span>
+            </div>
           </div>
         </div>
       </section>
