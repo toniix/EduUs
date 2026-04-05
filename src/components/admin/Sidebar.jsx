@@ -5,17 +5,21 @@ import {
   ChevronLeft,
   ChevronRight,
   Tag,
+  Calendar,
+  ClipboardList,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import logo from "../../assets/logo_1.png";
 
-const menuItems = [
-  { icon: <Home />, label: "Dashboard", value: "dashboard" },
-  { icon: <Users />, label: "Usuarios", value: "users" },
-  { icon: <FileText />, label: "Oportunidades", value: "content" },
-  { icon: <Tag />, label: "Categorías", value: "categories" },
+const ALL_MENU_ITEMS = [
+  { icon: <Home />,          label: "Dashboard",     value: "dashboard",     adminOnly: false },
+  { icon: <Users />,         label: "Usuarios",      value: "users",         adminOnly: true },
+  { icon: <FileText />,      label: "Oportunidades", value: "content",       adminOnly: false },
+  { icon: <Tag />,           label: "Categorías",    value: "categories",    adminOnly: false },
+  { icon: <Calendar />,      label: "Eventos",       value: "events",        adminOnly: true },
+  { icon: <ClipboardList />, label: "Inscripciones", value: "registrations", adminOnly: true },
 ];
 
 export default function Sidebar({
@@ -83,7 +87,7 @@ export default function Sidebar({
 
       {/* Menú principal */}
       <nav className="p-4 space-y-2">
-        {menuItems.map((item) => (
+        {ALL_MENU_ITEMS.filter(item => !item.adminOnly || profile?.role === "admin").map((item) => (
           <div key={item.value}>
             <button
               onClick={() => handleItemClick(item)}
@@ -118,7 +122,7 @@ export default function Sidebar({
       <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
         <div className="space-y-2">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/edutracker")}
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
             } px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 hover:text-primary transition-all duration-300 ${
@@ -127,7 +131,7 @@ export default function Sidebar({
           >
             <Home className="h-5 w-5" />
             {!isCollapsed && (
-              <span className="ml-3 font-medium">Salir al Inicio</span>
+              <span className="ml-3 font-medium">Salir a Edutracker</span>
             )}
           </button>
         </div>

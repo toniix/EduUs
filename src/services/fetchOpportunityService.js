@@ -20,7 +20,7 @@ class OpportunitiesService {
     try {
       let query = supabase.from("opportunities").select(
         `*,
-        category:categories(id, name),
+        category:categories(id, name, color),
         creator:profiles!opportunities_created_by_fkey(id, full_name),
         opportunity_tags(tag:tags(id, name))`,
         { count: "exact" },
@@ -280,6 +280,44 @@ class OpportunitiesService {
       return this.sortByDeadline(transformedData);
     } catch (error) {
       console.error("Error in getRecentOpportunities:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene oportunidades destacadas ordenadas por featured_order
+   * @param {number} limit - Número máximo de oportunidades a obtener (default 4)
+   * @returns {Promise<Array>} Lista de oportunidades destacadas ordenadas
+   */
+  async getFeaturedOpportunities(limit = 4) {
+    try {
+      const { data, error } = await supabase
+        .from("opportunities")
+        .select(
+          `
+          *,
+          category:categories(
+            id,
+            name,
+            color
+          )
+        `,
+        )
+        .eq("is_featured", true)
+        // .eq("status", "active")
+        .order("featured_order", { ascending: true })
+        .limit(limit);
+
+      if (error) {
+        throw new Error(
+          `Error fetching featured opportunities: ${error.message}`,
+        );
+      }
+
+      const transformedData = this.transformOpportunityData(data || []);
+      return transformedData;
+    } catch (error) {
+      console.error("Error in getFeaturedOpportunities:", error);
       throw error;
     }
   }

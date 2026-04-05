@@ -4,18 +4,19 @@ const ImpactCard = ({ item, isFeatured = false }) => {
     : "bg-white";
 
   const shadow = isFeatured
-    ? "shadow-lg hover:shadow-xl"
-    : "shadow-md hover:shadow-lg";
+    ? "shadow-[0_10px_40px_rgba(0,0,0,0.08)] hover:shadow-[0_25px_50px_rgba(59,130,246,0.2)]"
+    : "shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(59,130,246,0.15)]";
 
   const padding = isFeatured ? "p-6 sm:p-8" : "p-5 sm:p-6";
 
   return (
     <div
       className={`group relative ${bgGradient} rounded-xl ${padding} h-full
-    border border-gray-100
-    transition-all duration-300 ${shadow} hover:border-transparent
+    border border-transparent
+    transition-all duration-300 ${shadow}
     flex flex-col justify-between overflow-hidden`}
     >
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       <div className="relative flex flex-col h-full z-10">
         {/* Number */}
         <div className="mb-2">

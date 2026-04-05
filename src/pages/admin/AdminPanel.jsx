@@ -9,11 +9,17 @@ import { paginate } from "../../utils/pagination";
 import { getAllProfiles } from "../../services/userService";
 import { opportunitiesService } from "../../services/fetchOpportunityService";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useAuth } from "../../contexts/AuthContext";
 import CategoriesTab from "../../components/admin/tabs/CategoriesTab";
+import EventsAdminTab from "../../components/admin/tabs/EventsAdminTab";
+import RegistrationsTab from "../../components/admin/tabs/RegistrationsTab";
 
 const ITEMS_PER_PAGE = 10;
 
 const AdminPanel = () => {
+  const { profile } = useAuth();
+  const isAdmin = profile?.role === "admin";
+  
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = localStorage.getItem("adminActiveTab");
     return savedTab || "dashboard";
@@ -145,6 +151,7 @@ const AdminPanel = () => {
       case "dashboard":
         return <DashboardTab />;
       case "users":
+        if (!isAdmin) return <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>;
         if (usersError) return <div className="text-red-600">{usersError}</div>;
         return (
           <UsersTab
@@ -176,6 +183,12 @@ const AdminPanel = () => {
         );
       case "categories":
         return <CategoriesTab />;
+      case "events":
+        if (!isAdmin) return <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>;
+        return <EventsAdminTab />;
+      case "registrations":
+        if (!isAdmin) return <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>;
+        return <RegistrationsTab />;
       default:
         return <div>Pestaña no encontrada</div>;
     }

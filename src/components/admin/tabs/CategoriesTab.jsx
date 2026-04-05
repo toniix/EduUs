@@ -100,7 +100,7 @@ const CategoriesTab = () => {
       window.confirm("¿Estás seguro de que quieres eliminar esta categoría?")
     ) {
       try {
-        console.log(role);
+        // console.log(role);
         await categoryService.deleteCategory(id, role);
         setCategories((prev) => prev.filter((cat) => cat.id !== id));
         toast.success("Categoría eliminada con éxito");

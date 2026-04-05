@@ -283,6 +283,59 @@ const OpportunityForm = ({
               </div>
             </div>
 
+            {/* Sección de Destacados - Solo visible para admins */}
+            {/* {isAdmin && (
+              <div className="mt-12 pt-8 border-t border-primary/20">
+                <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                  ⭐ Oportunidad Destacada
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20">
+                    <input
+                      type="checkbox"
+                      id="is_featured"
+                      name="is_featured"
+                      checked={formData.is_featured || false}
+                      onChange={handleChange}
+                      className="w-5 h-5 rounded border-primary cursor-pointer"
+                    />
+                    <label
+                      htmlFor="is_featured"
+                      className="text-sm font-semibold text-dark cursor-pointer flex-1"
+                    >
+                      Marcar como oportunidad destacada
+                    </label>
+                  </div>
+
+                  {formData.is_featured && (
+                    <div>
+                      <label className="block text-sm font-semibold text-dark mb-2">
+                        Posición destacada{" "}
+                        <span className="text-primary">*</span>
+                      </label>
+                      <select
+                        name="featured_order"
+                        value={formData.featured_order || ""}
+                        onChange={handleChange}
+                        className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
+                      >
+                        <option value="">Selecciona la posición</option>
+                        <option value="1">Posición 1 (Primera)</option>
+                        <option value="2">Posición 2 (Segunda)</option>
+                        <option value="3">Posición 3 (Tercera)</option>
+                        <option value="4">Posición 4 (Cuarta)</option>
+                      </select>
+                      {errors?.featured_order && (
+                        <div className="text-xs text-red-600 mt-1 font-semibold">
+                          {errors.featured_order}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )} */}
+
             {/* Quienes pueden postular */}
             <div className="mt-12 pt-8 border-t border-primary/20">
               <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">

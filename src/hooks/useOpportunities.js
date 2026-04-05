@@ -12,9 +12,10 @@ import { OpportunitiesContext } from "../contexts/OpportunityContext";
 // Hook para usar el contexto
 export const useOpportunities = () => {
   const context = useContext(OpportunitiesContext);
+  // console.log(context);
   if (!context) {
     throw new Error(
-      "useOpportunities debe ser usado dentro de OpportunitiesProvider"
+      "useOpportunities debe ser usado dentro de OpportunitiesProvider",
     );
   }
   return context;
@@ -97,9 +98,8 @@ export function useInactiveOpportunities(pagination = {}) {
     try {
       setLoading(true);
       setError(null);
-      const result = await opportunitiesService.getInactiveOpportunities(
-        pagination
-      );
+      const result =
+        await opportunitiesService.getInactiveOpportunities(pagination);
       setData(result);
     } catch (err) {
       setError(err);

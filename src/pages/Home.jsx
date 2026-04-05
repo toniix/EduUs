@@ -1,10 +1,14 @@
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { lazy, Suspense } from "react";
+import { motion } from "framer-motion";
 import ImpactSection from "../components/ImpactSection";
 import AboutSection from "../components/AboutSection";
 import OfferSection from "../components/OfferSection";
 import SEO from "../components/SEO";
+import FeaturedOpportunities from "../components/opportunities/FeaturedOpportunities";
+import EventsSection from "../components/events/EventsSection";
+import PromoModal from "../components/events/PromoModal";
 
 const TestimonialsSection = lazy(
   () => import("../components/TestimonialsSection"),
@@ -21,6 +25,8 @@ const Home = () => {
         title="EDU-US | Becas y oportunidades internacionales 2026"
         description="Encuentra becas, voluntariados y oportunidades académicas internacionales actualizadas cada semana."
       />
+      {/* PromoModal se auto-controla con usePromoModal */}
+      <PromoModal />
       <div className="flex flex-col min-h-screen">
         <section className="w-full min-h-[calc(100vh-4rem)] bg-center bg-cover flex items-center justify-center relative overflow-hidden">
           <img
@@ -38,28 +44,43 @@ const Home = () => {
           />
           <div className="absolute inset-0 bg-dark bg-opacity-60"></div>
           <div className="relative w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex ">
-            <div className="text-light max-w-3xl lg:w-1/2">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                Educación de Calidad para Todos
-              </h1>
-              <p className="text-xl mb-8">
-                Acompañamos a jóvenes en el desarrollo de habilidades que les
-                permitan explorar su potencial y aprovechar nuevas
-                oportunidades.
-              </p>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-light max-w-3xl lg:w-1/2 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 sm:p-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)]"
+            >
+              <motion.h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                {"Educación de Calidad para Todos".split("").map((char, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.8 + i * 0.06,
+                      duration: 0.3,
+                      ease: "easeOut",
+                    }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </motion.h1>
               <Link
                 to="/edutracker"
-                className="inline-flex items-center bg-primary text-light px-6 py-3 rounded-md hover:bg-opacity-90 hover:text-dark"
+                className="group inline-flex items-center gap-3 bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all duration-300 hover:bg-primary/95 hover:scale-[1.05] hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98]"
               >
-                Explora oportunidades aqui
-                <ArrowRight className="ml-2 h-5 w-5" />
+                Explora oportunidades aquí
+                <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1.5" />
               </Link>
-            </div>
+            </motion.div>
           </div>
         </section>
         <ImpactSection />
         <AboutSection />
         <OfferSection />
+        <FeaturedOpportunities />
+        <EventsSection />
         <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
           <TestimonialsSection />
         </Suspense>

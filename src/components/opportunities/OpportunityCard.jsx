@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatDate, isDateInPast } from "../../utils/formatDate";
-import { typeConfig, modalityConfig } from "../../utils/opportunity";
+import { modalityConfig } from "../../utils/opportunity";
 import { useMemo, useState } from "react";
 import ShareOpportunity from "./ShareOpportunity";
 
@@ -20,27 +20,20 @@ export default function OpportunityCard({ opportunity }) {
     description,
     deadline,
     image_url,
-    tags,
     modality,
     country,
     category,
   } = opportunity;
+
+  // console.log("Oportunidad recibida en OpportunityCard:", opportunity);
 
   const isFinished = useMemo(() => {
     return deadline ? isDateInPast(new Date(deadline)) : false;
   }, [deadline]);
 
   // Obtener la información del tipo basada en el nombre de la categoría
-  const categoryName = category?.name?.toLowerCase() || "";
-  const typeInfo = typeConfig[categoryName] || {
-    label: categoryName,
-    color: "bg-gray-100 text-gray-800",
-  };
-
-  // Si no encontramos una coincidencia exacta, buscamos por coincidencia parcial
-  const typeKey =
-    Object.keys(typeConfig).find((key) => categoryName.includes(key)) || "";
-  const matchedType = typeConfig[typeKey] || typeInfo;
+  const categoryName = category?.name;
+  const categoryColor = category?.color;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -62,11 +55,10 @@ export default function OpportunityCard({ opportunity }) {
         />
         <div className="absolute top-3 left-3">
           <span
-            className={`px-2 py-1 rounded-full text-sm font-medium ${
-              matchedType.color || "bg-gray-100 text-gray-800"
-            }`}
+            className="px-2 py-1 rounded-full text-sm font-medium"
+            style={{ backgroundColor: categoryColor }}
           >
-            {matchedType.label || categoryName || "Oportunidad"}
+            {categoryName}
           </span>
         </div>
 
