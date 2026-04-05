@@ -101,13 +101,6 @@ export default function EventForm({ event = null, onClose, onSave }) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // Scroll bloqueado mientras el modal está open
-  // useEffect(() => {
-  //   document.body.style.overflow = "hidden";
-  //   return () => {
-  //     document.body.style.overflow = "";
-  //   };
-  // }, []);
 
   // Auto-generar slug cuando cambia el título (solo si el usuario no lo ha editado manualmente)
   const handleTitleChange = (e) => {

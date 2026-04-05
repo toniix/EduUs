@@ -49,6 +49,7 @@ export default function RegistrationsTab() {
   }, []);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
+  console.log(registrations);
 
   /* Cambiar estado */
   const handleStatusChange = async (regId, newStatus) => {
@@ -67,9 +68,9 @@ export default function RegistrationsTab() {
 
   /* Exportar CSV global */
   const exportCSV = () => {
-    const headers = ["Nombre", "Email", "Teléfono", "Estado", "Evento", "Fecha inscripción"];
+    const headers = ["Nombre", "Email", "Carrera", "Universidad", "DNI", "Teléfono", "Estado", "Evento", "Fecha inscripción"];
     const rows = filtered.map((r) => [
-      r.name, r.email, r.phone || "",
+      r.name, r.email, r.career || "", r.university || "", r.dni || "", r.phone || "",
       REG_STATUS[r.status]?.label || r.status,
       r.event?.title || "—",
       formatDate(r.registered_at),
@@ -100,6 +101,9 @@ export default function RegistrationsTab() {
       !q ||
       r.name?.toLowerCase().includes(q) ||
       r.email?.toLowerCase().includes(q) ||
+      r.dni?.toLowerCase().includes(q) ||
+      r.career?.toLowerCase().includes(q) ||
+      r.university?.toLowerCase().includes(q) ||
       r.event?.title?.toLowerCase().includes(q);
     const matchStatus = statusFilter === "all" || r.status === statusFilter;
     const matchEvent = eventFilter === "all" || r.event?.id === eventFilter;
@@ -219,7 +223,7 @@ export default function RegistrationsTab() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className={isDark ? "border-b border-gray-700 bg-gray-800/60" : "border-b border-gray-100 bg-gray-50"}>
-                    {["Persona", "Email", "Teléfono", "Evento", "Estado", "Fecha", "Acciones"].map((h) => (
+                    {["Persona", "Email", "Carrera", "Universidad", "DNI", "Teléfono", "Evento", "Estado", "Fecha", "Acciones"].map((h) => (
                       <th key={h} className={`px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider ${subText}`}>
                         {h}
                       </th>
@@ -250,6 +254,15 @@ export default function RegistrationsTab() {
 
                         {/* Email */}
                         <td className={`px-4 py-3 ${subText} truncate max-w-[160px]`}>{reg.email}</td>
+
+                        {/* Carrera */}
+                        <td className={`px-4 py-3 ${subText} truncate max-w-[140px]`}>{reg.career || "—"}</td>
+
+                        {/* Universidad */}
+                        <td className={`px-4 py-3 ${subText} truncate max-w-[160px]`}>{reg.university || "—"}</td>
+
+                        {/* DNI */}
+                        <td className={`px-4 py-3 ${subText} font-mono`}>{reg.dni || "—"}</td>
 
                         {/* Teléfono */}
                         <td className={`px-4 py-3 ${subText}`}>{reg.phone || "—"}</td>

@@ -11,7 +11,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  *  - onClose: () => void
  */
 export default function RegisterModal({ event, onClose }) {
-  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [form, setForm] = useState({ name: "", email: "", career: "", university: "", dni: "", phone: "" });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [apiError, setApiError] = useState("");
@@ -46,6 +46,18 @@ export default function RegisterModal({ event, onClose }) {
     } else if (!EMAIL_REGEX.test(form.email)) {
       newErrors.email = "Ingresa un correo válido.";
     }
+    if (!form.career.trim()) newErrors.career = "La carrera es obligatoria.";
+    if (!form.university.trim()) newErrors.university = "La universidad es obligatoria.";
+    if (!form.dni.trim()) {
+      newErrors.dni = "El DNI es obligatorio.";
+    } else if (!/^\d{8}$/.test(form.dni.trim())) {
+      newErrors.dni = "Ingresa un DNI válido (8 dígitos).";
+    }
+    if (!form.phone.trim()) {
+      newErrors.phone = "El número es obligatorio.";
+    } else if (!/^\d{9}$/.test(form.phone.trim().replace(/\s/g, ""))) {
+      newErrors.phone = "Ingresa un número válido (9 dígitos).";
+    }
     return newErrors;
   };
 
@@ -63,6 +75,9 @@ export default function RegisterModal({ event, onClose }) {
     const { success, error } = await eventsService.registerForEvent(event.id, {
       name: form.name.trim(),
       email: form.email.trim(),
+      career: form.career.trim(),
+      university: form.university.trim(),
+      dni: form.dni.trim(),
       phone: form.phone.trim(),
     });
 
@@ -86,7 +101,7 @@ export default function RegisterModal({ event, onClose }) {
       onClick={handleOverlayClick}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative animate-[fadeInUp_0.25s_ease]">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative animate-[fadeInUp_0.25s_ease] max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b border-gray-100">
           <div className="pr-8">
@@ -107,7 +122,7 @@ export default function RegisterModal({ event, onClose }) {
         </div>
 
         {/* Contenido */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {/* Estado éxito */}
           {status === "success" ? (
             <div className="flex flex-col items-center text-center gap-4 py-4">
@@ -182,20 +197,97 @@ export default function RegisterModal({ event, onClose }) {
                 )}
               </div>
 
-              {/* Teléfono */}
+              {/* Carrera */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Teléfono{" "}
-                  <span className="text-gray-400 font-normal">(opcional)</span>
+                  Carrera <span className="text-primary">*</span>
                 </label>
                 <input
-                  type="tel"
-                  name="phone"
-                  value={form.phone}
+                  type="text"
+                  name="career"
+                  value={form.career}
                   onChange={handleChange}
-                  placeholder="+51 999 999 999"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                  placeholder="Ej: Ingeniería de Sistemas"
+                  className={`w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors ${
+                    errors.career
+                      ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                      : "border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  }`}
                 />
+                {errors.career && (
+                  <p className="text-xs text-red-600 mt-1">{errors.career}</p>
+                )}
+              </div>
+
+              {/* Universidad */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  Universidad <span className="text-primary">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="university"
+                  value={form.university}
+                  onChange={handleChange}
+                  placeholder="Ej: Universidad Nacional Mayor de San Marcos"
+                  className={`w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors ${
+                    errors.university
+                      ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                      : "border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  }`}
+                />
+                {errors.university && (
+                  <p className="text-xs text-red-600 mt-1">{errors.university}</p>
+                )}
+              </div>
+
+              {/* DNI y Teléfono en una fila */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* DNI */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                    DNI <span className="text-primary">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="dni"
+                    value={form.dni}
+                    onChange={handleChange}
+                    placeholder="12345678"
+                    maxLength={8}
+                    className={`w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors ${
+                      errors.dni
+                        ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                        : "border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    }`}
+                  />
+                  {errors.dni && (
+                    <p className="text-xs text-red-600 mt-1">{errors.dni}</p>
+                  )}
+                </div>
+
+                {/* Número de celular */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                    Celular <span className="text-primary">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={form.phone}
+                    onChange={handleChange}
+                    placeholder="999 999 999"
+                    maxLength={9}
+                    className={`w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors ${
+                      errors.phone
+                        ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                        : "border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    }`}
+                  />
+                  {errors.phone && (
+                    <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
+                  )}
+                </div>
               </div>
 
               {/* Botones */}

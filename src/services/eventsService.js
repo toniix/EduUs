@@ -233,8 +233,8 @@ class EventsService {
    * Verifica cupos disponibles antes de insertar.
    * @returns {Promise<{success: boolean, error: string|null}>}
    */
-  async registerForEvent(eventId, { name, email, phone }) {
-    console.log(eventId, name, email, phone);
+  async registerForEvent(eventId, { name, email, career, university, dni, phone }) {
+    console.log(eventId, name, email, career, university, dni, phone);
     try {
       // Verificar si ya existe una inscripción con este correo
       const { data: existing } = await supabase
@@ -254,7 +254,7 @@ class EventsService {
         // Si fue cancelado, se puede re-inscribir actualizando
         const { error } = await supabase
           .from("event_registrations")
-          .update({ status: "registered", name, phone })
+          .update({ status: "registered", name, career, university, dni, phone })
           .eq("id", existing.id);
 
         if (error) throw new Error(error.message);
@@ -273,7 +273,7 @@ class EventsService {
 
       const { error } = await supabase
         .from("event_registrations")
-        .insert([{ event_id: eventId, user_id: userId, name, email, phone }]);
+        .insert([{ event_id: eventId, user_id: userId, name, email, career, university, dni, phone }]);
 
       if (error) throw new Error(error.message);
       return { success: true, error: null };
