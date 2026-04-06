@@ -31,6 +31,7 @@ export default function OpportunitySidebar({
     error,
     isAuthenticated,
   } = useReminders();
+  console.log("isAuthenticated:", isAuthenticated);
 
   const [showReminderSetup, setShowReminderSetup] = useState(false);
   const [selectedDays, setSelectedDays] = useState(["7", "3", "1"]);
@@ -61,7 +62,7 @@ export default function OpportunitySidebar({
 
   const handleToggleReminder = (day) => {
     setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
     );
   };
 
@@ -103,8 +104,8 @@ export default function OpportunitySidebar({
               isExpired
                 ? "bg-red-50 border border-red-200"
                 : daysUntilDeadline <= 7
-                ? "bg-yellow-50 border border-yellow-200"
-                : "bg-green-50 border border-green-200"
+                  ? "bg-yellow-50 border border-yellow-200"
+                  : "bg-green-50 border border-green-200"
             }`}
           >
             <div className="flex items-center">
@@ -113,8 +114,8 @@ export default function OpportunitySidebar({
                   isExpired
                     ? "text-red-500"
                     : daysUntilDeadline <= 7
-                    ? "text-yellow-500"
-                    : "text-green-500"
+                      ? "text-yellow-500"
+                      : "text-green-500"
                 }`}
               />
               <div>
@@ -126,8 +127,8 @@ export default function OpportunitySidebar({
                     isExpired
                       ? "text-red-600"
                       : daysUntilDeadline <= 7
-                      ? "text-yellow-600"
-                      : "text-green-600"
+                        ? "text-yellow-600"
+                        : "text-green-600"
                   }`}
                 >
                   {new Date(deadline).toLocaleDateString("es-ES", {
@@ -140,8 +141,8 @@ export default function OpportunitySidebar({
                       {daysUntilDeadline === 0
                         ? "¡Hoy!"
                         : daysUntilDeadline === 1
-                        ? "¡Mañana!"
-                        : `${daysUntilDeadline} días restantes`}
+                          ? "¡Mañana!"
+                          : `${daysUntilDeadline} días restantes`}
                     </span>
                   )}
                 </p>
@@ -268,7 +269,7 @@ export default function OpportunitySidebar({
                           {reminderOptions.find(
                             (opt) =>
                               opt.value ===
-                              reminder.reminder_type.replace("_days", "")
+                              reminder.reminder_type.replace("_days", ""),
                           )?.label || reminder.reminder_type}
                         </span>
                       </div>
@@ -277,15 +278,15 @@ export default function OpportunitySidebar({
                           reminder.status === "pending"
                             ? "bg-secondary /20 text-[#f5ba3c] border border-[#f5ba3c]/30"
                             : reminder.status === "sent"
-                            ? "bg-[#4db9a9]/20 text-[#4db9a9] border border-[#4db9a9]/30"
-                            : "bg-secondary /20 text-[#ec451d] border border-[#ec451d]/30"
+                              ? "bg-[#4db9a9]/20 text-[#4db9a9] border border-[#4db9a9]/30"
+                              : "bg-secondary /20 text-[#ec451d] border border-[#ec451d]/30"
                         }`}
                       >
                         {reminder.status === "pending"
                           ? "Pendiente"
                           : reminder.status === "sent"
-                          ? "Enviado"
-                          : "Error"}
+                            ? "Enviado"
+                            : "Error"}
                       </span>
                     </div>
                   ))}
@@ -343,7 +344,7 @@ export default function OpportunitySidebar({
                                 reminderOptions.find(
                                   (opt) =>
                                     opt.value ===
-                                    reminder.reminder_type.replace("_days", "")
+                                    reminder.reminder_type.replace("_days", ""),
                                 )?.label
                               }
                             </span>
@@ -353,15 +354,15 @@ export default function OpportunitySidebar({
                               reminder.status === "pending"
                                 ? "bg-[#f5ba3c]/20 text-[#f5ba3c] border border-[#f5ba3c]/30"
                                 : reminder.status === "sent"
-                                ? "bg-[#4db9a9]/20 text-[#4db9a9] border border-[#4db9a9]/30"
-                                : "bg-[#ec451d]/20 text-[#ec451d] border border-[#ec451d]/30"
+                                  ? "bg-[#4db9a9]/20 text-[#4db9a9] border border-[#4db9a9]/30"
+                                  : "bg-[#ec451d]/20 text-[#ec451d] border border-[#ec451d]/30"
                             }`}
                           >
                             {reminder.status === "pending"
                               ? "Pendiente"
                               : reminder.status === "sent"
-                              ? "Enviado"
-                              : "Error"}
+                                ? "Enviado"
+                                : "Error"}
                           </span>
                         </div>
                       ))}
@@ -404,8 +405,8 @@ export default function OpportunitySidebar({
                               isDisabled
                                 ? "opacity-40 cursor-not-allowed bg-gray-50 border-gray-200"
                                 : isSelected
-                                ? "bg-gradient-to-r from-[#4db9a9]/10 to-[#4db9a9]/5 border-[#4db9a9] shadow-md transform scale-105"
-                                : "bg-white border-gray-200 hover:border-[#4db9a9]/50 hover:bg-[#4db9a9]/5 hover:shadow-sm"
+                                  ? "bg-gradient-to-r from-[#4db9a9]/10 to-[#4db9a9]/5 border-[#4db9a9] shadow-md transform scale-105"
+                                  : "bg-white border-gray-200 hover:border-[#4db9a9]/50 hover:bg-[#4db9a9]/5 hover:shadow-sm"
                             }`}
                           >
                             <input

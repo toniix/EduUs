@@ -6,16 +6,16 @@ import { supabase } from "../lib/supabase";
 export function useReminders() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user } = useAuth();
+  const { profile, isAuthenticated } = useAuth();
 
   /**
    * Crear recordatorios para una oportunidad
    */
   const createReminder = async (
     opportunityId,
-    reminderTypes = ["7", "3", "1"]
+    reminderTypes = ["7", "3", "1"],
   ) => {
-    if (!user) {
+    if (!profile) {
       setError("Usuario no autenticado");
       return { success: false, error: "Usuario no autenticado" };
     }
@@ -29,11 +29,11 @@ export function useReminders() {
         "create-reminder",
         {
           body: {
-            userId: user.id,
+            userId: profile.id,
             opportunityId,
             reminderTypes,
           },
-        }
+        },
       );
 
       if (error) {
@@ -64,7 +64,7 @@ export function useReminders() {
    * Obtener recordatorios del usuario actual
    */
   const getUserReminders = async () => {
-    if (!user) {
+    if (!profile) {
       setError("Usuario no autenticado");
       return [];
     }
@@ -85,9 +85,9 @@ export function useReminders() {
             type,
             url
           )
-        `
+        `,
         )
-        .eq("user_id", user.id)
+        .eq("user_id", profile.id)
         .order("reminder_date", { ascending: true });
 
       if (error) {
@@ -111,7 +111,7 @@ export function useReminders() {
    * Eliminar un recordatorio específico
    */
   const deleteReminder = async (reminderId) => {
-    if (!user) {
+    if (!profile) {
       setError("Usuario no autenticado");
       return { success: false, error: "Usuario no autenticado" };
     }
@@ -124,7 +124,7 @@ export function useReminders() {
         .from("reminders")
         .delete()
         .eq("id", reminderId)
-        .eq("user_id", user.id);
+        .eq("user_id", profile.id);
 
       if (error) {
         console.error("❌ Error eliminando recordatorio:", error);
@@ -147,7 +147,7 @@ export function useReminders() {
    * Eliminar todos los recordatorios de una oportunidad
    */
   const deleteOpportunityReminders = async (opportunityId) => {
-    if (!user) {
+    if (!profile) {
       setError("Usuario no autenticado");
       return { success: false, error: "Usuario no autenticado" };
     }
@@ -160,12 +160,12 @@ export function useReminders() {
         .from("reminders")
         .delete()
         .eq("opportunity_id", opportunityId)
-        .eq("user_id", user.id);
+        .eq("user_id", profile.id);
 
       if (error) {
         console.error(
           "❌ Error eliminando recordatorios de oportunidad:",
-          error
+          error,
         );
         throw new Error(error.message);
       }
@@ -186,13 +186,13 @@ export function useReminders() {
    * Verificar si existe recordatorio para una oportunidad
    */
   const checkExistingReminders = async (opportunityId) => {
-    if (!user) return [];
+    if (!profile) return [];
 
     try {
       const { data, error } = await supabase
         .from("reminders")
         .select("id, reminder_type, status, reminder_date")
-        .eq("user_id", user.id)
+        .eq("user_id", profile.id)
         .eq("opportunity_id", opportunityId);
 
       if (error) {
@@ -211,13 +211,13 @@ export function useReminders() {
    * Obtener estadísticas de recordatorios
    */
   const getReminderStats = async () => {
-    if (!user) return null;
+    if (!profile) return null;
 
     try {
       const { data, error } = await supabase
         .from("reminders")
         .select("status")
-        .eq("user_id", user.id);
+        .eq("user_id", profile.id);
 
       if (error) {
         console.error("❌ Error obteniendo estadísticas:", error);
@@ -252,7 +252,7 @@ export function useReminders() {
     error,
 
     // Información del usuario
-    user,
-    isAuthenticated: !!user,
+    profile,
+    isAuthenticated,
   };
 }
