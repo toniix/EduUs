@@ -441,6 +441,7 @@ export default function OpportunitySidebar({
                         return (
                           <label
                             key={option.value}
+                            htmlFor={`reminder-${option.value}`}
                             className={`relative flex items-center p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
                               isDisabled
                                 ? "opacity-40 cursor-not-allowed bg-gray-50 border-gray-200"
@@ -450,6 +451,7 @@ export default function OpportunitySidebar({
                             }`}
                           >
                             <input
+                              id={`reminder-${option.value}`}
                               type="checkbox"
                               checked={isSelected}
                               onChange={() =>

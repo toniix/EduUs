@@ -80,10 +80,15 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
     <div
       className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 backdrop-blur-sm"
       onClick={closeModal}
+      role="presentation"
+      aria-hidden="true"
     >
       <div
         className="bg-white rounded-2xl w-11/12 max-w-md p-8 relative border border-gray-200 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Compartir oportunidad"
       >
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-[#ec451d] transition-colors"

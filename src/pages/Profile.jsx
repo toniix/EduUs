@@ -43,10 +43,12 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-light pt-16">
       <div className="max-w-xl mx-auto bg-white rounded-lg shadow-lg p-8 mt-8 relative">
-        <div
+        <button
+          type="button"
           className="absolute left-4 top-4 flex items-center gap-1 cursor-pointer text-primary hover:text-secondary font-semibold text-base transition-colors"
           onClick={() => navigate(-1)}
           title="Volver"
+          aria-label="Volver a la página anterior"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -55,6 +57,7 @@ const Profile = () => {
             viewBox="0 0 24 24"
             stroke="currentColor"
             strokeWidth={2}
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -63,7 +66,7 @@ const Profile = () => {
             />
           </svg>
           Volver
-        </div>
+        </button>
         <div className="flex flex-col items-center mb-8">
           <div className="w-24 h-24 bg-gray-200 rounded-full mb-4 flex items-center justify-center text-4xl text-primary">
             {userName?.charAt(0) || "U"}

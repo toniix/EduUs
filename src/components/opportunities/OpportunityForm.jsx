@@ -121,10 +121,14 @@ const OpportunityForm = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Basic Information */}
               <div>
-                <label className="block text-sm font-semibold text-dark mb-1">
+                <label
+                  htmlFor="opp-title"
+                  className="block text-sm font-semibold text-dark mb-1"
+                >
                   Título <span className="text-primary">*</span>
                 </label>
                 <input
+                  id="opp-title"
                   type="text"
                   name="title"
                   // required
@@ -140,10 +144,14 @@ const OpportunityForm = ({
                 )}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-dark mb-1">
+                <label
+                  htmlFor="opp-description"
+                  className="block text-sm font-semibold text-dark mb-1"
+                >
                   Descripción <span className="text-primary">*</span>
                 </label>
                 <textarea
+                  id="opp-description"
                   name="description"
                   rows="4"
                   className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400 resize-none"
@@ -158,10 +166,14 @@ const OpportunityForm = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="opp-organization"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Organización
                 </label>
                 <input
+                  id="opp-organization"
                   type="text"
                   name="organization"
                   // required
@@ -177,10 +189,14 @@ const OpportunityForm = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="opp-category"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Categoría
                 </label>
                 <select
+                  id="opp-category"
                   name="category_id"
                   className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
                   value={formData.category_id || ""}
@@ -212,10 +228,14 @@ const OpportunityForm = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="opp-modality"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Modalidad
                 </label>
                 <select
+                  id="opp-modality"
                   name="modality"
                   // required
                   className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
@@ -229,10 +249,14 @@ const OpportunityForm = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="opp-country"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   País
                 </label>
                 <input
+                  id="opp-country"
                   type="text"
                   name="country"
                   // required
@@ -248,10 +272,14 @@ const OpportunityForm = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="opp-location"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Ubicación
                 </label>
                 <select
+                  id="opp-location"
                   name="location"
                   // required
                   className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
@@ -264,10 +292,14 @@ const OpportunityForm = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="opp-deadline"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Fecha Límite
                 </label>
                 <input
+                  id="opp-deadline"
                   type="date"
                   name="deadline"
                   // required
@@ -618,10 +650,14 @@ const OpportunityForm = ({
           </div>
           {/* Input para imagen al final del formulario */}
           <div className="mt-8">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="opp-image"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Imagen principal
             </label>
             <input
+              id="opp-image"
               type="file"
               accept="image/*"
               name="image_url"

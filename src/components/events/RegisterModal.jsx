@@ -100,15 +100,22 @@ export default function RegisterModal({ event, onClose }) {
       ref={overlayRef}
       onClick={handleOverlayClick}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+      role="presentation"
+      aria-hidden="true"
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative animate-[fadeInUp_0.25s_ease] max-h-[90vh] flex flex-col">
+      <div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative animate-[fadeInUp_0.25s_ease] max-h-[90vh] flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="register-modal-title"
+      >
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b border-gray-100">
           <div className="pr-8">
             <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-1">
               Inscripción
             </p>
-            <h2 className="text-base font-bold text-gray-900 leading-snug">
+            <h2 id="register-modal-title" className="text-base font-bold text-gray-900 leading-snug">
               {event?.title}
             </h2>
           </div>
@@ -155,10 +162,11 @@ export default function RegisterModal({ event, onClose }) {
 
               {/* Nombre */}
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                <label htmlFor="reg-name" className="block text-xs font-semibold text-gray-700 mb-1.5">
                   Nombre completo <span className="text-primary">*</span>
                 </label>
                 <input
+                  id="reg-name"
                   type="text"
                   name="name"
                   value={form.name}
@@ -177,10 +185,11 @@ export default function RegisterModal({ event, onClose }) {
 
               {/* Correo */}
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                <label htmlFor="reg-email" className="block text-xs font-semibold text-gray-700 mb-1.5">
                   Correo electrónico <span className="text-primary">*</span>
                 </label>
                 <input
+                  id="reg-email"
                   type="email"
                   name="email"
                   value={form.email}
@@ -199,10 +208,11 @@ export default function RegisterModal({ event, onClose }) {
 
               {/* Carrera */}
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                <label htmlFor="reg-career" className="block text-xs font-semibold text-gray-700 mb-1.5">
                   Carrera <span className="text-primary">*</span>
                 </label>
                 <input
+                  id="reg-career"
                   type="text"
                   name="career"
                   value={form.career}
@@ -221,10 +231,11 @@ export default function RegisterModal({ event, onClose }) {
 
               {/* Universidad */}
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                <label htmlFor="reg-university" className="block text-xs font-semibold text-gray-700 mb-1.5">
                   Universidad <span className="text-primary">*</span>
                 </label>
                 <input
+                  id="reg-university"
                   type="text"
                   name="university"
                   value={form.university}
@@ -245,10 +256,11 @@ export default function RegisterModal({ event, onClose }) {
               <div className="grid grid-cols-2 gap-3">
                 {/* DNI */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  <label htmlFor="reg-dni" className="block text-xs font-semibold text-gray-700 mb-1.5">
                     DNI <span className="text-primary">*</span>
                   </label>
                   <input
+                    id="reg-dni"
                     type="text"
                     name="dni"
                     value={form.dni}
@@ -268,10 +280,11 @@ export default function RegisterModal({ event, onClose }) {
 
                 {/* Número de celular */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  <label htmlFor="reg-phone" className="block text-xs font-semibold text-gray-700 mb-1.5">
                     Celular <span className="text-primary">*</span>
                   </label>
                   <input
+                    id="reg-phone"
                     type="tel"
                     name="phone"
                     value={form.phone}
