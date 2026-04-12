@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Calendar,
@@ -14,6 +14,45 @@ import {
 import { useReminders } from "../../hooks/useReminders";
 import toast from "react-hot-toast";
 import { useLoginRedirect } from "../../hooks/useLoginRedirect";
+
+const reminderInitialState = {
+  showReminderSetup: false,
+  existingReminders: [],
+  hasReminders: false,
+  showSuccess: false,
+};
+
+function reminderReducer(state, action) {
+  switch (action.type) {
+    case "SHOW_SETUP":
+      return { ...state, showReminderSetup: true, showSuccess: false };
+    case "HIDE_SETUP":
+      return { ...state, showReminderSetup: false };
+    case "LOAD_REMINDERS":
+      return {
+        ...state,
+        existingReminders: action.payload,
+        hasReminders: action.payload.length > 0,
+      };
+    case "CREATE_SUCCESS":
+      return {
+        ...state,
+        showReminderSetup: false,
+        showSuccess: true,
+        existingReminders: action.payload,
+        hasReminders: action.payload.length > 0,
+      };
+    case "DELETE_SUCCESS":
+      return {
+        ...state,
+        existingReminders: [],
+        hasReminders: false,
+        showSuccess: true,
+      };
+    default:
+      return state;
+  }
+}
 
 export default function OpportunitySidebar({
   deadline,
@@ -31,13 +70,17 @@ export default function OpportunitySidebar({
     error,
     isAuthenticated,
   } = useReminders();
-  console.log("isAuthenticated:", isAuthenticated);
 
-  const [showReminderSetup, setShowReminderSetup] = useState(false);
+  // console.log("isAuthenticated:", isAuthenticated);
+
+  const [reminderState, dispatchReminder] = useReducer(
+    reminderReducer,
+    reminderInitialState,
+  );
+  const { showReminderSetup, existingReminders, hasReminders, showSuccess } =
+    reminderState;
+
   const [selectedDays, setSelectedDays] = useState(["7", "3", "1"]);
-  const [existingReminders, setExistingReminders] = useState([]);
-  const [hasReminders, setHasReminders] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const { redirectToLogin } = useLoginRedirect();
 
   const reminderOptions = [
@@ -56,8 +99,7 @@ export default function OpportunitySidebar({
 
   const loadExistingReminders = async () => {
     const existing = await checkExistingReminders(opportunityId);
-    setExistingReminders(existing);
-    setHasReminders(existing.length > 0);
+    dispatchReminder({ type: "LOAD_REMINDERS", payload: existing });
   };
 
   const handleToggleReminder = (day) => {
@@ -67,13 +109,13 @@ export default function OpportunitySidebar({
   };
 
   const handleCreateReminders = async () => {
+    // console.log("creando recordatorios");
     if (selectedDays.length === 0) return;
 
     const result = await createReminder(opportunityId, selectedDays);
     if (result.success) {
-      setShowSuccess(true);
-      setShowReminderSetup(false);
-      await loadExistingReminders();
+      const existing = await checkExistingReminders(opportunityId);
+      dispatchReminder({ type: "CREATE_SUCCESS", payload: existing });
       toast.success("Recordatorios configurados exitosamente");
     }
   };
@@ -81,9 +123,7 @@ export default function OpportunitySidebar({
   const handleDeleteReminders = async () => {
     const result = await deleteOpportunityReminders(opportunityId);
     if (result.success) {
-      setHasReminders(false);
-      setExistingReminders([]);
-      setShowSuccess(true);
+      dispatchReminder({ type: "DELETE_SUCCESS" });
       toast.success("Recordatorios eliminados exitosamente");
     }
   };
@@ -221,7 +261,7 @@ export default function OpportunitySidebar({
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowReminderSetup(true)}
+                  onClick={() => dispatchReminder({ type: "SHOW_SETUP" })}
                   className="w-full bg-gradient-to-r from-[#4db9a9] to-[#4db9a9]/90 hover:from-[#4db9a9]/90 hover:to-[#4db9a9] text-white py-3 px-4 rounded-xl font-medium text-sm transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   Configurar recordatorios
@@ -249,7 +289,7 @@ export default function OpportunitySidebar({
                     </div>
                   </div>
                   <button
-                    onClick={() => setShowReminderSetup(true)}
+                    onClick={() => dispatchReminder({ type: "SHOW_SETUP" })}
                     className="flex items-center px-3 py-1.5 text-xs text-[#4db9a9] hover:text-[#4db9a9]/80 hover:bg-[#4db9a9]/10 rounded-lg transition-all duration-200"
                   >
                     <Settings className="h-3 w-3 mr-1" />
@@ -318,7 +358,7 @@ export default function OpportunitySidebar({
                     </h4>
                   </div>
                   <button
-                    onClick={() => setShowReminderSetup(false)}
+                    onClick={() => dispatchReminder({ type: "HIDE_SETUP" })}
                     className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200"
                   >
                     <X className="h-4 w-4" />
@@ -470,7 +510,7 @@ export default function OpportunitySidebar({
                         )}
                       </button>
                       <button
-                        onClick={() => setShowReminderSetup(false)}
+                        onClick={() => dispatchReminder({ type: "HIDE_SETUP" })}
                         className="px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-200"
                       >
                         Cancelar

@@ -1,39 +1,108 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useReducer, useContext } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { categoryService } from "../../../services/categoryService";
 import toast from "react-hot-toast";
 import CategoryForm from "../../CategoryForm";
 import { ThemeContext } from "../../../contexts/ThemeContext";
-import { useContext } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 
+const EMPTY_FORM = { name: "", description: "", color: "#3b82f6" };
+
+const dataInitialState = { categories: [], loading: true, error: null };
+
+function dataReducer(state, action) {
+  switch (action.type) {
+    case "FETCH_START":
+      return { ...state, loading: true, error: null };
+    case "FETCH_SUCCESS":
+      return { categories: action.payload, loading: false, error: null };
+    case "FETCH_ERROR":
+      return { ...state, loading: false, error: action.payload };
+    case "ADD":
+      return { ...state, categories: [...state.categories, action.payload] };
+    case "UPDATE":
+      return {
+        ...state,
+        categories: state.categories.map((cat) =>
+          cat.id === action.payload.id ? action.payload : cat,
+        ),
+      };
+    case "DELETE":
+      return {
+        ...state,
+        categories: state.categories.filter((cat) => cat.id !== action.payload),
+      };
+    default:
+      return state;
+  }
+}
+
+const modalInitialState = {
+  isModalOpen: false,
+  isSubmitting: false,
+  currentCategory: null,
+  formData: EMPTY_FORM,
+};
+
+function modalReducer(state, action) {
+  switch (action.type) {
+    case "OPEN_CREATE":
+      return {
+        ...state,
+        isModalOpen: true,
+        currentCategory: null,
+        formData: EMPTY_FORM,
+      };
+    case "OPEN_EDIT":
+      return {
+        ...state,
+        isModalOpen: true,
+        currentCategory: action.payload,
+        formData: {
+          name: action.payload.name,
+          description: action.payload.description || "",
+          color: action.payload.color || "#3b82f6",
+        },
+      };
+    case "CLOSE":
+      return { ...modalInitialState };
+    case "SUBMIT_START":
+      return { ...state, isSubmitting: true };
+    case "SUBMIT_END":
+      return { ...state, isSubmitting: false };
+    case "FIELD_CHANGE":
+      return { ...state, formData: { ...state.formData, ...action.payload } };
+    default:
+      return state;
+  }
+}
+
 const CategoriesTab = () => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState(null);
   const { isDark } = useContext(ThemeContext);
   const { profile } = useAuth();
   const role = profile?.role;
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    color: "#3b82f6",
-  });
+
+  const [dataState, dispatchData] = useReducer(dataReducer, dataInitialState);
+  const { categories, loading, error } = dataState;
+
+  const [modalState, dispatchModal] = useReducer(
+    modalReducer,
+    modalInitialState,
+  );
+  const { isModalOpen, isSubmitting, currentCategory, formData } = modalState;
 
   const fetchCategories = useCallback(async () => {
     try {
-      setLoading(true);
+      dispatchData({ type: "FETCH_START" });
       const data = await categoryService.getCategories();
-      setCategories(data);
-      setError(null);
+      dispatchData({ type: "FETCH_SUCCESS", payload: data });
     } catch (err) {
-      setError("Error al cargar las categorías. Inténtalo de nuevo más tarde.");
+      dispatchData({
+        type: "FETCH_ERROR",
+        payload:
+          "Error al cargar las categorías. Inténtalo de nuevo más tarde.",
+      });
       toast.error("No se pudieron cargar las categorías.");
-    } finally {
-      setLoading(false);
     }
   }, []);
 
@@ -43,18 +112,16 @@ const CategoriesTab = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    dispatchModal({ type: "FIELD_CHANGE", payload: { [name]: value } });
   };
 
   const resetForm = () => {
-    setFormData({ name: "", description: "", color: "#3b82f6" });
-    setCurrentCategory(null);
-    setIsModalOpen(false);
+    dispatchModal({ type: "CLOSE" });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    dispatchModal({ type: "SUBMIT_START" });
     try {
       if (currentCategory) {
         const updatedCategory = await categoryService.updateCategory(
@@ -62,18 +129,14 @@ const CategoriesTab = () => {
           formData,
           role,
         );
-        setCategories((prev) =>
-          prev.map((cat) =>
-            cat.id === currentCategory.id ? updatedCategory : cat,
-          ),
-        );
+        dispatchData({ type: "UPDATE", payload: updatedCategory });
         toast.success("Categoría actualizada con éxito");
       } else {
         const newCategory = await categoryService.createCategory(
           formData,
           role,
         );
-        setCategories((prev) => [...prev, newCategory]);
+        dispatchData({ type: "ADD", payload: newCategory });
         toast.success("Categoría creada con éxito");
       }
       resetForm();
@@ -81,18 +144,12 @@ const CategoriesTab = () => {
       console.error("Error creating category:", err);
       toast.error("Ocurrió un error. Por favor, inténtalo de nuevo.");
     } finally {
-      setIsSubmitting(false);
+      dispatchModal({ type: "SUBMIT_END" });
     }
   };
 
   const handleEdit = (category) => {
-    setCurrentCategory(category);
-    setFormData({
-      name: category.name,
-      description: category.description || "",
-      color: category.color || "#3b82f6",
-    });
-    setIsModalOpen(true);
+    dispatchModal({ type: "OPEN_EDIT", payload: category });
   };
 
   const handleDelete = async (id) => {
@@ -102,7 +159,7 @@ const CategoriesTab = () => {
       try {
         // console.log(role);
         await categoryService.deleteCategory(id, role);
-        setCategories((prev) => prev.filter((cat) => cat.id !== id));
+        dispatchData({ type: "DELETE", payload: id });
         toast.success("Categoría eliminada con éxito");
       } catch (err) {
         toast.error("No se pudo eliminar la categoría. " + err);
@@ -156,11 +213,7 @@ const CategoriesTab = () => {
         </h2>
 
         <button
-          onClick={() => {
-            setCurrentCategory(null);
-            setFormData({ name: "", description: "", color: "#3b82f6" });
-            setIsModalOpen(true);
-          }}
+          onClick={() => dispatchModal({ type: "OPEN_CREATE" })}
           className="flex items-center px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white transition-colors"
         >
           <Plus className="h-4 w-4 mr-2" />
