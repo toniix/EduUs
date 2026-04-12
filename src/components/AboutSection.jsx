@@ -1,7 +1,7 @@
 import React from "react";
 import { AboutItems } from "../data/aboutData";
 import styles from "./AboutSection.module.css";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const AboutSection = () => {
   const [hoveredCard, setHoveredCard] = React.useState(null);
@@ -23,7 +23,7 @@ const AboutSection = () => {
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {AboutItems.map((item, index) => (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
@@ -143,7 +143,7 @@ const AboutSection = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

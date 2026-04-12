@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { opportunitiesService } from "../../services/fetchOpportunityService";
 import { Link } from "react-router-dom";
 import FeaturedOpportunityCard from "./FeaturedOpportunityCard";
@@ -93,7 +93,7 @@ const FeaturedOpportunities = () => {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
+        <m.div
           variants={headerVariants}
           initial="hidden"
           whileInView="visible"
@@ -128,10 +128,10 @@ const FeaturedOpportunities = () => {
             Explorar más
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
           </Link>
-        </motion.div>
+        </m.div>
 
         {/* Grid de tarjetas */}
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -145,7 +145,7 @@ const FeaturedOpportunities = () => {
               index={index}
             />
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

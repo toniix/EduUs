@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { formatDate } from "../../utils/formatDate";
 import { modalityConfig } from "../../utils/opportunity";
 import { Globe, MapPin, Calendar, ArrowUpRight } from "lucide-react";
@@ -28,7 +28,7 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
   const categoryName = category?.name;
 
   return (
-    <motion.div
+    <m.div
       variants={cardVariants}
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
       className="group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-400 h-96 cursor-pointer"
@@ -95,7 +95,7 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
           </Link>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 

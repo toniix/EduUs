@@ -1,8 +1,12 @@
 import { X, Timer } from "lucide-react";
 import { usePromoModal } from "../../hooks/usePromoModal";
-import { categoryConfig, modalityConfig, formatEventDate } from "../../utils/events";
+import {
+  categoryConfig,
+  modalityConfig,
+  formatEventDate,
+} from "../../utils/events";
 import RegisterModal from "./RegisterModal";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 const PLACEHOLDER_SVG =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='260' viewBox='0 0 600 260'%3E%3Crect width='600' height='260' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' fill='%239ca3af'%3ESin imagen%3C/text%3E%3C/svg%3E";
@@ -14,8 +18,9 @@ function CountdownUnit({ value, label, isUrgent }) {
   return (
     <div className="flex flex-col items-center">
       <span
-        className={`text-2xl font-extrabold tabular-nums ${isUrgent ? "text-orange-500" : "text-white"
-          }`}
+        className={`text-2xl font-extrabold tabular-nums ${
+          isUrgent ? "text-orange-500" : "text-white"
+        }`}
       >
         {String(value).padStart(2, "0")}
       </span>
@@ -29,8 +34,9 @@ function CountdownUnit({ value, label, isUrgent }) {
 function Separator({ isUrgent }) {
   return (
     <span
-      className={`text-xl font-bold mb-4 ${isUrgent ? "text-orange-500" : "text-white"
-        }`}
+      className={`text-xl font-bold mb-4 ${
+        isUrgent ? "text-orange-500" : "text-white"
+      }`}
     >
       :
     </span>
@@ -78,13 +84,13 @@ export default function PromoModal() {
     <>
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4 sm:px-6"
           >
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
@@ -134,19 +140,24 @@ export default function PromoModal() {
                 <div className="flex flex-col sm:flex-row gap-4 text-sm text-slate-300 mb-6 bg-white/5 p-4 rounded-xl border border-white/5">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">📅</span>
-                    <span className="font-medium text-white">{formatEventDate(event.starts_at)}</span>
+                    <span className="font-medium text-white">
+                      {formatEventDate(event.starts_at)}
+                    </span>
                   </div>
-                  {event.location && event.modality !== 'virtual' && (
+                  {event.location && event.modality !== "virtual" && (
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{modalCfg.icon}</span>
-                      <span className="font-medium text-white">{event.location}</span>
+                      <span className="font-medium text-white">
+                        {event.location}
+                      </span>
                     </div>
                   )}
                 </div>
 
                 {event.spots_left !== null && event.spots_left > 0 && (
                   <div className="mb-6 inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 px-4 py-2 rounded-lg font-semibold text-sm w-fit">
-                    <span className="animate-pulse">⚡</span> Solo {event.spots_left} cupos restantes
+                    <span className="animate-pulse">⚡</span> Solo{" "}
+                    {event.spots_left} cupos restantes
                   </div>
                 )}
 
@@ -198,7 +209,10 @@ export default function PromoModal() {
                   <button
                     onClick={openRegister}
                     className="flex-1 py-4 rounded-xl font-extrabold text-base transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25"
-                    style={{ background: "var(--color-primary, #e6461e)", color: "#fff" }}
+                    style={{
+                      background: "var(--color-primary, #e6461e)",
+                      color: "#fff",
+                    }}
                   >
                     Reserva tu cupo ahora
                   </button>
@@ -210,15 +224,13 @@ export default function PromoModal() {
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
 
       {/* RegisterModal abierto desde PromoModal */}
-      {registerOpen && (
-        <RegisterModal event={event} onClose={closeRegister} />
-      )}
+      {registerOpen && <RegisterModal event={event} onClose={closeRegister} />}
     </>
   );
 }
