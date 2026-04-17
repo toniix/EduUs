@@ -68,6 +68,7 @@ const OpportunityDetail = () => {
     audience,
   } = opportunity;
 
+
   // console.log("oportunity:", opportunity);
   // Supón que data.requirements viene como un string JSON
   const parsedRequirements =

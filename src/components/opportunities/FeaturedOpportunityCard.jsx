@@ -3,6 +3,7 @@ import { m } from "framer-motion";
 import { formatDate } from "../../utils/formatDate";
 import { modalityConfig } from "../../utils/opportunity";
 import { Globe, MapPin, Calendar, ArrowUpRight } from "lucide-react";
+import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -35,7 +36,7 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
     >
       {/* Imagen de fondo */}
       <img
-        src={image_url || "/placeholder.svg"}
+        src={optimizeCloudinaryUrl(image_url, { width: 600 }) || "/placeholder.svg"}
         alt={title}
         className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
       />

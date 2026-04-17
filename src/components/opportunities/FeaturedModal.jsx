@@ -1,4 +1,3 @@
-import { parse } from "postcss";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import { useContext } from "react";
 

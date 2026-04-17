@@ -14,6 +14,7 @@ import {
   Plane,
   Award,
 } from "lucide-react";
+import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 import { modalityStyles } from "../../utils/opportunity";
 
 const categoryIcons = {
@@ -58,7 +59,7 @@ const DetailHeader = ({
       {image_url && (
         <div className="h-64 overflow-hidden">
           <img
-            src={image_url}
+            src={optimizeCloudinaryUrl(image_url, { width: 800 })}
             alt={title}
             className="w-full h-full object-cover"
           />

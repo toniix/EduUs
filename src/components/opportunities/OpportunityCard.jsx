@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { formatDate, isDateInPast } from "../../utils/formatDate";
 import { modalityConfig } from "../../utils/opportunity";
+import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 import { useMemo, useState } from "react";
 import ShareOpportunity from "./ShareOpportunity";
 
@@ -49,7 +50,7 @@ export default function OpportunityCard({ opportunity }) {
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
       <div className="relative h-40 w-full">
         <img
-          src={image_url || "/placeholder.svg"}
+          src={optimizeCloudinaryUrl(image_url, { width: 400 }) || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-cover"
         />
