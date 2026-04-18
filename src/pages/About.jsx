@@ -1,5 +1,5 @@
 import { Target, Globe, Lightbulb } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { values } from "../data/eduUsValues";
 import { teamMembers } from "../data/teamMembers";
 
@@ -23,14 +23,14 @@ const About = () => {
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-            <motion.span
+            <m.span
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
             >
               Conoce sobre{" "}
-            </motion.span>
-            <motion.span
+            </m.span>
+            <m.span
               className="relative"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -40,7 +40,7 @@ const About = () => {
                 EDU-US
               </span>
               <span className="absolute -bottom-2 left-0 w-full h-1.5 bg-gradient-to-r from-primary/60 to-secondary/60 rounded-full"></span>
-            </motion.span>
+            </m.span>
           </h1>
 
           <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-12">
@@ -75,7 +75,7 @@ const About = () => {
 
           <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
             {/* Misión Card */}
-            <motion.div
+            <m.div
               className="relative group"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -98,10 +98,10 @@ const About = () => {
                   reales en el mercado laboral.
                 </p>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Visión Card */}
-            <motion.div
+            <m.div
               className="relative group"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ const About = () => {
                   impacto medible en la empleabilidad juvenil.
                 </p>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -141,7 +141,7 @@ const About = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 auto-rows-fr">
             {values.map((value, index) => (
-              <motion.div
+              <m.div
                 key={index}
                 className="group relative flex"
                 initial={{ opacity: 0, y: 20 }}
@@ -164,7 +164,7 @@ const About = () => {
                     {value.description}
                   </p>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -187,7 +187,7 @@ const About = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Eje 1: Empleabilidad */}
-            <motion.div
+            <m.div
               className="relative group"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -208,10 +208,10 @@ const About = () => {
                   joven con oportunidades reales en el mercado.
                 </p>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Eje 2: Asociatividad */}
-            <motion.div
+            <m.div
               className="relative group"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -232,10 +232,10 @@ const About = () => {
                   un ecosistema de oportunidades.
                 </p>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Eje 3: Tecnologías Emergentes */}
-            <motion.div
+            <m.div
               className="relative group"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -256,7 +256,7 @@ const About = () => {
                   en la educación.
                 </p>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -273,7 +273,7 @@ const About = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
             {teamMembers.map((member, index) => (
-              <motion.div
+              <m.div
                 key={index}
                 className="text-center"
                 initial={{ opacity: 0, y: 30 }}
@@ -299,7 +299,7 @@ const About = () => {
                     {member.bio}
                   </p>
                 )}
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>

@@ -21,22 +21,17 @@ export const useOpportunities = () => {
   return context;
 };
 
-/**
- * Hook para obtener una oportunidad específica
- * @param {string} id - ID de la oportunidad
- * @returns {Object} Estado con oportunidad, loading, error
- */
-export function useOpportunity(id) {
+export function useOpportunity(identifier) {
   const [opportunity, setOpportunity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchOpportunity = useCallback(async () => {
-    if (!id) return;
+    if (!identifier) return;
 
     try {
       setLoading(true);
-      const data = await opportunitiesService.getOpportunityById(id);
+      const data = await opportunitiesService.getOpportunity(identifier);
       setOpportunity(data);
       setError(null);
     } catch (err) {
@@ -46,7 +41,7 @@ export function useOpportunity(id) {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [identifier]);
 
   useEffect(() => {
     fetchOpportunity();

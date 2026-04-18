@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { formatDate } from "../../utils/formatDate";
 import { modalityConfig } from "../../utils/opportunity";
 import { Globe, MapPin, Calendar, ArrowUpRight } from "lucide-react";
+import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -22,20 +23,20 @@ const accentPalette = [
 ];
 
 const FeaturedOpportunityCard = ({ opportunity, index }) => {
-  const { id, title, deadline, image_url, modality, country, category } = opportunity;
+  const { id, title, deadline, image_url, modality, country, category, slug } = opportunity;
 
   const accent = accentPalette[index % accentPalette.length];
   const categoryName = category?.name;
 
   return (
-    <motion.div
+    <m.div
       variants={cardVariants}
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
       className="group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-400 h-96 cursor-pointer"
     >
       {/* Imagen de fondo */}
       <img
-        src={image_url || "/placeholder.svg"}
+        src={optimizeCloudinaryUrl(image_url, { width: 600 }) || "/placeholder.svg"}
         alt={title}
         className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
       />
@@ -87,7 +88,7 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
 
           {/* Botón */}
           <Link
-            to={`/edutracker/oportunidad/${id}`}
+            to={`/edutracker/oportunidad/${slug || id}`}
             className={`group/btn flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-semibold text-sm text-white transition-all duration-300 shadow-lg ${accent.button}`}
           >
             Ver detalles
@@ -95,7 +96,7 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
           </Link>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 

@@ -25,7 +25,7 @@ import InlineLoader from "../../ui/LoadingSpinner";
 import { toast } from "react-hot-toast";
 import { useTheme } from "../../../contexts/ThemeContext";
 import ActionBtn from "../../ui/ActionBtn";
-
+import { optimizeCloudinaryUrl } from "../../../utils/cloudinaryOptimize";
 
 export default function EventsAdminTab() {
   const { isDark } = useTheme();
@@ -34,8 +34,8 @@ export default function EventsAdminTab() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null); // para editar
-  const [previewEvent, setPreviewEvent] = useState(null);  // para preview público
-  const [drawerEvent, setDrawerEvent] = useState(null);    // para el drawer de detalles
+  const [previewEvent, setPreviewEvent] = useState(null); // para preview público
+  const [drawerEvent, setDrawerEvent] = useState(null); // para el drawer de detalles
 
   // Filtrado local por título
   const filtered = useMemo(() => {
@@ -70,7 +70,7 @@ export default function EventsAdminTab() {
 
     if (result.success) {
       toast.success(
-        selectedEvent ? "Evento actualizado" : "Evento creado correctamente"
+        selectedEvent ? "Evento actualizado" : "Evento creado correctamente",
       );
       handleCloseForm();
       refetch();
@@ -83,7 +83,7 @@ export default function EventsAdminTab() {
     const isPublished = event.status === "published";
     const action = isPublished ? "despublicar" : "publicar";
     const confirmed = window.confirm(
-      `¿Estás seguro de que deseas ${action} "${event.title}"?`
+      `¿Estás seguro de que deseas ${action} "${event.title}"?`,
     );
     if (!confirmed) return;
 
@@ -92,7 +92,9 @@ export default function EventsAdminTab() {
     });
 
     if (success) {
-      toast.success(`Evento ${action === "publicar" ? "publicado" : "despublicado"} correctamente`);
+      toast.success(
+        `Evento ${action === "publicar" ? "publicado" : "despublicado"} correctamente`,
+      );
       refetch();
     } else {
       toast.error(error || "Error al actualizar el evento");
@@ -106,7 +108,7 @@ export default function EventsAdminTab() {
     }
 
     const confirmed = window.confirm(
-      `¿Deseas marcar "${event.title}" como el modal promocional? Esto reemplazará el evento promo actual.`
+      `¿Deseas marcar "${event.title}" como el modal promocional? Esto reemplazará el evento promo actual.`,
     );
     if (!confirmed) return;
 
@@ -124,7 +126,7 @@ export default function EventsAdminTab() {
 
   const handleDelete = async (event) => {
     const confirmed = window.confirm(
-      `¿Estás seguro de eliminar "${event.title}"? Esta acción no se puede deshacer.`
+      `¿Estás seguro de eliminar "${event.title}"? Esta acción no se puede deshacer.`,
     );
     if (!confirmed) return;
 
@@ -137,11 +139,13 @@ export default function EventsAdminTab() {
     }
   };
 
-  const containerClass = `rounded-lg shadow-md p-6 w-full h-full flex flex-col ${isDark ? "bg-gray-800" : "bg-white"
-    }`;
+  const containerClass = `rounded-lg shadow-md p-6 w-full h-full flex flex-col ${
+    isDark ? "bg-gray-800" : "bg-white"
+  }`;
 
-  const thClass = `px-4 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${isDark ? "text-gray-300" : "text-gray-500"
-    }`;
+  const thClass = `px-4 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
+    isDark ? "text-gray-300" : "text-gray-500"
+  }`;
 
   const tdClass = `px-4 py-3 text-sm ${isDark ? "text-gray-200" : "text-gray-900"}`;
 
@@ -150,8 +154,9 @@ export default function EventsAdminTab() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h2
-          className={`text-xl font-semibold flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"
-            }`}
+          className={`text-xl font-semibold flex items-center gap-2 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}
         >
           Gestión de Eventos
           <span className="ml-2 px-3 py-1 rounded-full bg-secondary text-white text-xs font-semibold">
@@ -168,10 +173,11 @@ export default function EventsAdminTab() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por título..."
-              className={`pl-9 pr-4 py-2 rounded-lg border text-sm outline-none transition-colors ${isDark
-                ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-primary"
-                : "bg-white border-gray-200 text-gray-900 focus:border-primary focus:ring-1 focus:ring-primary/20"
-                }`}
+              className={`pl-9 pr-4 py-2 rounded-lg border text-sm outline-none transition-colors ${
+                isDark
+                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-primary"
+                  : "bg-white border-gray-200 text-gray-900 focus:border-primary focus:ring-1 focus:ring-primary/20"
+              }`}
             />
           </div>
 
@@ -210,17 +216,19 @@ export default function EventsAdminTab() {
               </tr>
             </thead>
             <tbody
-              className={`divide-y ${isDark
-                ? "bg-gray-700 divide-gray-600"
-                : "bg-white divide-gray-100"
-                }`}
+              className={`divide-y ${
+                isDark
+                  ? "bg-gray-700 divide-gray-600"
+                  : "bg-white divide-gray-100"
+              }`}
             >
               {filtered.length === 0 ? (
                 <tr>
                   <td
                     colSpan={8}
-                    className={`px-4 py-10 text-center text-sm ${isDark ? "text-gray-400" : "text-gray-500"
-                      }`}
+                    className={`px-4 py-10 text-center text-sm ${
+                      isDark ? "text-gray-400" : "text-gray-500"
+                    }`}
                   >
                     No se encontraron eventos.
                   </td>
@@ -250,7 +258,9 @@ export default function EventsAdminTab() {
                         <div className="w-14 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                           {event.banner_url ? (
                             <img
-                              src={event.banner_url}
+                              src={optimizeCloudinaryUrl(event.banner_url, {
+                                width: 100,
+                              })}
                               alt={event.title}
                               className="w-full h-full object-cover"
                               onError={(e) => {
@@ -310,8 +320,9 @@ export default function EventsAdminTab() {
                       <td className={`${tdClass} text-xs whitespace-nowrap`}>
                         {event.capacity === null
                           ? "Sin límite"
-                          : `${event.capacity - (event.spots_left ?? 0)
-                          } / ${event.capacity}`}
+                          : `${
+                              event.capacity - (event.spots_left ?? 0)
+                            } / ${event.capacity}`}
                       </td>
 
                       {/* Acciones */}
@@ -338,7 +349,9 @@ export default function EventsAdminTab() {
                           {/* Toggle publicar */}
                           <ActionBtn
                             title={
-                              event.status === "published" ? "Despublicar" : "Publicar"
+                              event.status === "published"
+                                ? "Despublicar"
+                                : "Publicar"
                             }
                             onClick={() => handleTogglePublish(event)}
                             isDark={isDark}
@@ -357,10 +370,11 @@ export default function EventsAdminTab() {
                             isDark={isDark}
                           >
                             <Star
-                              className={`w-3.5 h-3.5 ${event.promo_modal
-                                ? "text-yellow-500 fill-yellow-400"
-                                : "text-gray-400"
-                                }`}
+                              className={`w-3.5 h-3.5 ${
+                                event.promo_modal
+                                  ? "text-yellow-500 fill-yellow-400"
+                                  : "text-gray-400"
+                              }`}
                             />
                           </ActionBtn>
 
@@ -429,5 +443,3 @@ export default function EventsAdminTab() {
     </div>
   );
 }
-
-

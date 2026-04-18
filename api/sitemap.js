@@ -6,10 +6,10 @@ export default async function handler(req, res) {
     process.env.SUPABASE_ANON_KEY,
   );
 
-  // Traer solo oportunidades activas
+  // Traer todas las oportunidades
   const { data, error } = await supabase
     .from("opportunities")
-    .select("id, updated_at")
+    .select("id, slug, updated_at")
     .order("updated_at", { ascending: false });
 
   if (error) {
@@ -41,8 +41,8 @@ export default async function handler(req, res) {
     .map(
       (item) => `
     <url>
-      <loc>${baseUrl}/edutracker/oportunidad/${item.id}</loc>
-      <lastmod>${new Date(item.updated_at).toISOString().split("T")[0]}</lastmod>
+      <loc>${baseUrl}/edutracker/oportunidad/${item.slug || item.id}</loc>
+      <lastmod>${new Date(item.updated_at || today).toISOString().split("T")[0]}</lastmod>
     </url>`,
     )
     .join("");

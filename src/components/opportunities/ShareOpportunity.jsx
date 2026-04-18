@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   FaFacebook,
   FaInstagram,
@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa6";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
+import SocialButton from "./ShareSocialButton";
 
 const ShareOpportunity = ({ opportunity, closeModal }) => {
   const [selectedNetwork, setSelectedNetwork] = useState(null);
@@ -75,59 +76,19 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
     closeModal();
   };
 
-  const SocialButton = ({ network, icon: Icon, name }) => (
-    <div
-      className={`flex flex-col items-center cursor-pointer transition-all ${
-        selectedNetwork === network
-          ? "scale-110 opacity-100"
-          : "opacity-70 hover:opacity-100 hover:scale-105"
-      }`}
-      onClick={() => selectSocialNetwork(network)}
-    >
-      <div
-        className={`w-12 h-12 rounded-2xl flex justify-center items-center text-white mb-2 shadow-md transition-all ${getSocialColor(
-          network,
-        )} ${
-          selectedNetwork === network
-            ? "ring-2 ring-offset-2 ring-[#f5ba3c]"
-            : ""
-        }`}
-      >
-        {Icon && <Icon className="text-xl" />}
-      </div>
-      <span className="text-xs font-medium text-gray-700">{name}</span>
-    </div>
-  );
-
-  const getSocialColor = (network) => {
-    const baseStyle = "transition-all duration-200 hover:opacity-90";
-
-    switch (network) {
-      case "facebook":
-        return `${baseStyle} bg-[#1877F2] hover:bg-[#166FE5]`;
-      case "twitter":
-        return `${baseStyle} bg-[#1DA1F2] hover:bg-[#1A91DA]`;
-      case "instagram":
-        return `${baseStyle} bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#8134AF]`;
-      case "whatsapp":
-        return `${baseStyle} bg-[#25D366] hover:bg-[#20BD5A]`;
-      case "telegram":
-        return `${baseStyle} bg-[#0088CC] hover:bg-[#0077B5]`;
-      case "linkedin":
-        return `${baseStyle} bg-[#0A66C2] hover:bg-[#0956A5]`;
-      default:
-        return `${baseStyle} bg-[#4db9a9] hover:bg-[#3da395]`;
-    }
-  };
-
   return (
     <div
       className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 backdrop-blur-sm"
       onClick={closeModal}
+      role="presentation"
+      aria-hidden="true"
     >
       <div
         className="bg-white rounded-2xl w-11/12 max-w-md p-8 relative border border-gray-200 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Compartir oportunidad"
       >
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-[#ec451d] transition-colors"
@@ -184,27 +145,43 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
               network="facebook"
               icon={FaFacebook}
               name="Facebook"
+              selectedNetwork={selectedNetwork}
+              onSelect={selectSocialNetwork}
             />
-            <SocialButton network="twitter" icon={FaTwitter} name="Twitter" />
+            <SocialButton
+              network="twitter"
+              icon={FaTwitter}
+              name="Twitter"
+              selectedNetwork={selectedNetwork}
+              onSelect={selectSocialNetwork}
+            />
             <SocialButton
               network="instagram"
               icon={FaInstagram}
               name="Instagram"
+              selectedNetwork={selectedNetwork}
+              onSelect={selectSocialNetwork}
             />
             <SocialButton
               network="whatsapp"
               icon={FaWhatsapp}
               name="WhatsApp"
+              selectedNetwork={selectedNetwork}
+              onSelect={selectSocialNetwork}
             />
             {/* <SocialButton
               network="telegram"
               icon={FaTelegram}
               name="Telegram"
+              selectedNetwork={selectedNetwork}
+              onSelect={selectSocialNetwork}
             /> */}
             <SocialButton
               network="linkedin"
               icon={FaLinkedin}
               name="LinkedIn"
+              selectedNetwork={selectedNetwork}
+              onSelect={selectSocialNetwork}
             />
           </div>
         </div>

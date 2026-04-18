@@ -1,8 +1,13 @@
 import { useState, useRef } from "react";
-import { X, AlertTriangle, Loader2, ImagePlus, Trash2 } from "lucide-react";
-import { categoryConfig, modalityConfig, EVENT_STATUS_OPTIONS } from "../../../utils/events";
+import { X, AlertTriangle, Loader2 } from "lucide-react";
+import {
+  categoryConfig,
+  modalityConfig,
+  EVENT_STATUS_OPTIONS,
+} from "../../../utils/events";
 import { eventSchema } from "../../../utils/validationSchemas";
 import { uploadImageToCloudinary } from "../../../services/cloudinaryService";
+import BannerUpload from "./EventBannerUpload";
 
 const CATEGORIES = Object.entries(categoryConfig).map(([value, cfg]) => ({
   value,
@@ -56,26 +61,25 @@ export default function EventForm({ event = null, onClose, onSave }) {
   const [form, setForm] = useState(() =>
     isEditing
       ? {
-        ...EMPTY_FORM,
-        ...event,
-        capacity: event.capacity ?? "",
-        price: event.price ?? "0",
-        registration_url: event.registration_url ?? "",
-        status: event.status ?? "draft",
-        starts_at: event.starts_at
-          ? event.starts_at.slice(0, 16)
-          : "",
-        ends_at: event.ends_at ? event.ends_at.slice(0, 16) : "",
-      }
-      : { ...EMPTY_FORM }
+          ...EMPTY_FORM,
+          ...event,
+          capacity: event.capacity ?? "",
+          price: event.price ?? "0",
+          registration_url: event.registration_url ?? "",
+          status: event.status ?? "draft",
+          starts_at: event.starts_at ? event.starts_at.slice(0, 16) : "",
+          ends_at: event.ends_at ? event.ends_at.slice(0, 16) : "",
+        }
+      : { ...EMPTY_FORM },
   );
 
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [showPromoWarning, setShowPromoWarning] = useState(false);
-  const [bannerFile, setBannerFile] = useState(null);       // File | null
-  const [bannerPreview, setBannerPreview] = useState(     // URL previsualizable
-    isEditing && event.banner_url ? event.banner_url : null
+  const [bannerFile, setBannerFile] = useState(null); // File | null
+  const [bannerPreview, setBannerPreview] = useState(
+    // URL previsualizable
+    isEditing && event.banner_url ? event.banner_url : null,
   );
   const fileInputRef = useRef(null);
 
@@ -100,7 +104,6 @@ export default function EventForm({ event = null, onClose, onSave }) {
     setForm((prev) => ({ ...prev, banner_url: "" }));
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
-
 
   // Auto-generar slug cuando cambia el título (solo si el usuario no lo ha editado manualmente)
   const handleTitleChange = (e) => {
@@ -320,60 +323,13 @@ export default function EventForm({ event = null, onClose, onSave }) {
 
           {/* Banner — file upload */}
           <Field label="Banner del evento">
-            {/* Zona de drop / click */}
-            {!bannerPreview ? (
-              <div
-                onDrop={handleBannerDrop}
-                onDragOver={(e) => e.preventDefault()}
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center gap-2 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors"
-              >
-                <ImagePlus className="w-8 h-8 text-gray-300" />
-                <p className="text-sm text-gray-400">
-                  Haz clic o arrastra una imagen aquí
-                </p>
-                <p className="text-xs text-gray-300">PNG, JPG, WEBP — máx. 5 MB</p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleBannerChange}
-                />
-              </div>
-            ) : (
-              <div className="relative rounded-xl overflow-hidden border border-gray-200">
-                <img
-                  src={bannerPreview}
-                  alt="Banner preview"
-                  className="w-full h-44 object-cover"
-                />
-                {/* Overlay con acciones */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="bg-white text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-gray-100"
-                  >
-                    Cambiar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleRemoveBanner}
-                    className="bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-red-600 flex items-center gap-1"
-                  >
-                    <Trash2 className="w-3 h-3" /> Quitar
-                  </button>
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleBannerChange}
-                />
-              </div>
-            )}
+            <BannerUpload
+              bannerPreview={bannerPreview}
+              fileInputRef={fileInputRef}
+              onDrop={handleBannerDrop}
+              onChange={handleBannerChange}
+              onRemove={handleRemoveBanner}
+            />
           </Field>
 
           {/* Fechas */}
@@ -431,7 +387,9 @@ export default function EventForm({ event = null, onClose, onSave }) {
                 className={inputClass()}
               >
                 {EVENT_STATUS_OPTIONS.filter((opt) =>
-                  isEditing ? true : !["cancelled", "finished"].includes(opt.value)
+                  isEditing
+                    ? true
+                    : !["cancelled", "finished"].includes(opt.value),
                 ).map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -537,12 +495,14 @@ function SwitchField({ name, checked, onChange, label, description }) {
           className="sr-only"
         />
         <div
-          className={`w-10 h-6 rounded-full transition-colors ${checked ? "bg-primary" : "bg-gray-200"
-            }`}
+          className={`w-10 h-6 rounded-full transition-colors ${
+            checked ? "bg-primary" : "bg-gray-200"
+          }`}
         />
         <div
-          className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${checked ? "translate-x-5" : "translate-x-1"
-            }`}
+          className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+            checked ? "translate-x-5" : "translate-x-1"
+          }`}
         />
       </div>
       <div>
@@ -556,8 +516,11 @@ function SwitchField({ name, checked, onChange, label, description }) {
 }
 
 function inputClass(hasError = false) {
-  return `w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors ${hasError
-    ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-    : "border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
-    }`;
+  return `w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors ${
+    hasError
+      ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+      : "border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
+  }`;
 }
+
+/* ─── Sub-componente: upload del banner ─── */

@@ -1,6 +1,6 @@
 import { impactData } from "../data/StastData";
 import ImpactCard from "./ImpactCard";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const ImpactSection = () => {
   return (
@@ -23,7 +23,7 @@ const ImpactSection = () => {
         {/* Layout principal */}
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Primer card - Destacado */}
-          <motion.div 
+          <m.div 
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -31,13 +31,13 @@ const ImpactSection = () => {
             className="w-full lg:w-1/4 transform transition-all duration-500 hover:-translate-y-2"
           >
             <ImpactCard item={impactData[0]} isFeatured={true} />
-          </motion.div>
+          </m.div>
 
           {/* Grid de 4 cards */}
           <div className="w-full lg:w-3/4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {impactData.slice(1).map((item, index) => (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
@@ -46,7 +46,7 @@ const ImpactSection = () => {
                   className="h-full transform transition-all duration-500 hover:-translate-y-2"
                 >
                   <ImpactCard item={item} />
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </div>

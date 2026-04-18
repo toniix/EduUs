@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import toast from "react-hot-toast";
@@ -11,46 +11,80 @@ import {
 } from "../services/AuthService";
 import { useLoginRedirect } from "../hooks/useLoginRedirect";
 
+const formInitialState = {
+  loading: false,
+  error: null,
+  email: "",
+  password: "",
+  showResendButton: false,
+  pendingEmail: "",
+};
+
+function formReducer(state, action) {
+  switch (action.type) {
+    case "SET_LOADING":
+      return { ...state, loading: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "FIELD_CHANGE":
+      return {
+        ...state,
+        [action.payload.name]: action.payload.value,
+        error: null,
+      };
+    case "SUBMIT_START":
+      return { ...state, loading: true, error: null, showResendButton: false };
+    case "EMAIL_NOT_CONFIRMED":
+      return {
+        ...state,
+        loading: false,
+        error: action.payload.error,
+        showResendButton: true,
+        pendingEmail: action.payload.email,
+      };
+    case "SUBMIT_ERROR":
+      return { ...state, loading: false, error: action.payload };
+    case "SUBMIT_END":
+      return { ...state, loading: false };
+    case "RESEND_SUCCESS":
+      return { ...state, loading: false, showResendButton: false };
+    default:
+      return state;
+  }
+}
+
 const Login = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [showResendButton, setShowResendButton] = useState(false);
-  const [pendingEmail, setPendingEmail] = useState("");
+  const [state, dispatch] = useReducer(formReducer, formInitialState);
+  const { loading, error, email, password, showResendButton, pendingEmail } =
+    state;
 
   const { loginWithGoogle } = useLoginRedirect();
 
   const handleGoogleSignIn = async () => {
-    setLoading(true);
+    dispatch({ type: "SET_LOADING", payload: true });
     try {
       await loginWithGoogle();
     } catch (error) {
-      setError(error.message);
+      dispatch({ type: "SET_ERROR", payload: error.message });
       toast.error("Error al iniciar sesión con Google");
     } finally {
-      setLoading(false);
+      dispatch({ type: "SET_LOADING", payload: false });
     }
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+    dispatch({
+      type: "FIELD_CHANGE",
+      payload: { name: e.target.name, value: e.target.value },
     });
-    setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setShowResendButton(false);
+    dispatch({ type: "SUBMIT_START" });
 
     try {
-      const { user } = await signInWithEmail(formData.email, formData.password);
+      const { user } = await signInWithEmail(email, password);
 
       if (user) {
         toast.success("¡Inicio de sesión exitoso!");
@@ -62,48 +96,57 @@ const Login = () => {
         error.message?.includes("Email not confirmed") ||
         error.message?.includes("email_not_confirmed")
       ) {
-        setError(
-          "Tu email aún no ha sido confirmado. Revisa tu bandeja de entrada y confirma tu cuenta."
-        );
-        setShowResendButton(true);
-        setPendingEmail(formData.email);
+        dispatch({
+          type: "EMAIL_NOT_CONFIRMED",
+          payload: {
+            error:
+              "Tu email aún no ha sido confirmado. Revisa tu bandeja de entrada y confirma tu cuenta.",
+            email,
+          },
+        });
         toast.error("Email no confirmado");
       } else if (
         error.message?.includes("Invalid login credentials") ||
         error.message?.includes("invalid_credentials")
       ) {
-        setError(
-          "Email o contraseña incorrectos. Por favor, verifica tus datos."
-        );
+        dispatch({
+          type: "SUBMIT_ERROR",
+          payload:
+            "Email o contraseña incorrectos. Por favor, verifica tus datos.",
+        });
         toast.error("Credenciales incorrectas");
       } else if (error.message?.includes("Too many requests")) {
-        setError(
-          "Demasiados intentos. Por favor, espera un momento antes de intentar nuevamente."
-        );
+        dispatch({
+          type: "SUBMIT_ERROR",
+          payload:
+            "Demasiados intentos. Por favor, espera un momento antes de intentar nuevamente.",
+        });
         toast.error("Demasiados intentos");
       } else {
-        setError("Error al iniciar sesión. Por favor, inténtalo de nuevo.");
+        dispatch({
+          type: "SUBMIT_ERROR",
+          payload: "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
+        });
         toast.error("Error al iniciar sesión");
       }
     } finally {
-      setLoading(false);
+      dispatch({ type: "SUBMIT_END" });
     }
   };
 
   const handleResendConfirmation = async () => {
-    setLoading(true);
+    dispatch({ type: "SET_LOADING", payload: true });
 
     try {
       await resendConfirmationEmail(pendingEmail);
       toast.success(
-        "Email de confirmación reenviado. Revisa tu bandeja de entrada."
+        "Email de confirmación reenviado. Revisa tu bandeja de entrada.",
       );
-      setShowResendButton(false);
+      dispatch({ type: "RESEND_SUCCESS" });
     } catch (error) {
-      // console.error("Error reenviando email:", error);
       toast.error("Error al reenviar el email. Inténtalo más tarde.");
     } finally {
-      setLoading(false);
+      dispatch({ type: "SET_LOADING", payload: false });
     }
   };
 
@@ -147,7 +190,7 @@ const Login = () => {
                   label="Correo Electrónico"
                   icon={Mail}
                   // required
-                  value={formData.email}
+                  value={email}
                   onChange={handleChange}
                   placeholder="tu@email.com"
                   className="bg-gray-50 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
@@ -160,7 +203,7 @@ const Login = () => {
                   label="Contraseña"
                   icon={Lock}
                   // required
-                  value={formData.password}
+                  value={password}
                   onChange={handleChange}
                   placeholder="••••••••"
                   className="bg-gray-50 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"

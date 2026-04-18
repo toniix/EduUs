@@ -102,46 +102,43 @@ class OpportunitiesService {
   }
 
   /**
-   * Obtiene una oportunidad específica por ID
-   * @param {string} id - ID de la oportunidad
+   * Obtiene una oportunidad específica por ID o por Slug
+   * @param {string} identifier - ID o Slug de la oportunidad
    * @returns {Promise<Object|null>} Oportunidad o null si no se encuentra
    */
-  async getOpportunityById(id) {
+  async getOpportunity(identifier) {
     try {
-      const { data, error } = await supabase
-        .from("opportunities")
-        .select(
-          `
+      // Intentamos buscar por ID primero si parece un UUID, o buscamos por slug
+      const isUUID =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+          identifier,
+        );
+
+      let query = supabase.from("opportunities").select(
+        `
           *,
-          category:categories(
-            id,
-            name
-          ),
-          creator:profiles!opportunities_created_by_fkey(
-            id,
-            full_name
-          ),
-          opportunity_tags(
-            tag:tags(
-              id,
-              name
-            )
-          )
+          category:categories(id, name),
+          creator:profiles!opportunities_created_by_fkey(id, full_name),
+          opportunity_tags(tag:tags(id, name))
         `,
-        )
-        .eq("id", id)
-        .single();
+      );
+
+      if (isUUID) {
+        query = query.or(`id.eq.${identifier},slug.eq.${identifier}`);
+      } else {
+        query = query.eq("slug", identifier);
+      }
+
+      const { data, error } = await query.single();
 
       if (error) {
-        if (error.code === "PGRST116") {
-          return null; // No encontrado
-        }
+        if (error.code === "PGRST116") return null;
         throw new Error(`Error fetching opportunity: ${error.message}`);
       }
 
       return this.transformSingleOpportunity(data);
     } catch (error) {
-      console.error("Error in getOpportunityById:", error);
+      console.error("Error in getOpportunity:", error);
       throw error;
     }
   }

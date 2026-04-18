@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabase";
 import { uploadImageToCloudinary } from "../services/cloudinaryService";
+import { createSlug } from "../utils/slugify";
 
 // Busca o crea la categoría y retorna su id
 async function getOrCreateCategory(name) {
@@ -55,6 +56,7 @@ export async function createOpportunity(data) {
       category_id: categoryId,
       image_url: imageUrl || "",
       created_by: userId,
+      slug: createSlug(data.title), // Generar slug desde el título
     };
 
     delete opportunityPayload.category; // No enviar el nombre, sino el id
@@ -364,6 +366,7 @@ export async function updateOpportunity(id, data, userRole = null) {
       category_id: categoryId,
       image_url: imageUrl,
       updated_at: new Date().toISOString(),
+      slug: data.title ? createSlug(data.title) : existingOpportunity.slug,
     };
 
     // Eliminar campos que no deben actualizarse directamente

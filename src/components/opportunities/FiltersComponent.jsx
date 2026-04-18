@@ -51,10 +51,11 @@ const FiltersComponent = ({
       <form onSubmit={handleFilterSubmit} className="space-y-4">
         {/* Filtro por categoria*/}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label htmlFor="filter-category" className="block text-sm font-medium text-gray-700">
             Categoría
           </label>
           <select
+            id="filter-category"
             name="category_id"
             value={localFilters.category_id || ""}
             onChange={handleFilterChange}
@@ -71,10 +72,11 @@ const FiltersComponent = ({
 
         {/* Filtro por modalidad */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label htmlFor="filter-modality" className="block text-sm font-medium text-gray-700">
             Modalidad
           </label>
           <select
+            id="filter-modality"
             name="modality"
             value={localFilters.modality}
             onChange={handleFilterChange}
@@ -91,10 +93,11 @@ const FiltersComponent = ({
 
         {/* Filtro por ubicación */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label htmlFor="filter-location" className="block text-sm font-medium text-gray-700">
             Ubicación
           </label>
           <select
+            id="filter-location"
             name="location"
             value={localFilters.location}
             onChange={handleFilterChange}

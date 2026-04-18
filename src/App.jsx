@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "react-hot-toast";
+import { LazyMotion, domAnimation } from "framer-motion";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Projects from "./pages/Projects";
@@ -26,81 +27,83 @@ import AuthCallback from "./routes/AuthCallback";
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Analytics />
-      <AuthProvider>
-        {/* <RoleProvider> */}
-        <OpportunitiesProvider>
-          <ThemeProvider>
-            <Router>
-              <ScrollToTop />
-              <Routes>
-                {/*  RUTAS PÚBLICAS */}
-                <Route element={<PublicLayout />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/nosotros" element={<About />} />
-                  <Route path="/proyectos" element={<Projects />} />
-                  <Route
-                    path="/edutracker/oportunidad/:id"
-                    element={<OpportunityDetail />}
-                  />
-                  <Route path="/edutracker" element={<Opportunities />} />
-                  <Route path="/terminos" element={<TermsPage />} />
-                  <Route path="/privacidad" element={<PrivacyPage />} />
+    <LazyMotion features={domAnimation}>
+      <div className="min-h-screen flex flex-col">
+        <Analytics />
+        <AuthProvider>
+          {/* <RoleProvider> */}
+          <OpportunitiesProvider>
+            <ThemeProvider>
+              <Router>
+                <ScrollToTop />
+                <Routes>
+                  {/*  RUTAS PÚBLICAS */}
+                  <Route element={<PublicLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/nosotros" element={<About />} />
+                    <Route path="/proyectos" element={<Projects />} />
+                    <Route
+                      path="/edutracker/oportunidad/:idOrSlug"
+                      element={<OpportunityDetail />}
+                    />
+                    <Route path="/edutracker" element={<Opportunities />} />
+                    <Route path="/terminos" element={<TermsPage />} />
+                    <Route path="/privacidad" element={<PrivacyPage />} />
 
+                    <Route
+                      path="/login"
+                      element={
+                        <PublicRoute>
+                          <Login />
+                        </PublicRoute>
+                      }
+                    />
+                    <Route
+                      path="/register"
+                      element={
+                        <PublicRoute>
+                          <Register />
+                        </PublicRoute>
+                      }
+                    />
+                  </Route>
+
+                  {/* 🔒 RUTAS PRIVADAS */}
                   <Route
-                    path="/login"
+                    path="/perfil"
                     element={
-                      <PublicRoute>
-                        <Login />
-                      </PublicRoute>
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
                     }
                   />
+
                   <Route
-                    path="/register"
+                    path="/adminpanel"
                     element={
-                      <PublicRoute>
-                        <Register />
-                      </PublicRoute>
+                      <ProtectedRoute>
+                        <RoleGuard
+                          requiredRoles={["admin", "editor"]}
+                          fallback={<NoAccessFallback />}
+                        >
+                          <AdminPanel />
+                        </RoleGuard>
+                      </ProtectedRoute>
                     }
                   />
-                </Route>
 
-                {/* 🔒 RUTAS PRIVADAS */}
-                <Route
-                  path="/perfil"
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route path="*" element={<NotFound />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                </Routes>
 
-                <Route
-                  path="/adminpanel"
-                  element={
-                    <ProtectedRoute>
-                      <RoleGuard
-                        requiredRoles={["admin", "editor"]}
-                        fallback={<NoAccessFallback />}
-                      >
-                        <AdminPanel />
-                      </RoleGuard>
-                    </ProtectedRoute>
-                  }
-                />
-
-                <Route path="*" element={<NotFound />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
-              </Routes>
-
-              <Toaster position="bottom-right" />
-            </Router>
-          </ThemeProvider>
-        </OpportunitiesProvider>
-        {/* </RoleProvider> */}
-      </AuthProvider>
-    </div>
+                <Toaster position="bottom-right" />
+              </Router>
+            </ThemeProvider>
+          </OpportunitiesProvider>
+          {/* </RoleProvider> */}
+        </AuthProvider>
+      </div>
+    </LazyMotion>
   );
 }
 

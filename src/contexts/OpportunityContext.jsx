@@ -1,76 +1,97 @@
-import React, {
+import {
   createContext,
-  useContext,
   useState,
+  useReducer,
   useCallback,
   useEffect,
-  useMemo,
 } from "react";
 import { opportunitiesService } from "../services/fetchOpportunityService";
 
 // Crear el contexto
 export const OpportunitiesContext = createContext();
 
+const initialState = {
+  opportunities: [],
+  loading: true,
+  error: null,
+  totalCount: 0,
+  totalPages: 0,
+  filterOptions: { types: [], modalities: [], locations: [] },
+};
+
+function opportunitiesReducer(state, action) {
+  switch (action.type) {
+    case "FETCH_START":
+      return { ...state, loading: true, error: null };
+    case "FETCH_SUCCESS":
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        opportunities: action.payload.data,
+        totalCount: action.payload.total,
+        totalPages: action.payload.totalPages,
+      };
+    case "FETCH_ERROR":
+      return { ...state, loading: false, error: action.payload };
+    case "SET_FILTER_OPTIONS":
+      return { ...state, filterOptions: action.payload };
+    default:
+      return state;
+  }
+}
+
 // Provider del contexto
 export const OpportunitiesProvider = ({ children }) => {
-  // Estados del contexto
-  const [opportunities, setOpportunities] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [totalCount, setTotalCount] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [filterOptions, setFilterOptions] = useState({
-    types: [],
-    modalities: [],
-    locations: [],
-  });
+  // console.log("montando opportunities provider");
+  const [state, dispatch] = useReducer(opportunitiesReducer, initialState);
+  const {
+    opportunities,
+    loading,
+    error,
+    totalCount,
+    totalPages,
+    filterOptions,
+  } = state;
 
-  // Estados para filtros y paginación controlados por el contexto
+  // Filtros y paginación controlados por el contexto
   const [filters, setFilters] = useState({});
   const [pagination, setPagination] = useState({});
-
-  // Memoizar las dependencias para evitar recreación en cada render
-  const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)]);
-  const memoizedPagination = useMemo(
-    () => pagination,
-    [JSON.stringify(pagination)]
-  );
 
   // Función para cargar oportunidades
   const fetchOpportunities = useCallback(async () => {
     try {
-      setLoading(true);
+      dispatch({ type: "FETCH_START" });
       const result = await opportunitiesService.getOpportunitiesWithFilters(
-        memoizedFilters,
-        memoizedPagination
+        filters,
+        pagination,
       );
-      setOpportunities(result.data);
-      setTotalCount(result.total);
-      setTotalPages(result.totalPages);
-      setError(null);
+      dispatch({
+        type: "FETCH_SUCCESS",
+        payload: {
+          data: result.data,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      });
     } catch (err) {
       console.error("Error fetching opportunities:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      dispatch({ type: "FETCH_ERROR", payload: err.message });
     }
-  }, [memoizedFilters, memoizedPagination]);
+  }, [filters, pagination]);
 
   // Función para cargar opciones de filtro (solo una vez)
   const fetchFilterOptions = useCallback(async () => {
     try {
       const options = await opportunitiesService.getFilterOptions();
-      setFilterOptions(options);
+      dispatch({ type: "SET_FILTER_OPTIONS", payload: options });
     } catch (err) {
       console.error("Error fetching filter options:", err);
     }
   }, []);
 
-  // console.log(filters);
-
   // Función para actualizar filtros
   const updateFilters = useCallback((newFilters) => {
-    // console.log("newFilters:", newFilters);
     setFilters((prevFilters) => ({
       ...prevFilters,
       ...newFilters,
@@ -105,7 +126,6 @@ export const OpportunitiesProvider = ({ children }) => {
     fetchFilterOptions();
   }, [fetchFilterOptions]);
 
-  // console.log("opportunities:", opportunities);
   // Valor del contexto que se proporcionará a los componentes hijos
   const contextValue = {
     // Estados

@@ -1,9 +1,10 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   categoryConfig,
   modalityConfig,
   formatEventDate,
 } from "../../utils/events";
+import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 
 const PLACEHOLDER = "https://via.placeholder.com/400x200?text=Evento";
 
@@ -39,7 +40,7 @@ export default function EventCard({
   const showSpots = capacity !== null && spots_left !== null;
 
   return (
-    <motion.div
+    <m.div
       layout
       className="border border-gray-200 rounded-xl bg-white 
       hover:border-primary/40 hover:shadow-sm
@@ -57,13 +58,13 @@ export default function EventCard({
             {catCfg.label}
           </span>
 
-          <motion.div
+          <m.div
             animate={{ rotate: expanded ? 180 : 0 }}
             transition={{ duration: 0.25 }}
             className="text-gray-400"
           >
             ▼
-          </motion.div>
+          </m.div>
         </div>
 
         <h3 className="text-sm font-semibold text-gray-900 line-clamp-1">
@@ -97,7 +98,7 @@ export default function EventCard({
       {/* EXPANSIÓN */}
       <AnimatePresence initial={false}>
         {expanded && (
-          <motion.div
+          <m.div
             key="expand"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
@@ -105,20 +106,19 @@ export default function EventCard({
             transition={{ duration: 0.35 }}
             className="overflow-hidden border-t border-gray-100"
           >
-            {/* Imagen */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="h-40 w-full overflow-hidden bg-gray-100"
+              className="max-h-[450px] w-full overflow-hidden bg-gray-50 flex items-center justify-center"
             >
               <img
-                src={banner_url || PLACEHOLDER}
+                src={optimizeCloudinaryUrl(banner_url, { width: 600 }) || PLACEHOLDER}
                 alt={title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
-            </motion.div>
+            </m.div>
 
             {/* Contenido */}
             <div className="p-4 flex flex-col gap-3">
@@ -144,9 +144,9 @@ export default function EventCard({
                 </p>
               )}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 }

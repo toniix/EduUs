@@ -1,4 +1,3 @@
-import { parse } from "postcss";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import { useContext } from "react";
 
@@ -55,6 +54,7 @@ const FeaturedModal = ({
         <div className="px-6 py-5 space-y-4">
           {/* Toggle card */}
           <label
+            htmlFor="is_featured_modal"
             className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition ${
               featuredForm.is_featured
                 ? isDark

@@ -123,6 +123,8 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
         onClick={onClose}
+        role="presentation"
+        aria-hidden="true"
       />
 
       {/* Drawer */}

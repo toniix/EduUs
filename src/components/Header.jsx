@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import UserMenu from "./UserMenu";
 import UserMenuMobile from "./UserMenuMobile";
 import { useAuth } from "../contexts/AuthContext";
@@ -85,7 +85,7 @@ export default function Header() {
                     {item.name}
                     {/* Indicador activo con shared-layout animation */}
                     {active && (
-                      <motion.span
+                      <m.span
                         layoutId="nav-indicator"
                         className="absolute inset-0 rounded-lg bg-secondary/8 border border-secondary/15"
                         transition={{ type: "spring", stiffness: 380, damping: 34 }}
