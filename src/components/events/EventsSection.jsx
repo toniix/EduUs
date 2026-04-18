@@ -1,8 +1,21 @@
 import { useState } from "react";
-import { Calendar, MapPin, Clock, ArrowRight, Users, Lightbulb, Award } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Clock,
+  ArrowRight,
+  Users,
+  Lightbulb,
+  Award,
+} from "lucide-react";
 import { useFeaturedEvent } from "../../hooks/useEvents";
-import { categoryConfig, modalityConfig, formatEventDate } from "../../utils/events";
+import {
+  categoryConfig,
+  modalityConfig,
+  formatEventDate,
+} from "../../utils/events";
 import RegisterModal from "./RegisterModal";
+import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 
 const HIGHLIGHTS = [
   {
@@ -37,7 +50,10 @@ export default function EventsSection() {
   }
 
   const catCfg = event
-    ? categoryConfig[event.category] || { label: event.category, badgeClass: "bg-white/10 text-white border-white/20" }
+    ? categoryConfig[event.category] || {
+        label: event.category,
+        badgeClass: "bg-white/10 text-white border-white/20",
+      }
     : null;
   const modalCfg = event
     ? modalityConfig[event.modality] || { label: event.modality, icon: "📍" }
@@ -53,15 +69,16 @@ export default function EventsSection() {
     }).format(new Date(iso));
   }
 
-  const timeRange = event?.starts_at
-    ? `${formatTime(event.starts_at)}${event.ends_at ? ` - ${formatTime(event.ends_at)}` : ""}`
-    : null;
+  // const timeRange = event?.starts_at
+  //   ? `${formatTime(event.starts_at)}${event.ends_at ? ` - ${formatTime(event.ends_at)}` : ""}`
+  //   : null;
 
   return (
     <section
       className="relative py-20 overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, #0a0f1e 0%, #0f172a 50%, #0d1526 100%)",
+        background:
+          "linear-gradient(135deg, #0a0f1e 0%, #0f172a 50%, #0d1526 100%)",
       }}
     >
       {/* ─── Radial glow decorativo ─── */}
@@ -93,7 +110,6 @@ export default function EventsSection() {
       />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* Loading skeleton */}
         {loading && (
           <div className="animate-pulse rounded-3xl overflow-hidden bg-white/5 h-80" />
@@ -127,13 +143,18 @@ export default function EventsSection() {
                       stroke="currentColor"
                       strokeWidth="2.5"
                       strokeLinecap="round"
-                      style={{ color: "var(--color-primary, #e6461e)", opacity: 0.45 }}
+                      style={{
+                        color: "var(--color-primary, #e6461e)",
+                        opacity: 0.45,
+                      }}
                     />
                   </svg>
-                </span>{" "}🎉
+                </span>{" "}
+                🎉
               </h2>
               <p className="mt-4 text-slate-400 text-sm max-w-md mx-auto leading-relaxed">
-                Una nueva oportunidad de aprender, conectar y crecer junto a nuestra comunidad.
+                Una nueva oportunidad de aprender, conectar y crecer junto a
+                nuestra comunidad.
               </p>
             </div>
 
@@ -149,7 +170,6 @@ export default function EventsSection() {
             >
               {/* Left — contenido */}
               <div className="flex-1 p-8 lg:p-12 flex flex-col justify-center gap-5">
-
                 {/* Badge */}
                 <div className="flex items-center gap-2 w-fit">
                   <span
@@ -160,7 +180,8 @@ export default function EventsSection() {
                     className="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
                     style={{
                       color: "var(--color-primary, #e6461e)",
-                      background: "rgba(var(--color-primary-rgb, 230,70,30), 0.12)",
+                      background:
+                        "rgba(var(--color-primary-rgb, 230,70,30), 0.12)",
                     }}
                   >
                     No te pierdas nuestro próximo evento
@@ -193,7 +214,7 @@ export default function EventsSection() {
                       {formatEventDate(event.starts_at)}
                     </span>
                   )}
-                  {event.location && event.modality !== 'virtual' && (
+                  {event.location && event.modality !== "virtual" && (
                     <span className="flex items-center gap-1.5">
                       <MapPin
                         className="w-4 h-4 flex-shrink-0"
@@ -202,7 +223,7 @@ export default function EventsSection() {
                       {event.location}
                     </span>
                   )}
-                  {timeRange && (
+                  {/* {timeRange && (
                     <span className="flex items-center gap-1.5 w-full sm:w-auto">
                       <Clock
                         className="w-4 h-4 flex-shrink-0"
@@ -210,7 +231,7 @@ export default function EventsSection() {
                       />
                       {timeRange}
                     </span>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Descripción */}
@@ -228,11 +249,11 @@ export default function EventsSection() {
                     style={{
                       background: "var(--color-primary, #e6461e)",
                       color: "#fff",
-                      boxShadow: "0 8px 24px rgba(var(--color-primary-rgb, 230,70,30), 0.35)",
+                      boxShadow:
+                        "0 8px 24px rgba(var(--color-primary-rgb, 230,70,30), 0.35)",
                     }}
                   >
                     Reservar mi lugar
-
                   </button>
                   {event.registration_url && (
                     <a
@@ -255,7 +276,7 @@ export default function EventsSection() {
               {/* Right — imagen */}
               <div className="w-full md:w-5/12 lg:w-2/5 min-h-[240px] md:min-h-0 flex-shrink-0 relative overflow-hidden">
                 <img
-                  src={event.banner_url}
+                  src={optimizeCloudinaryUrl(event.banner_url, 800)}
                   alt={event.title}
                   className="w-full h-full object-cover"
                 />
@@ -290,13 +311,18 @@ export default function EventsSection() {
                 >
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: "rgba(var(--color-primary-rgb, 230,70,30), 0.15)" }}
+                    style={{
+                      background:
+                        "rgba(var(--color-primary-rgb, 230,70,30), 0.15)",
+                    }}
                   >
                     {h.icon}
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white">{h.title}</p>
-                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{h.desc}</p>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                      {h.desc}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -306,10 +332,7 @@ export default function EventsSection() {
       </div>
 
       {registerOpen && event && (
-        <RegisterModal
-          event={event}
-          onClose={() => setRegisterOpen(false)}
-        />
+        <RegisterModal event={event} onClose={() => setRegisterOpen(false)} />
       )}
     </section>
   );

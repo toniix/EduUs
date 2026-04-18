@@ -7,6 +7,7 @@ import {
 } from "../../utils/events";
 import RegisterModal from "./RegisterModal";
 import { m, AnimatePresence } from "framer-motion";
+import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 
 const PLACEHOLDER_SVG =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='260' viewBox='0 0 600 260'%3E%3Crect width='600' height='260' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' fill='%239ca3af'%3ESin imagen%3C/text%3E%3C/svg%3E";
@@ -106,17 +107,17 @@ export default function PromoModal() {
                 <X className="w-5 h-5 text-white" />
               </button>
 
-              {/* Banner / Imagen (Lado izquierdo) */}
-              <div className="relative w-full md:w-5/12 lg:w-1/2 min-h-[200px] sm:min-h-[250px] md:min-h-full">
+               {/* Banner / Imagen (Lado izquierdo) */}
+              <div className="relative w-full md:w-5/12 lg:w-1/2 min-h-[300px] md:min-h-[500px] bg-slate-950 flex items-center justify-center p-4">
                 <img
-                  src={event.banner_url || PLACEHOLDER_SVG}
+                  src={optimizeCloudinaryUrl(event.banner_url, { width: 800 }) || PLACEHOLDER_SVG}
                   alt={event.title}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="max-w-full max-h-full object-contain shadow-2xl rounded-lg"
                   onError={(e) => {
                     e.currentTarget.src = PLACEHOLDER_SVG;
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-black/20 md:to-slate-900" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent pointer-events-none" />
                 {/* Badge categoría elegante */}
                 <span
                   className={`absolute top-5 left-5 text-xs font-bold px-4 py-1.5 rounded-full shadow-lg backdrop-blur-md bg-white/90 text-gray-900 border border-white/50`}
@@ -216,12 +217,12 @@ export default function PromoModal() {
                   >
                     Reserva tu cupo ahora
                   </button>
-                  <button
+                  {/* <button
                     onClick={close}
                     className="py-4 px-6 rounded-xl border border-slate-700 text-slate-300 font-medium hover:bg-slate-800 hover:text-white transition-colors"
                   >
                     Quizás después
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </m.div>

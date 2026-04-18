@@ -4,6 +4,7 @@ import {
   modalityConfig,
   formatEventDate,
 } from "../../utils/events";
+import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 
 const PLACEHOLDER = "https://via.placeholder.com/400x200?text=Evento";
 
@@ -105,18 +106,17 @@ export default function EventCard({
             transition={{ duration: 0.35 }}
             className="overflow-hidden border-t border-gray-100"
           >
-            {/* Imagen */}
             <m.div
               initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="h-40 w-full overflow-hidden bg-gray-100"
+              className="max-h-[450px] w-full overflow-hidden bg-gray-50 flex items-center justify-center"
             >
               <img
-                src={banner_url || PLACEHOLDER}
+                src={optimizeCloudinaryUrl(banner_url, { width: 600 }) || PLACEHOLDER}
                 alt={title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </m.div>
 

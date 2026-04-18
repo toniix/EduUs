@@ -41,7 +41,11 @@ export const modalityConfig = {
  */
 export function formatEventDate(isoString) {
   if (!isoString) return "";
-  const date = new Date(isoString);
+
+  // Cortamos el string para quedarnos solo con "YYYY-MM-DDTHH:mm:ss"
+  // Esto elimina el "+00:00" o la "Z", forzando al navegador a 
+  // tratar los números tal cual como hora local peruana.
+  const date = new Date(isoString.slice(0, 19));
 
   const datePart = new Intl.DateTimeFormat("es-PE", {
     day: "numeric",
