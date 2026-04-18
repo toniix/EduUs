@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useOpportunity } from "../../hooks/useOpportunities";
 import { ChevronLeft } from "lucide-react";
 import { statusColors } from "../../utils/opportunity";
@@ -13,8 +13,9 @@ import DetailHeader from "./OpportunityDetailHeader";
 import DetailBody from "./OpportunityDetailBody";
 
 const OpportunityDetail = () => {
-  const { id } = useParams();
-  const { opportunity, loading, error } = useOpportunity(id);
+  const { idOrSlug } = useParams();
+  const { opportunity, loading, error } = useOpportunity(idOrSlug);
+  const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState(null);
@@ -22,6 +23,13 @@ const OpportunityDetail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Redirección 301 (Client-side): Si entra por ID o slug viejo, redirigir al slug actual
+  useEffect(() => {
+    if (opportunity && opportunity.slug && idOrSlug !== opportunity.slug) {
+      navigate(`/edutracker/oportunidad/${opportunity.slug}`, { replace: true });
+    }
+  }, [opportunity, idOrSlug, navigate]);
 
   // Función para abrir el modal
   const openShareModal = () => {

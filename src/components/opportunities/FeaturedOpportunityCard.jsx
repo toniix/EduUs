@@ -23,7 +23,7 @@ const accentPalette = [
 ];
 
 const FeaturedOpportunityCard = ({ opportunity, index }) => {
-  const { id, title, deadline, image_url, modality, country, category } = opportunity;
+  const { id, title, deadline, image_url, modality, country, category, slug } = opportunity;
 
   const accent = accentPalette[index % accentPalette.length];
   const categoryName = category?.name;
@@ -88,7 +88,7 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
 
           {/* Botón */}
           <Link
-            to={`/edutracker/oportunidad/${id}`}
+            to={`/edutracker/oportunidad/${slug || id}`}
             className={`group/btn flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-semibold text-sm text-white transition-all duration-300 shadow-lg ${accent.button}`}
           >
             Ver detalles

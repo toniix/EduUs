@@ -43,7 +43,7 @@ function App() {
                     <Route path="/nosotros" element={<About />} />
                     <Route path="/proyectos" element={<Projects />} />
                     <Route
-                      path="/edutracker/oportunidad/:id"
+                      path="/edutracker/oportunidad/:idOrSlug"
                       element={<OpportunityDetail />}
                     />
                     <Route path="/edutracker" element={<Opportunities />} />

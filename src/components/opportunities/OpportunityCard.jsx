@@ -24,6 +24,7 @@ export default function OpportunityCard({ opportunity }) {
     modality,
     country,
     category,
+    slug,
   } = opportunity;
 
   // console.log("Oportunidad recibida en OpportunityCard:", opportunity);
@@ -126,7 +127,7 @@ export default function OpportunityCard({ opportunity }) {
 
         <div className="flex gap-3">
           <Link
-            to={`/edutracker/oportunidad/${id}`}
+            to={`/edutracker/oportunidad/${slug || id}`}
             className="flex-1 flex items-center justify-center px-4 py-3 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:bg-primary/90 active:scale-[0.98] transition-all duration-300"
           >
             Ver detalles
