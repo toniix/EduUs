@@ -15,7 +15,8 @@ const AboutSection = () => {
             <span className="relative inline-block">Lo que hacemos hoy</span>
           </h2>
           <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto mt-4 px-4">
-            Nuestra labor principal es conectar a jovenes peruanos con las mejores oportunidades académicas y de desarrollo.
+            Nuestra labor principal es conectar a jovenes peruanos con las
+            mejores oportunidades académicas y de desarrollo.
           </p>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 mx-auto mt-6 rounded-full"></div>
         </div>

@@ -107,8 +107,8 @@ export default function PromoModal() {
                 <X className="w-5 h-5 text-white" />
               </button>
 
-               {/* Banner / Imagen (Lado izquierdo) */}
-              <div className="relative w-full md:w-5/12 lg:w-1/2 min-h-[300px] md:min-h-[500px] bg-slate-950 flex items-center justify-center p-4">
+              {/* Banner / Imagen (Lado izquierdo) */}
+              <div className="relative w-full md:w-5/12 lg:w-1/2 min-h-[220px] md:min-h-[500px] bg-slate-950 flex items-center justify-center p-4">
                 <img
                   src={optimizeCloudinaryUrl(event.banner_url, { width: 800 }) || PLACEHOLDER_SVG}
                   alt={event.title}
@@ -128,17 +128,17 @@ export default function PromoModal() {
 
               {/* Contenido (Lado derecho) */}
               <div className="w-full md:w-7/12 lg:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center bg-slate-900">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-4 pr-10">
+                <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-3 pr-10">
                   {event.title}
                 </h2>
                 {description && (
-                  <p className="text-sm sm:text-base text-slate-400 mb-6 leading-relaxed">
+                  <p className="text-xs sm:text-base text-slate-400 mb-4 md:mb-6 leading-relaxed line-clamp-3 md:line-clamp-none">
                     {description}
                   </p>
                 )}
 
-                {/* Fecha y lugar */}
-                <div className="flex flex-col sm:flex-row gap-4 text-sm text-slate-300 mb-6 bg-white/5 p-4 rounded-xl border border-white/5">
+                {/* Fecha y lugar - Oculto en móvil para ahorrar espacio */}
+                <div className="hidden md:flex flex-col sm:flex-row gap-4 text-sm text-slate-300 mb-6 bg-white/5 p-4 rounded-xl border border-white/5">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">📅</span>
                     <span className="font-medium text-white">
@@ -156,15 +156,15 @@ export default function PromoModal() {
                 </div>
 
                 {event.spots_left !== null && event.spots_left > 0 && (
-                  <div className="mb-6 inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 px-4 py-2 rounded-lg font-semibold text-sm w-fit">
+                  <div className="mb-4 md:mb-6 inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-semibold text-[10px] md:text-sm w-fit">
                     <span className="animate-pulse">⚡</span> Solo{" "}
                     {event.spots_left} cupos restantes
                   </div>
                 )}
 
-                {/* Countdown */}
+                {/* Countdown - Más compacto en móvil */}
                 {countdown && !countdown.isExpired && (
-                  <div className="mb-8">
+                  <div className="mb-6 md:mb-8">
                     <div className="flex items-center gap-2 text-slate-400 text-sm mb-3">
                       <Timer className="w-4 h-4 text-primary" />
                       <span className="font-medium">

@@ -16,14 +16,31 @@ const cardVariants = {
 
 // Paletas de acento para cada tarjeta
 const accentPalette = [
-  { badge: "bg-primary", button: "bg-primary hover:bg-primary/90", glow: "from-primary/60" },
-  { badge: "bg-secondary", button: "bg-secondary hover:bg-secondary/90", glow: "from-secondary/60" },
-  { badge: "bg-primary", button: "bg-primary hover:bg-primary/90", glow: "from-primary/60" },
-  { badge: "bg-secondary", button: "bg-secondary hover:bg-secondary/90", glow: "from-secondary/60" },
+  {
+    badge: "bg-primary",
+    button: "bg-primary hover:bg-primary/90",
+    glow: "from-primary/60",
+  },
+  {
+    badge: "bg-secondary",
+    button: "bg-secondary hover:bg-secondary/90",
+    glow: "from-secondary/60",
+  },
+  {
+    badge: "bg-primary",
+    button: "bg-primary hover:bg-primary/90",
+    glow: "from-primary/60",
+  },
+  {
+    badge: "bg-secondary",
+    button: "bg-secondary hover:bg-secondary/90",
+    glow: "from-secondary/60",
+  },
 ];
 
 const FeaturedOpportunityCard = ({ opportunity, index }) => {
-  const { id, title, deadline, image_url, modality, country, category, slug } = opportunity;
+  const { id, title, deadline, image_url, modality, country, category, slug } =
+    opportunity;
 
   const accent = accentPalette[index % accentPalette.length];
   const categoryName = category?.name;
@@ -36,7 +53,9 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
     >
       {/* Imagen de fondo */}
       <img
-        src={optimizeCloudinaryUrl(image_url, { width: 600 }) || "/placeholder.svg"}
+        src={
+          optimizeCloudinaryUrl(image_url, { width: 400 }) || "/placeholder.svg"
+        }
         alt={title}
         className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
       />
@@ -44,14 +63,18 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
       {/* Overlay gradiente multicapa */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10" />
       {/* Glow de color en la parte inferior */}
-      <div className={`absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t ${accent.glow} to-transparent opacity-30 group-hover:opacity-50 transition-opacity duration-400`} />
+      <div
+        className={`absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t ${accent.glow} to-transparent opacity-30 group-hover:opacity-50 transition-opacity duration-400`}
+      />
 
       {/* Contenido */}
       <div className="absolute inset-0 flex flex-col justify-between p-5">
         {/* Parte superior – badge de categoría */}
         <div className="flex items-start justify-between">
           {categoryName && (
-            <span className={`px-3 py-1 rounded-full text-[11px] font-bold text-white shadow-md ${accent.badge}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-[11px] font-bold text-white shadow-md ${accent.badge}`}
+            >
               {categoryName}
             </span>
           )}
@@ -69,19 +92,32 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
             {deadline && (
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 flex-shrink-0 text-white/60" />
-                <span>Límite: <span className="text-white font-medium">{formatDate(deadline)}</span></span>
+                <span>
+                  Límite:{" "}
+                  <span className="text-white font-medium">
+                    {formatDate(deadline)}
+                  </span>
+                </span>
               </div>
             )}
             {modality && modalityConfig[modality] && (
               <div className="flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-white/60" />
-                <span>Modalidad: <span className="text-white font-medium">{modalityConfig[modality].label}</span></span>
+                <span>
+                  Modalidad:{" "}
+                  <span className="text-white font-medium">
+                    {modalityConfig[modality].label}
+                  </span>
+                </span>
               </div>
             )}
             {country && (
               <div className="flex items-center gap-1.5">
                 <Globe className="w-3.5 h-3.5 flex-shrink-0 text-white/60" />
-                <span>País: <span className="text-white font-medium">{country}</span></span>
+                <span>
+                  País:{" "}
+                  <span className="text-white font-medium">{country}</span>
+                </span>
               </div>
             )}
           </div>
