@@ -7,6 +7,8 @@ import {
   Tag,
   Calendar,
   ClipboardList,
+  Globe,
+  Sparkles,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -119,20 +121,50 @@ export default function Sidebar({
       </nav>
 
       {/* Acciones de navegación y logout */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
-        <div className="space-y-2">
+      <div className={`absolute bottom-0 left-0 right-0 p-4 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+        {!isCollapsed && (
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-2">
+            Sitio Público
+          </p>
+        )}
+        <div className="space-y-1">
+          {/* Ir a Home */}
+          <button
+            onClick={() => navigate("/")}
+            className={`w-full flex items-center ${
+              isCollapsed ? "justify-center" : "justify-start"
+            } px-4 py-2.5 rounded-xl text-xs font-medium transition-all duration-300 ${
+              isDark ? "hover:bg-gray-800 text-gray-400" : "hover:bg-gray-50 text-gray-600"
+            } hover:text-primary`}
+          >
+            <Globe className="h-4 w-4" />
+            {!isCollapsed && <span className="ml-3">Inicio (Landing)</span>}
+          </button>
+
+          {/* Ir a Proyectos/Eventos */}
+          <button
+            onClick={() => navigate("/proyectos")}
+            className={`w-full flex items-center ${
+              isCollapsed ? "justify-center" : "justify-start"
+            } px-4 py-2.5 rounded-xl text-xs font-medium transition-all duration-300 ${
+              isDark ? "hover:bg-gray-800 text-gray-400" : "hover:bg-gray-50 text-gray-600"
+            } hover:text-primary`}
+          >
+            <Sparkles className="h-4 w-4" />
+            {!isCollapsed && <span className="ml-3">Eventos</span>}
+          </button>
+
+          {/* Ir a Edutracker */}
           <button
             onClick={() => navigate("/edutracker")}
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
-            } px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 hover:text-primary transition-all duration-300 ${
-              isDark ? "text-secondary" : "text-gray-700"
-            }`}
+            } px-4 py-2.5 rounded-xl text-xs font-medium transition-all duration-300 ${
+              isDark ? "hover:bg-gray-800 text-gray-400" : "hover:bg-gray-50 text-gray-600"
+            } hover:text-primary mb-4`}
           >
-            <Home className="h-5 w-5" />
-            {!isCollapsed && (
-              <span className="ml-3 font-medium">Salir a Edutracker</span>
-            )}
+            <Home className="h-4 w-4" />
+            {!isCollapsed && <span className="ml-3">Edutracker</span>}
           </button>
         </div>
       </div>
