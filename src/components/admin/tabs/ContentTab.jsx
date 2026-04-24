@@ -209,9 +209,9 @@ export default function ContentTab({
                         isDark ? "hover:bg-gray-600" : "hover:bg-gray-50"
                       }
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900 border-b border-gray-100/5">
                         <div
-                          className={`text-sm font-medium ${
+                          className={`text-sm font-medium max-w-xs break-words ${
                             isDark ? "text-white" : "text-gray-900"
                           }`}
                         >

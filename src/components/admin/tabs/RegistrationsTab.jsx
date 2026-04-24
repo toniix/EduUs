@@ -136,12 +136,13 @@ export default function RegistrationsTab() {
       !q ||
       r.name?.toLowerCase().includes(q) ||
       r.email?.toLowerCase().includes(q) ||
-      r.dni?.toLowerCase().includes(q) ||
+      String(r.dni ?? "").includes(q) ||
       r.career?.toLowerCase().includes(q) ||
       r.university?.toLowerCase().includes(q) ||
       r.event?.title?.toLowerCase().includes(q);
     const matchStatus = statusFilter === "all" || r.status === statusFilter;
-    const matchEvent = eventFilter === "all" || r.event?.id === eventFilter;
+    const matchEvent =
+      eventFilter === "all" || String(r.event?.id) === eventFilter;
     return matchSearch && matchStatus && matchEvent;
   });
 
@@ -292,7 +293,6 @@ export default function RegistrationsTab() {
             subText={subText}
             cardBg={cardBg}
             updatingId={updatingId}
-            reminderOptions={[]}
             onStatusChange={handleStatusChange}
           />
         )}
