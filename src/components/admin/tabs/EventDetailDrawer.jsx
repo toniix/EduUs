@@ -1,12 +1,29 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  X, Calendar, MapPin, Clock, Users, DollarSign, Link,
-  Hash, Star, CheckCircle2, XCircle, UserCheck, Loader2,
-  ExternalLink, Copy, ChevronDown,
+  X,
+  Calendar,
+  MapPin,
+  Clock,
+  Users,
+  DollarSign,
+  Link,
+  Hash,
+  Star,
+  CheckCircle2,
+  XCircle,
+  UserCheck,
+  Loader2,
+  ExternalLink,
+  Copy,
+  ChevronDown,
 } from "lucide-react";
 import { eventsService } from "../../../services/eventsService";
 import {
-  categoryConfig, modalityConfig, formatEventDate, getEventStatus, eventStatusConfig,
+  categoryConfig,
+  modalityConfig,
+  formatEventDate,
+  getEventStatus,
+  eventStatusConfig,
 } from "../../../utils/events";
 import { toast } from "react-hot-toast";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -15,26 +32,38 @@ import { useTheme } from "../../../contexts/ThemeContext";
 function formatDateTime(iso) {
   if (!iso) return "—";
   return new Intl.DateTimeFormat("es-PE", {
-    day: "2-digit", month: "short", year: "numeric",
-    hour: "2-digit", minute: "2-digit", hour12: true,
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   }).format(new Date(iso));
 }
 
 function formatShortDate(iso) {
   if (!iso) return "—";
   return new Intl.DateTimeFormat("es-PE", {
-    day: "2-digit", month: "short", year: "numeric",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   }).format(new Date(iso));
 }
 
 const REG_STATUS = {
-  registered: { label: "Inscrito",  cls: "bg-blue-100 text-blue-700" },
-  attended:   { label: "Asistió",   cls: "bg-green-100 text-green-700" },
-  cancelled:  { label: "Cancelado", cls: "bg-red-100 text-red-600" },
+  registered: { label: "Inscrito", cls: "bg-blue-100 text-blue-700" },
+  attended: { label: "Asistió", cls: "bg-green-100 text-green-700" },
+  cancelled: { label: "Cancelado", cls: "bg-red-100 text-red-600" },
 };
 
 /* ─── Componente principal ─── */
-export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, onRefetch }) {
+export default function EventDetailDrawer({
+  event,
+  onClose,
+  onEdit,
+  onDelete,
+  onRefetch,
+}) {
   const { isDark } = useTheme();
   const [registrations, setRegistrations] = useState([]);
   const [loadingRegs, setLoadingRegs] = useState(true);
@@ -60,21 +89,28 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
     }
   }, [event?.id]);
 
-  useEffect(() => { fetchRegs(); }, [fetchRegs]);
+  useEffect(() => {
+    fetchRegs();
+  }, [fetchRegs]);
 
   /* Bloquear scroll */
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, []);
 
   /* Cambiar estado de inscripción */
   const handleStatusChange = async (regId, newStatus) => {
     setUpdatingId(regId);
-    const { success, error } = await eventsService.updateRegistrationStatus(regId, newStatus);
+    const { success, error } = await eventsService.updateRegistrationStatus(
+      regId,
+      newStatus,
+    );
     if (success) {
       setRegistrations((prev) =>
-        prev.map((r) => r.id === regId ? { ...r, status: newStatus } : r)
+        prev.map((r) => (r.id === regId ? { ...r, status: newStatus } : r)),
       );
       toast.success("Estado actualizado");
     } else {
@@ -85,9 +121,18 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
 
   /* Exportar CSV */
   const exportCSV = () => {
-    const headers = ["Nombre", "Email", "Teléfono", "Estado", "Fecha inscripción"];
+    const headers = [
+      "Nombre",
+      "Email",
+      "Teléfono",
+      "Estado",
+      "Fecha inscripción",
+    ];
     const rows = registrations.map((r) => [
-      r.name, r.email, r.phone || "", REG_STATUS[r.status]?.label || r.status,
+      r.name,
+      r.email,
+      r.phone || "",
+      REG_STATUS[r.status]?.label || r.status,
       formatShortDate(r.registered_at),
     ]);
     const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
@@ -104,18 +149,34 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
 
   const status = getEventStatus(event);
   const statusCfg = eventStatusConfig[status] || {};
-  const catCfg = categoryConfig[event.category] || { label: event.category, badgeClass: "bg-gray-100 text-gray-600" };
-  const modalCfg = modalityConfig[event.modality] || { label: event.modality, icon: "📍" };
+  const catCfg = categoryConfig[event.category] || {
+    label: event.category,
+    badgeClass: "bg-gray-100 text-gray-600",
+  };
+  const modalCfg = modalityConfig[event.modality] || {
+    label: event.modality,
+    icon: "📍",
+  };
 
   const totalCapacity = event.capacity;
-  const registeredCount = registrations.filter((r) => r.status === "registered").length;
-  const attendedCount = registrations.filter((r) => r.status === "attended").length;
-  const cancelledCount = registrations.filter((r) => r.status === "cancelled").length;
-  const spotsLeft = totalCapacity !== null ? Math.max(0, totalCapacity - registeredCount) : null;
+  const registeredCount = registrations.filter(
+    (r) => r.status === "registered",
+  ).length;
+  const attendedCount = registrations.filter(
+    (r) => r.status === "attended",
+  ).length;
+  const cancelledCount = registrations.filter(
+    (r) => r.status === "cancelled",
+  ).length;
+  const spotsLeft =
+    totalCapacity !== null
+      ? Math.max(0, totalCapacity - registeredCount)
+      : null;
 
-  const filteredRegs = regFilter === "all"
-    ? registrations
-    : registrations.filter((r) => r.status === regFilter);
+  const filteredRegs =
+    regFilter === "all"
+      ? registrations
+      : registrations.filter((r) => r.status === regFilter);
 
   return (
     <>
@@ -133,12 +194,18 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
         style={{ animation: "slideIn 0.25s ease-out" }}
       >
         {/* ─── Header ─── */}
-        <div className={`flex items-center justify-between px-6 py-4 border-b ${border} flex-shrink-0`}>
+        <div
+          className={`flex items-center justify-between px-6 py-4 border-b ${border} flex-shrink-0`}
+        >
           <div className="flex items-center gap-3 min-w-0">
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${statusCfg.badgeClass}`}>
+            <span
+              className={`text-xs font-bold px-2.5 py-1 rounded-full ${statusCfg.badgeClass}`}
+            >
               {statusCfg.label}
             </span>
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${catCfg.badgeClass}`}>
+            <span
+              className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${catCfg.badgeClass}`}
+            >
               {catCfg.label}
             </span>
             {event.promo_modal && (
@@ -165,7 +232,6 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
 
         {/* ─── Scrollable body ─── */}
         <div className="flex-1 overflow-y-auto">
-
           {/* Banner */}
           {event.banner_url && (
             <div className="w-full h-48 overflow-hidden flex-shrink-0">
@@ -178,11 +244,12 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
           )}
 
           <div className="px-6 py-5 space-y-6">
-
             {/* Título */}
             <div>
               <h2 className="text-xl font-bold leading-snug">{event.title}</h2>
-              <p className={`text-xs mt-1 font-mono ${subText}`}>/{event.slug}</p>
+              <p className={`text-xs mt-1 font-mono ${subText}`}>
+                /{event.slug}
+              </p>
             </div>
 
             {/* ─── Stats ─── */}
@@ -201,7 +268,10 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
                 {
                   icon: <DollarSign className="w-4 h-4 text-amber-500" />,
                   label: "Precio",
-                  value: event.price === 0 || event.price === null ? "Gratis" : `S/ ${event.price}`,
+                  value:
+                    event.price === 0 || event.price === null
+                      ? "Gratis"
+                      : `S/ ${event.price}`,
                 },
                 {
                   icon: <Users className="w-4 h-4 text-gray-400" />,
@@ -209,7 +279,10 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
                   value: spotsLeft === null ? "Sin límite" : spotsLeft,
                 },
               ].map((s, i) => (
-                <div key={i} className={`${cardBg} rounded-xl p-3 flex flex-col gap-1`}>
+                <div
+                  key={i}
+                  className={`${cardBg} rounded-xl p-3 flex flex-col gap-1`}
+                >
                   <div className="flex items-center gap-1.5">
                     {s.icon}
                     <span className={`text-[11px] ${subText}`}>{s.label}</span>
@@ -225,29 +298,47 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
                 Información del evento
               </h3>
 
-              <InfoRow icon={<Calendar className="w-4 h-4 text-primary" />} label="Inicio">
+              <InfoRow
+                icon={<Calendar className="w-4 h-4 text-primary" />}
+                label="Inicio"
+              >
                 {formatDateTime(event.starts_at)}
               </InfoRow>
               {event.ends_at && (
-                <InfoRow icon={<Clock className="w-4 h-4 text-gray-400" />} label="Fin">
+                <InfoRow
+                  icon={<Clock className="w-4 h-4 text-gray-400" />}
+                  label="Fin"
+                >
                   {formatDateTime(event.ends_at)}
                 </InfoRow>
               )}
-              <InfoRow icon={<span className="text-sm">{modalCfg.icon}</span>} label="Modalidad">
+              <InfoRow
+                icon={<span className="text-sm">{modalCfg.icon}</span>}
+                label="Modalidad"
+              >
                 {modalCfg.label}
               </InfoRow>
               {event.location && (
-                <InfoRow icon={<MapPin className="w-4 h-4 text-gray-400" />} label="Lugar">
+                <InfoRow
+                  icon={<MapPin className="w-4 h-4 text-gray-400" />}
+                  label="Lugar"
+                >
                   {event.location}
                 </InfoRow>
               )}
               {totalCapacity !== null && (
-                <InfoRow icon={<Users className="w-4 h-4 text-gray-400" />} label="Capacidad">
+                <InfoRow
+                  icon={<Users className="w-4 h-4 text-gray-400" />}
+                  label="Capacidad"
+                >
                   {totalCapacity} personas
                 </InfoRow>
               )}
               {event.registration_url && (
-                <InfoRow icon={<Link className="w-4 h-4 text-blue-500" />} label="URL inscripción">
+                <InfoRow
+                  icon={<Link className="w-4 h-4 text-blue-500" />}
+                  label="URL inscripción"
+                >
                   <a
                     href={event.registration_url}
                     target="_blank"
@@ -267,7 +358,9 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
                 <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-2">
                   Descripción
                 </h3>
-                <p className={`text-sm leading-relaxed ${subText}`}>{event.description}</p>
+                <p className={`text-sm leading-relaxed ${subText}`}>
+                  {event.description}
+                </p>
               </div>
             )}
 
@@ -286,20 +379,26 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
                     className={`text-xs rounded-lg border px-2 py-1 outline-none ${isDark ? "bg-gray-700 border-gray-600 text-gray-200" : "bg-white border-gray-200 text-gray-700"}`}
                   >
                     <option value="all">Todos ({registrations.length})</option>
-                    <option value="registered">Inscritos ({registeredCount})</option>
-                    <option value="attended">Asistieron ({attendedCount})</option>
-                    <option value="cancelled">Cancelados ({cancelledCount})</option>
+                    <option value="registered">
+                      Inscritos ({registeredCount})
+                    </option>
+                    <option value="attended">
+                      Asistieron ({attendedCount})
+                    </option>
+                    <option value="cancelled">
+                      Cancelados ({cancelledCount})
+                    </option>
                   </select>
 
                   {/* Exportar CSV */}
-                  {registrations.length > 0 && (
+                  {/* {registrations.length > 0 && (
                     <button
                       onClick={exportCSV}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary/5 transition-colors"
                     >
                       Exportar CSV
                     </button>
-                  )}
+                  )} */}
                 </div>
               </div>
 
@@ -323,7 +422,10 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
               {!loadingRegs && filteredRegs.length > 0 && (
                 <div className="space-y-2">
                   {filteredRegs.map((reg) => {
-                    const regCfg = REG_STATUS[reg.status] || { label: reg.status, cls: "bg-gray-100 text-gray-600" };
+                    const regCfg = REG_STATUS[reg.status] || {
+                      label: reg.status,
+                      cls: "bg-gray-100 text-gray-600",
+                    };
                     return (
                       <div
                         key={reg.id}
@@ -336,8 +438,12 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold truncate">{reg.name}</p>
-                          <p className={`text-xs truncate ${subText}`}>{reg.email}</p>
+                          <p className="text-sm font-semibold truncate">
+                            {reg.name}
+                          </p>
+                          <p className={`text-xs truncate ${subText}`}>
+                            {reg.email}
+                          </p>
                           {reg.phone && (
                             <p className={`text-xs ${subText}`}>{reg.phone}</p>
                           )}
@@ -348,7 +454,9 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
 
                         {/* Estado + acciones */}
                         <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${regCfg.cls}`}>
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${regCfg.cls}`}
+                          >
                             {regCfg.label}
                           </span>
 
@@ -359,7 +467,9 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
                               {reg.status !== "attended" && (
                                 <button
                                   title="Marcar como asistió"
-                                  onClick={() => handleStatusChange(reg.id, "attended")}
+                                  onClick={() =>
+                                    handleStatusChange(reg.id, "attended")
+                                  }
                                   className="p-1 rounded-lg hover:bg-green-100 text-green-600 transition-colors"
                                 >
                                   <UserCheck className="w-3.5 h-3.5" />
@@ -368,7 +478,9 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
                               {reg.status !== "registered" && (
                                 <button
                                   title="Marcar como inscrito"
-                                  onClick={() => handleStatusChange(reg.id, "registered")}
+                                  onClick={() =>
+                                    handleStatusChange(reg.id, "registered")
+                                  }
                                   className="p-1 rounded-lg hover:bg-blue-100 text-blue-500 transition-colors"
                                 >
                                   <CheckCircle2 className="w-3.5 h-3.5" />
@@ -377,7 +489,9 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
                               {reg.status !== "cancelled" && (
                                 <button
                                   title="Cancelar inscripción"
-                                  onClick={() => handleStatusChange(reg.id, "cancelled")}
+                                  onClick={() =>
+                                    handleStatusChange(reg.id, "cancelled")
+                                  }
                                   className="p-1 rounded-lg hover:bg-red-100 text-red-500 transition-colors"
                                 >
                                   <XCircle className="w-3.5 h-3.5" />
@@ -394,7 +508,9 @@ export default function EventDetailDrawer({ event, onClose, onEdit, onDelete, on
             </div>
 
             {/* ─── Zona peligrosa ─── */}
-            <div className={`border ${isDark ? "border-red-900/40" : "border-red-100"} rounded-xl p-4`}>
+            <div
+              className={`border ${isDark ? "border-red-900/40" : "border-red-100"} rounded-xl p-4`}
+            >
               <h3 className="text-xs font-bold uppercase tracking-wider text-red-500 mb-3">
                 Zona peligrosa
               </h3>
