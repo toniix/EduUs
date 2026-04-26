@@ -8,8 +8,8 @@ import {
 } from "../../../services/opportunityService";
 import InlineLoader from "../../ui/LoadingSpinner";
 import { toast } from "react-hot-toast";
-import OpportunityActionsMenu from "../../admin/tabs/OpportunityActionsMenu";
-import Pagination from "../../Pagination2";
+import OpportunityActionsMenu from "../../admin/OpportunityActionsMenu";
+import Pagination from "../../Pagination";
 import { useAuth } from "../../../contexts/AuthContext";
 import { getCountOfFeaturedOpportunities } from "../../../services/opportunityService";
 

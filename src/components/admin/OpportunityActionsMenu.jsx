@@ -1,15 +1,15 @@
 import { useState, useContext, useEffect } from "react";
-import ModalConfirmacion from "../../ModalConfirmacion";
+import ModalConfirmacion from "../ui/ModalConfirmacion";
 import {
   deleteOpportunity,
   updateOpportunity,
-} from "../../../services/opportunityService";
+} from "../../services/opportunityService";
 import { toast } from "react-hot-toast";
 import { Edit, Trash2, Star } from "lucide-react";
-import { useAuth } from "../../../contexts/AuthContext";
-import { ThemeContext } from "../../../contexts/ThemeContext";
-import DeletionLoader from "../../ui/DeletionLoader";
-import FeaturedModal from "../../opportunities/FeaturedModal";
+import { useAuth } from "../../contexts/AuthContext";
+import { ThemeContext } from "../../contexts/ThemeContext";
+import DeletionLoader from "../ui/DeletionLoader";
+import FeaturedModal from "../opportunities/FeaturedModal";
 
 const OpportunityActionsMenu = ({
   opportunity,

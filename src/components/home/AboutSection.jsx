@@ -1,5 +1,5 @@
 import React from "react";
-import { AboutItems } from "../data/aboutData";
+import { AboutItems } from "../../data/aboutData";
 import styles from "./AboutSection.module.css";
 import { m } from "framer-motion";
 

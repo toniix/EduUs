@@ -8,8 +8,8 @@ import Projects from "./pages/Projects";
 import Opportunities from "./pages/opportunities/Opportunities";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import TermsPage from "./pages/TermsPage";
-import PrivacyPage from "./pages/PrivacyPage";
+import TermsPage from "./pages/Terms";
+import PrivacyPage from "./pages/Privacy";
 import AdminPanel from "./pages/admin/AdminPanel";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -18,11 +18,11 @@ import OpportunityDetail from "./components/opportunities/OpportunityDetail";
 import ScrollToTop from "./components/ScrollToTop";
 import PublicLayout from "./components/layouts/PublicLayout";
 import Profile from "./pages/Profile";
-import RoleGuard from "./components/admin/RoleGuard";
+import RoleGuard from "./routes/RoleGuard";
 import NoAccessFallback from "./components/ui/NoAccessFallback";
 import PublicRoute from "./routes/PublicRoute";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import NotFound from "./routes/NotFound";
+import NotFound from "./pages/NotFound";
 import AuthCallback from "./routes/AuthCallback";
 
 function App() {

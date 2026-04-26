@@ -12,7 +12,7 @@ import {
 import { eventsService } from "../../../services/eventsService";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { toast } from "react-hot-toast";
-import RegistrationsTable from "./EventsRegistrationsTable";
+import RegistrationsTable from "../EventsRegistrationsTable";
 
 const REG_STATUS = {
   registered: { label: "Inscrito", cls: "bg-blue-100 text-blue-700" },

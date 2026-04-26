@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import { useAuth } from "../../contexts/AuthContext";
-import LoadingSpinner from "../ui/LoadingSpinner";
+import { useAuth } from "../contexts/AuthContext";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 // Nueva implementación simplificada
 const RoleGuard = ({

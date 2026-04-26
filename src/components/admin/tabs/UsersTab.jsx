@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import UserActionsMenu from "./UserActionsMenu";
+import UserActionsMenu from "../UserActionsMenu";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ThemeContext } from "../../../contexts/ThemeContext";
 import InlineLoader from "../../ui/LoadingSpinner";
-import Pagination from "../../Pagination2";
+import Pagination from "../../Pagination";
 
 export default function UsersTab({
   users,

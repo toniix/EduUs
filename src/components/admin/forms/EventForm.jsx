@@ -7,7 +7,7 @@ import {
 } from "../../../utils/events";
 import { eventSchema } from "../../../utils/validationSchemas";
 import { uploadImageToCloudinary } from "../../../services/cloudinaryService";
-import BannerUpload from "./EventBannerUpload";
+import BannerUpload from "../EventBannerUpload";
 
 const CATEGORIES = Object.entries(categoryConfig).map(([value, cfg]) => ({
   value,
