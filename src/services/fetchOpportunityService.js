@@ -357,27 +357,6 @@ class OpportunitiesService {
   }
 
   /**
-   * Transforma los datos de las oportunidades para aplanar las relaciones many-to-many
-   * @param {Array} opportunities - Lista de oportunidades con relaciones anidadas
-   * @returns {Array} Datos transformados
-   */
-  transformOpportunityData(opportunities) {
-    return opportunities.map((opportunity) => {
-      // Extraer tags de la relación many-to-many
-      const tags = (opportunity.opportunity_tags || [])
-        .map((ot) => ot.tag)
-        .filter(Boolean);
-
-      return {
-        ...opportunity,
-        tags, // Añadir tags como array plano
-        // Eliminar la relación original que ya no necesitamos
-        opportunity_tags: undefined,
-      };
-    });
-  }
-
-  /**
    * Transforma los datos de oportunidades para aplanar las relaciones many-to-many
    * @param {Array} data - Array de oportunidades raw
    * @returns {Array} Array de oportunidades transformadas

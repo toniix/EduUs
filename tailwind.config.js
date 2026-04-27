@@ -46,9 +46,6 @@ export default {
 
         // Para contenido general - sobrescribe la fuente sans por defecto
         sans: ["Nunito", "ui-sans-serif", "system-ui"],
-
-        // // También puedes crear un alias específico para Nunito
-        // body: ["Nunito", "sans-serif"],
       },
       transitionProperty: {
         colors:

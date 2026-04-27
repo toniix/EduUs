@@ -496,12 +496,11 @@ export async function deleteOpportunity(id, userRole = null) {
     }
 
     // 4. Eliminar la imagen de Cloudinary si existe
-    console.log("Deleting image from Cloudinary...");
-    console.log("Image URL:", opportunity.image_url);
     if (opportunity.image_url) {
       try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
         const response = await fetch(
-          "https://tlhkmdnopmqftsglmyqr.supabase.co/functions/v1/delete-image",
+          `${supabaseUrl}/functions/v1/delete-image`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

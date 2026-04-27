@@ -92,8 +92,8 @@ function App() {
                     }
                   />
 
-                  <Route path="*" element={<NotFound />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
 
                 <Toaster position="bottom-right" />
