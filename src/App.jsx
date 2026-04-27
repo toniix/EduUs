@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "react-hot-toast";
 import { LazyMotion, domAnimation } from "framer-motion";
@@ -43,11 +43,10 @@ function App() {
         <Analytics />
         <AuthProvider>
           {/* <RoleProvider> */}
-          <OpportunitiesProvider>
-            <ThemeProvider>
-              <Router>
-                <ScrollToTop />
-                <Suspense fallback={<PageLoader />}>
+          <ThemeProvider>
+            <Router>
+              <ScrollToTop />
+              <Suspense fallback={<PageLoader />}>
                   <Routes>
                     {/*  RUTAS PÚBLICAS */}
                     <Route element={<PublicLayout />}>
@@ -55,10 +54,18 @@ function App() {
                       <Route path="/nosotros" element={<About />} />
                       <Route path="/proyectos" element={<Projects />} />
                       <Route
-                        path="/edutracker/oportunidad/:idOrSlug"
-                        element={<OpportunityDetail />}
-                      />
-                      <Route path="/edutracker" element={<Opportunities />} />
+                        element={
+                          <OpportunitiesProvider>
+                            <Outlet />
+                          </OpportunitiesProvider>
+                        }
+                      >
+                        <Route path="/edutracker" element={<Opportunities />} />
+                        <Route
+                          path="/edutracker/oportunidad/:idOrSlug"
+                          element={<OpportunityDetail />}
+                        />
+                      </Route>
                       <Route path="/terminos" element={<TermsPage />} />
                       <Route path="/privacidad" element={<PrivacyPage />} />
 
@@ -112,7 +119,6 @@ function App() {
                 <Toaster position="bottom-right" />
               </Router>
             </ThemeProvider>
-          </OpportunitiesProvider>
           {/* </RoleProvider> */}
         </AuthProvider>
       </div>
