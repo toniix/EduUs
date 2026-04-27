@@ -108,7 +108,7 @@ export function useOpportunityForm(initial = {}, categories = []) {
           fieldErrors[err.path[0]] = err.message;
         }
       });
-      console.log(fieldErrors);
+      // console.log(fieldErrors);
       setErrors(fieldErrors);
       // Devuelve mensaje general si hay muchos errores
       return "Corrige los errores del formulario.";

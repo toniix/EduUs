@@ -32,8 +32,8 @@ export default function ContentTab({
     (opp) => opp.is_featured,
   ).length;
 
-  console.log(opportunities);
-  console.log(opportunities.map((opp) => opp.featured_order));
+  // console.log(opportunities);
+  // console.log(opportunities.map((opp) => opp.featured_order));
 
   const handleFormSubmit = async (formData) => {
     try {

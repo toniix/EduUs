@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabase";
+import { createSlug } from "../utils/slugify";
 
 /**
  * SELECT base para eventos — incluye conteo de inscritos para calcular spots_left.
@@ -78,24 +79,10 @@ class EventsService {
 
   /**
    * Evento destacado para el home.
-   * Usa promo_modal=true (mismo flag que el popup), ya que ambos representan
-   * el evento del mes de la organización.
+   * Usa el mismo evento que el promo_modal (el evento del mes).
    */
   async getFeaturedEvent() {
-    try {
-      const { data } = await supabase
-        .from("events")
-        .select(EVENT_SELECT)
-        .eq("promo_modal", true)
-        .eq("status", "published")
-        .order("starts_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-
-      return data ? transformEvent(data) : null;
-    } catch {
-      return null;
-    }
+    return this.getPromoEvent();
   }
 
   /**
@@ -401,13 +388,7 @@ class EventsService {
 
   /** Genera slug básico desde un título */
   _generateSlug(title = "") {
-    return title
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-");
+    return createSlug(title);
   }
 }
 

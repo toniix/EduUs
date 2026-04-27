@@ -37,11 +37,11 @@ export async function createOpportunity(data) {
   try {
     // 1. Procesar categoría
     let categoryId = null;
-    console.log("empezando a procesar categoría");
+    // console.log("empezando a procesar categoría");
     if (data.category) {
       categoryId = await getOrCreateCategory(data.category);
     }
-    console.log("terminando de procesar categoría");
+    // console.log("terminando de procesar categoría");
 
     // 2. Subir imagen a Cloudinary si es un archivo
     let imageUrl = data.image_url;
@@ -60,18 +60,18 @@ export async function createOpportunity(data) {
     };
 
     delete opportunityPayload.category; // No enviar el nombre, sino el id
-    delete opportunityPayload.tags; // ← Agrega esta línea
-    console.log("empezando a insertar oportunidad");
+    delete opportunityPayload.tags;
+    // console.log("empezando a insertar oportunidad");
     const { data: result, error } = await supabase
       .from("opportunities")
       .insert([opportunityPayload])
       .select()
       .single();
     if (error) {
-      console.log("error insertando oportunidad");
+      // console.log("error insertando oportunidad");
       return { success: false, error: error.message };
     }
-    console.log("terminando de insertar oportunidad");
+    // console.log("terminando de insertar oportunidad");
     const opportunityId = result.id;
 
     // 3. Procesar tags y relacionar
@@ -203,12 +203,13 @@ async function reorganizeFeaturedOrders(removedOrder) {
 
   // Decrementar en 1 cada orden mayor al removido
   if (featured && featured.length > 0) {
-    for (const opp of featured) {
-      await supabase
+    const updatePromises = featured.map((opp) =>
+      supabase
         .from("opportunities")
         .update({ featured_order: opp.featured_order - 1 })
-        .eq("id", opp.id);
-    }
+        .eq("id", opp.id),
+    );
+    await Promise.all(updatePromises);
   }
 }
 
@@ -219,8 +220,8 @@ async function reorganizeFeaturedOrders(removedOrder) {
  * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
  */
 export async function updateOpportunity(id, data, userRole = null) {
-  console.log(data);
-  console.log(userRole);
+  // console.log(data);
+  // console.log(userRole);
   try {
     // Verificar autenticación
     const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -233,7 +234,7 @@ export async function updateOpportunity(id, data, userRole = null) {
     }
 
     // Obtener la oportunidad existente
-    console.log("Fetching opportunity with ID:", id);
+    // console.log("Fetching opportunity with ID:", id);
     const { data: existingOpportunity, error: fetchError } = await supabase
       .from("opportunities")
       .select("*")
@@ -248,7 +249,7 @@ export async function updateOpportunity(id, data, userRole = null) {
     }
 
     // Verificar que el usuario autenticado sea el creador de la oportunidad o un admin
-    console.log("verificando permisos para usuario:", userData.user.id);
+    // console.log("verificando permisos para usuario:", userData.user.id);
     if (
       existingOpportunity.created_by !== userData.user.id &&
       userRole !== "admin"
@@ -297,12 +298,7 @@ export async function updateOpportunity(id, data, userRole = null) {
         );
 
         if (conflictingOpportunity) {
-          // Reasignar automáticamente el orden anterior al conflictivo
-          console.log(
-            `Reasignando orden ${featuredOrder} de ${conflictingOpportunity.title}`,
-          );
-
-          // Buscar un orden disponible
+          // Buscar un orden disponible para reasignar al conflictivo
           let newOrder = 1;
           while (newOrder <= 4) {
             const occupied = await findOpportunityByFeaturedOrder(newOrder, id);
@@ -323,10 +319,6 @@ export async function updateOpportunity(id, data, userRole = null) {
             .from("opportunities")
             .update({ featured_order: newOrder })
             .eq("id", conflictingOpportunity.id);
-
-          console.log(
-            `Orden reasignado: ${conflictingOpportunity.id} → posición ${newOrder}`,
-          );
         }
       }
     }
@@ -334,16 +326,14 @@ export async function updateOpportunity(id, data, userRole = null) {
     // Si se desmarca como destacada y tenía un orden, reorganizar
     if (isUnmarkingAsFeatured && existingOpportunity.featured_order) {
       await reorganizeFeaturedOrders(existingOpportunity.featured_order);
-      console.log(
-        `Órdenes reorganizados después de remover posición ${existingOpportunity.featured_order}`,
-      );
+      // console.log(`Órdenes reorganizados después de remover posición ${existingOpportunity.featured_order}`);
     }
 
     // ========== FIN VALIDACIONES DE DESTACADO ==========
 
     // Procesar categoría si se proporciona
     let categoryId = existingOpportunity.category_id;
-    console.log("categoryId:", categoryId);
+    // console.log("categoryId:", categoryId);
     if (data.category) {
       categoryId = await getOrCreateCategory(data.category);
     }
@@ -377,9 +367,8 @@ export async function updateOpportunity(id, data, userRole = null) {
     delete updateData.creator;
     delete updateData.tags;
 
-    console.log("Updating opportunity...");
-    // Actualizar la oportunidad
-    console.log("Updating opportunity with data:", updateData);
+    // console.log("Updating opportunity...");
+    // console.log("Updating opportunity with data:", updateData);
     const { data: updatedOpportunity, error: updateError } = await supabase
       .from("opportunities")
       .update(updateData)
@@ -391,17 +380,15 @@ export async function updateOpportunity(id, data, userRole = null) {
       throw new Error(updateError.message);
     }
 
-    console.log("Opportunity updated successfully");
+    // console.log("Opportunity updated successfully");
 
     // Actualizar tags si se proporcionaron
     if (data.tags && Array.isArray(data.tags) && data.tags.length > 0) {
-      console.log("Processing tags:", data.tags);
-
+      // console.log("Processing tags:", data.tags);
       // Obtener o crear los tags y obtener sus IDs
       const tagPromises = data.tags.map((tag) => getOrCreateTag(tag));
       const tagIds = await Promise.all(tagPromises);
-
-      console.log("Tag IDs to relate:", tagIds);
+      // console.log("Tag IDs to relate:", tagIds);
 
       if (tagIds.length > 0) {
         // Eliminar relaciones de tags existentes
@@ -490,12 +477,12 @@ export async function deleteOpportunity(id, userRole = null) {
     // 3. Si es una oportunidad destacada, reorganizar órdenes
     if (opportunity.is_featured && opportunity.featured_order) {
       await reorganizeFeaturedOrders(opportunity.featured_order);
-      console.log(
-        `Órdenes reorganizados después de eliminar posición ${opportunity.featured_order}`,
-      );
+      // console.log(`Órdenes reorganizados después de eliminar posición ${opportunity.featured_order}`);
     }
 
     // 4. Eliminar la imagen de Cloudinary si existe
+    // console.log("Deleting image from Cloudinary...");
+    // console.log("Image URL:", opportunity.image_url);
     if (opportunity.image_url) {
       try {
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
