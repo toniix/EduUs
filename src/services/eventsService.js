@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabase";
+import { createSlug } from "../utils/slugify";
 
 /**
  * SELECT base para eventos — incluye conteo de inscritos para calcular spots_left.
@@ -15,7 +16,9 @@ function transformEvent(row) {
 
   const registrationCount = row.registrations?.[0]?.count ?? 0;
   const spotsLeft =
-    row.capacity !== null ? Math.max(0, row.capacity - registrationCount) : null;
+    row.capacity !== null
+      ? Math.max(0, row.capacity - registrationCount)
+      : null;
 
   return {
     ...row,
@@ -25,7 +28,6 @@ function transformEvent(row) {
 }
 
 class EventsService {
-
   /**
    * Eventos públicos: solo los publicados, ordenados por fecha de inicio.
    */
@@ -77,24 +79,10 @@ class EventsService {
 
   /**
    * Evento destacado para el home.
-   * Usa promo_modal=true (mismo flag que el popup), ya que ambos representan
-   * el evento del mes de la organización.
+   * Usa el mismo evento que el promo_modal (el evento del mes).
    */
   async getFeaturedEvent() {
-    try {
-      const { data } = await supabase
-        .from("events")
-        .select(EVENT_SELECT)
-        .eq("promo_modal", true)
-        .eq("status", "published")
-        .order("starts_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-
-      return data ? transformEvent(data) : null;
-    } catch {
-      return null;
-    }
+    return this.getPromoEvent();
   }
 
   /**
@@ -143,7 +131,7 @@ class EventsService {
    * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
    */
   async updateEvent(id, formData) {
-    console.log(formData);
+    // console.log(formData);
     try {
       // Validar que el evento esté publicado antes de marcarlo como promo
       if (formData.promo_modal === true) {
@@ -159,7 +147,8 @@ class EventsService {
           return {
             success: false,
             data: null,
-            error: "El evento debe estar publicado para marcarlo como destacado.",
+            error:
+              "El evento debe estar publicado para marcarlo como destacado.",
           };
         }
 
@@ -173,9 +162,8 @@ class EventsService {
 
       // Update completo (viene del EventForm) → sanitizar con _buildPayload
       // Patch parcial (ej: toggle publish, marcar promo) → enviar tal cual
-      const payload = "title" in formData
-        ? this._buildPayload(formData)
-        : formData;
+      const payload =
+        "title" in formData ? this._buildPayload(formData) : formData;
 
       const { data, error } = await supabase
         .from("events")
@@ -212,10 +200,7 @@ class EventsService {
         };
       }
 
-      const { error } = await supabase
-        .from("events")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("events").delete().eq("id", id);
 
       if (error) throw new Error(error.message);
       return { success: true, error: null };
@@ -233,8 +218,11 @@ class EventsService {
    * Verifica cupos disponibles antes de insertar.
    * @returns {Promise<{success: boolean, error: string|null}>}
    */
-  async registerForEvent(eventId, { name, email, career, university, dni, phone, is_udep }) {
-    console.log(eventId, name, email, career, university, dni, phone, is_udep);
+  async registerForEvent(
+    eventId,
+    { name, email, career, university, dni, phone, is_udep },
+  ) {
+    // console.log(eventId, name, email, career, university, dni, phone, is_udep);
     try {
       // Verificar si ya existe una inscripción con este correo
       const { data: existing } = await supabase
@@ -254,7 +242,15 @@ class EventsService {
         // Si fue cancelado, se puede re-inscribir actualizando
         const { error } = await supabase
           .from("event_registrations")
-          .update({ status: "registered", name, career, university, dni, phone, is_udep })
+          .update({
+            status: "registered",
+            name,
+            career,
+            university,
+            dni,
+            phone,
+            is_udep,
+          })
           .eq("id", existing.id);
 
         if (error) throw new Error(error.message);
@@ -264,16 +260,29 @@ class EventsService {
       // Verificar cupos (si el evento tiene límite)
       const event = await this.getEventById(eventId);
       if (event && event.spots_left !== null && event.spots_left <= 0) {
-        return { success: false, error: "El evento ya no tiene cupos disponibles." };
+        return {
+          success: false,
+          error: "El evento ya no tiene cupos disponibles.",
+        };
       }
 
       // Obtener usuario autenticado (opcional)
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData?.user?.id ?? null;
 
-      const { error } = await supabase
-        .from("event_registrations")
-        .insert([{ event_id: eventId, user_id: userId, name, email, career, university, dni, phone, is_udep }]);
+      const { error } = await supabase.from("event_registrations").insert([
+        {
+          event_id: eventId,
+          user_id: userId,
+          name,
+          email,
+          career,
+          university,
+          dni,
+          phone,
+          is_udep,
+        },
+      ]);
 
       if (error) throw new Error(error.message);
       return { success: true, error: null };
@@ -322,13 +331,16 @@ class EventsService {
   async getAllRegistrations() {
     const { data, error } = await supabase
       .from("event_registrations")
-      .select(`
+      .select(
+        `
         *,
         event:events(id, title, slug, starts_at, category)
-      `)
+      `,
+      )
       .order("registered_at", { ascending: false });
 
-    if (error) throw new Error(`Error al obtener inscripciones: ${error.message}`);
+    if (error)
+      throw new Error(`Error al obtener inscripciones: ${error.message}`);
     return data || [];
   }
 
@@ -376,13 +388,7 @@ class EventsService {
 
   /** Genera slug básico desde un título */
   _generateSlug(title = "") {
-    return title
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-");
+    return createSlug(title);
   }
 }
 

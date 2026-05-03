@@ -81,7 +81,6 @@ export const resendConfirmationEmail = async (email) => {
   });
 
   if (error) throw error;
-  console.log(error);
   return true;
 };
 

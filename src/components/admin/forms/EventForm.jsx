@@ -7,7 +7,7 @@ import {
 } from "../../../utils/events";
 import { eventSchema } from "../../../utils/validationSchemas";
 import { uploadImageToCloudinary } from "../../../services/cloudinaryService";
-import BannerUpload from "./EventBannerUpload";
+import BannerUpload from "../EventBannerUpload";
 
 const CATEGORIES = Object.entries(categoryConfig).map(([value, cfg]) => ({
   value,
@@ -177,7 +177,7 @@ export default function EventForm({ event = null, onClose, onSave }) {
     setSaving(true);
     try {
       const payload = buildPayload(false);
-      console.log(payload);
+      // console.log(payload);
       if (bannerFile) {
         payload.banner_url = await uploadImageToCloudinary(bannerFile);
       }
@@ -196,7 +196,7 @@ export default function EventForm({ event = null, onClose, onSave }) {
     setSaving(true);
     try {
       const payload = buildPayload(true);
-      console.log(payload);
+      // console.log(payload);
       if (bannerFile) {
         payload.banner_url = await uploadImageToCloudinary(bannerFile);
       }

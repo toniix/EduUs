@@ -17,16 +17,16 @@ import {
   Copy,
   ChevronDown,
 } from "lucide-react";
-import { eventsService } from "../../../services/eventsService";
+import { eventsService } from "../../services/eventsService";
 import {
   categoryConfig,
   modalityConfig,
   formatEventDate,
   getEventStatus,
   eventStatusConfig,
-} from "../../../utils/events";
+} from "../../utils/events";
 import { toast } from "react-hot-toast";
-import { useTheme } from "../../../contexts/ThemeContext";
+import { useTheme } from "../../contexts/ThemeContext";
 
 /* ─── Helpers ─── */
 function formatDateTime(iso) {
@@ -56,7 +56,6 @@ const REG_STATUS = {
   cancelled: { label: "Cancelado", cls: "bg-red-100 text-red-600" },
 };
 
-/* ─── Componente principal ─── */
 export default function EventDetailDrawer({
   event,
   onClose,

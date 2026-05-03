@@ -1,4 +1,4 @@
-import { impactData } from "../data/StastData";
+import { impactData } from "../../data/statsData";
 import ImpactCard from "./ImpactCard";
 import { m } from "framer-motion";
 
@@ -15,7 +15,8 @@ const ImpactSection = () => {
             </span>
           </h2>
           <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto mt-4 px-4">
-            Conoce los logros y resultados tangibles que hemos alcanzado junto a nuestra comunidad de estudiantes.
+            Conoce los logros y resultados tangibles que hemos alcanzado junto a
+            nuestra comunidad de estudiantes.
           </p>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 mx-auto mt-6 rounded-full"></div>
         </div>
@@ -23,7 +24,7 @@ const ImpactSection = () => {
         {/* Layout principal */}
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Primer card - Destacado */}
-          <m.div 
+          <m.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-50px" }}

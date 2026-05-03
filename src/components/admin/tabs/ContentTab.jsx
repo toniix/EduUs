@@ -8,8 +8,8 @@ import {
 } from "../../../services/opportunityService";
 import InlineLoader from "../../ui/LoadingSpinner";
 import { toast } from "react-hot-toast";
-import OpportunityActionsMenu from "../../admin/tabs/OpportunityActionsMenu";
-import Pagination from "../../Pagination2";
+import OpportunityActionsMenu from "../../admin/OpportunityActionsMenu";
+import Pagination from "../../Pagination";
 import { useAuth } from "../../../contexts/AuthContext";
 import { getCountOfFeaturedOpportunities } from "../../../services/opportunityService";
 
@@ -32,8 +32,8 @@ export default function ContentTab({
     (opp) => opp.is_featured,
   ).length;
 
-  console.log(opportunities);
-  console.log(opportunities.map((opp) => opp.featured_order));
+  // console.log(opportunities);
+  // console.log(opportunities.map((opp) => opp.featured_order));
 
   const handleFormSubmit = async (formData) => {
     try {

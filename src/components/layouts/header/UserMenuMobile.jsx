@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { User, LogOut, Settings } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const UserMenuMobile = ({ onItemClick }) => {
   const { profile, signOut } = useAuth();

@@ -1,5 +1,9 @@
 import { X, Timer } from "lucide-react";
-import { categoryConfig, modalityConfig, formatEventDate } from "../../../utils/events";
+import {
+  categoryConfig,
+  modalityConfig,
+  formatEventDate,
+} from "../../utils/events";
 
 const PLACEHOLDER_SVG =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='260' viewBox='0 0 600 260'%3E%3Crect width='600' height='260' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' fill='%239ca3af'%3ESin imagen%3C/text%3E%3C/svg%3E";
@@ -8,8 +12,9 @@ function CountdownUnit({ value, label, isUrgent }) {
   return (
     <div className="flex flex-col items-center">
       <span
-        className={`text-2xl font-extrabold tabular-nums ${isUrgent ? "text-orange-500" : "text-white"
-          }`}
+        className={`text-2xl font-extrabold tabular-nums ${
+          isUrgent ? "text-orange-500" : "text-white"
+        }`}
       >
         {String(value).padStart(2, "0")}
       </span>
@@ -23,8 +28,9 @@ function CountdownUnit({ value, label, isUrgent }) {
 function Separator({ isUrgent }) {
   return (
     <span
-      className={`text-xl font-bold mb-4 ${isUrgent ? "text-orange-500" : "text-white"
-        }`}
+      className={`text-xl font-bold mb-4 ${
+        isUrgent ? "text-orange-500" : "text-white"
+      }`}
     >
       :
     </span>
@@ -32,8 +38,7 @@ function Separator({ isUrgent }) {
 }
 
 export default function EventPreviewModal({ event, onClose }) {
-
-  console.log(event);
+  // console.log(event);
   const catCfg = categoryConfig[event?.category] || {
     label: event?.category || "Categoría",
     badgeClass: "bg-gray-100 text-gray-700 border-gray-200",
@@ -97,9 +102,13 @@ export default function EventPreviewModal({ event, onClose }) {
           <div className="flex flex-col sm:flex-row gap-4 text-sm text-slate-300 mb-6 bg-white/5 p-4 rounded-xl border border-white/5">
             <div className="flex items-center gap-2">
               <span className="text-lg">📅</span>
-              <span className="font-medium text-white">{event?.starts_at ? formatEventDate(event.starts_at) : 'Fecha por definir'}</span>
+              <span className="font-medium text-white">
+                {event?.starts_at
+                  ? formatEventDate(event.starts_at)
+                  : "Fecha por definir"}
+              </span>
             </div>
-            {event?.location && event?.modality !== 'virtual' && (
+            {event?.location && event?.modality !== "virtual" && (
               <div className="flex items-center gap-2">
                 <span className="text-lg">{modalCfg.icon}</span>
                 <span className="font-medium text-white">{event.location}</span>
@@ -109,7 +118,8 @@ export default function EventPreviewModal({ event, onClose }) {
 
           {event?.spots_left !== null && event?.spots_left > 0 && (
             <div className="mb-6 inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 px-4 py-2 rounded-lg font-semibold text-sm w-fit">
-              <span className="animate-pulse">⚡</span> Solo {event.spots_left} cupos restantes
+              <span className="animate-pulse">⚡</span> Solo {event.spots_left}{" "}
+              cupos restantes
             </div>
           )}
 
@@ -117,34 +127,16 @@ export default function EventPreviewModal({ event, onClose }) {
           <div className="mb-8">
             <div className="flex items-center gap-2 text-slate-400 text-sm mb-3">
               <Timer className="w-4 h-4 text-primary" />
-              <span className="font-medium">
-                El evento comienza en (Demo)
-              </span>
+              <span className="font-medium">El evento comienza en (Demo)</span>
             </div>
             <div className="flex items-end gap-3">
-              <CountdownUnit
-                value={0}
-                label="días"
-                isUrgent={false}
-              />
+              <CountdownUnit value={0} label="días" isUrgent={false} />
               <Separator isUrgent={false} />
-              <CountdownUnit
-                value={0}
-                label="horas"
-                isUrgent={false}
-              />
+              <CountdownUnit value={0} label="horas" isUrgent={false} />
               <Separator isUrgent={false} />
-              <CountdownUnit
-                value={0}
-                label="min"
-                isUrgent={false}
-              />
+              <CountdownUnit value={0} label="min" isUrgent={false} />
               <Separator isUrgent={false} />
-              <CountdownUnit
-                value={0}
-                label="seg"
-                isUrgent={false}
-              />
+              <CountdownUnit value={0} label="seg" isUrgent={false} />
             </div>
           </div>
 
@@ -153,7 +145,10 @@ export default function EventPreviewModal({ event, onClose }) {
             <button
               onClick={(e) => e.preventDefault()}
               className="flex-1 py-4 rounded-xl font-extrabold text-base transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25 cursor-default"
-              style={{ background: "var(--color-primary, #e6461e)", color: "#fff" }}
+              style={{
+                background: "var(--color-primary, #e6461e)",
+                color: "#fff",
+              }}
             >
               Reserva tu cupo ahora
             </button>

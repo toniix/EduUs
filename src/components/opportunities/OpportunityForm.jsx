@@ -1,8 +1,10 @@
 import { X } from "lucide-react";
 import { useOpportunityForm } from "../../hooks/useOpportunityForm";
 import { categoryService } from "../../services/categoryService";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
+import Button from "../ui/Button";
+import ImagePreview from "./OpportunityImagePreview";
 
 const OpportunityForm = ({
   showOpportunityForm,
@@ -682,11 +684,7 @@ const OpportunityForm = ({
             )}
             {/* Previsualización */}
             {formData.image_url && typeof formData.image_url !== "string" && (
-              <img
-                src={URL.createObjectURL(formData.image_url)}
-                alt="Previsualización"
-                className="mt-2 rounded-xl max-h-40 border"
-              />
+              <ImagePreview file={formData.image_url} />
             )}
             {formData.image_url &&
               typeof formData.image_url === "string" &&
@@ -700,20 +698,22 @@ const OpportunityForm = ({
           </div>
 
           <div className="flex justify-end space-x-4 pt-8">
-            <button
-              type="button"
+            <Button
+              variant="secondary"
               onClick={onClose}
-              className="px-6 py-2 border border-secondary text-secondary rounded-full font-semibold shadow hover:bg-secondary hover:text-white transition-colors"
+              fullWidth={false}
+              className="px-6 rounded-full font-semibold"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-8 py-3 bg-primary text-light rounded-full font-bold text-lg shadow-lg hover:bg-primary/90 transition-all focus:ring-2 focus:ring-primary/50 disabled:opacity-60 disabled:cursor-not-allowed"
               disabled={loading}
+              fullWidth={false}
+              className="px-8 rounded-full font-bold text-lg shadow-lg"
             >
               {loading ? "Guardando..." : "Guardar Oportunidad"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

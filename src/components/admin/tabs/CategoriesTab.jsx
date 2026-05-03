@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useReducer, useContext } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { categoryService } from "../../../services/categoryService";
 import toast from "react-hot-toast";
-import CategoryForm from "../../CategoryForm";
+import CategoryForm from "../forms/CategoryForm";
 import { ThemeContext } from "../../../contexts/ThemeContext";
 import { useAuth } from "../../../contexts/AuthContext";
 

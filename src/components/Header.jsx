@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { m, AnimatePresence } from "framer-motion";
-import UserMenu from "./UserMenu";
-import UserMenuMobile from "./UserMenuMobile";
+import UserMenu from "./layouts/header/UserMenu";
+import UserMenuMobile from "./layouts/header/UserMenuMobile";
 import { useAuth } from "../contexts/AuthContext";
 import logo from "../assets/logo_2.png";
 
@@ -29,11 +29,15 @@ export default function Header() {
   }, []);
 
   /* Cerrar al navegar */
-  useEffect(() => { setIsOpen(false); }, [location]);
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
 
   /* Cerrar con Escape */
   useEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") setIsOpen(false); };
+    const onKey = (e) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
     if (isOpen) document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [isOpen]);
@@ -41,23 +45,27 @@ export default function Header() {
   /* Bloquear scroll del body */
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   const isActive = (path) =>
-    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+    path === "/"
+      ? location.pathname === "/"
+      : location.pathname.startsWith(path);
 
   return (
     <>
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-500
-          ${scrolled
-            ? "bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-sm shadow-black/5"
-            : "bg-white/60 backdrop-blur-lg border-b border-slate-100/40"
+          ${
+            scrolled
+              ? "bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-sm shadow-black/5"
+              : "bg-white/60 backdrop-blur-lg border-b border-slate-100/40"
           }`}
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-
           {/* ── Logo ── */}
           <Link to="/" className="flex items-center flex-shrink-0 group">
             <img
@@ -76,9 +84,10 @@ export default function Header() {
                   <Link
                     to={item.path}
                     className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 block 
-                      ${active
-                        ? "text-secondary"
-                        : "text-gray-900 hover:text-secondary hover:bg-secondary/5"
+                      ${
+                        active
+                          ? "text-secondary"
+                          : "text-gray-900 hover:text-secondary hover:bg-secondary/5"
                       }
                       `}
                   >
@@ -88,7 +97,11 @@ export default function Header() {
                       <m.span
                         layoutId="nav-indicator"
                         className="absolute inset-0 rounded-lg bg-secondary/8 border border-secondary/15"
-                        transition={{ type: "spring", stiffness: 380, damping: 34 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 34,
+                        }}
                       />
                     )}
                   </Link>
@@ -127,8 +140,11 @@ export default function Header() {
       <div
         onClick={() => setIsOpen(false)}
         aria-hidden="true"
-        className={`fixed inset-0 z-40 bg-black/30 backdrop-blur-sm transition-opacity duration-300 md:hidden ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-40 bg-black/30 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+          isOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
       />
 
       {/* Panel */}
@@ -137,8 +153,9 @@ export default function Header() {
         role="dialog"
         aria-modal="true"
         aria-label="Menú de navegación"
-        className={`fixed top-0 right-0 z-50 h-full w-72 bg-white/95 backdrop-blur-xl shadow-2xl border-l border-black/5 flex flex-col md:hidden transition-transform duration-300 ease-out ${isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`fixed top-0 right-0 z-50 h-full w-72 bg-white/95 backdrop-blur-xl shadow-2xl border-l border-black/5 flex flex-col md:hidden transition-transform duration-300 ease-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -161,10 +178,11 @@ export default function Header() {
                 key={item.path}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 ${active
-                  ? "text-primary bg-primary/8 border border-primary/15"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                  }`}
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 ${
+                  active
+                    ? "text-primary bg-primary/8 border border-primary/15"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
               >
                 {active && (
                   <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
@@ -180,7 +198,11 @@ export default function Header() {
           {isAuthenticated ? (
             <UserMenuMobile onItemClick={() => setIsOpen(false)} />
           ) : (
-            <Link to="/login" onClick={() => setIsOpen(false)} className="block">
+            <Link
+              to="/login"
+              onClick={() => setIsOpen(false)}
+              className="block"
+            >
               <button className="w-full bg-primary text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all duration-150">
                 Iniciar sesión
               </button>

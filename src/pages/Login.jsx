@@ -2,7 +2,7 @@ import { useReducer } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import toast from "react-hot-toast";
-import Button from "../components/ui/Buttom";
+import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import AuthError from "../components/auth/AuthError";
 import {

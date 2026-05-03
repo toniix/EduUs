@@ -1,4 +1,3 @@
-// src/hooks/useReminders.js
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
@@ -48,7 +47,6 @@ export function useReminders() {
         throw new Error(errorMessage);
       }
 
-      console.log("✅ Recordatorios creados:", data);
       return { success: true, data };
     } catch (err) {
       const errorMessage = err.message || "Error creando recordatorios";
@@ -95,7 +93,6 @@ export function useReminders() {
         throw new Error(error.message);
       }
 
-      console.log("📋 Recordatorios obtenidos:", data?.length || 0);
       return data || [];
     } catch (err) {
       const errorMessage = err.message || "Error obteniendo recordatorios";
@@ -131,7 +128,6 @@ export function useReminders() {
         throw new Error(error.message);
       }
 
-      console.log("🗑️ Recordatorio eliminado:", reminderId);
       return { success: true };
     } catch (err) {
       const errorMessage = err.message || "Error eliminando recordatorio";

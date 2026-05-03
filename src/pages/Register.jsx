@@ -4,7 +4,7 @@ import { Mail, Lock, User } from "lucide-react";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { useAuth } from "../contexts/AuthContext";
-import Button from "../components/ui/Buttom";
+import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import AuthError from "../components/auth/AuthError";
 import { registerUser, checkEmailExists } from "../services/AuthService";
@@ -83,7 +83,7 @@ const Register = () => {
       }
 
       toast.success(
-        "¡Registro exitoso! Revisa tu email para confirmar tu cuenta."
+        "¡Registro exitoso! Revisa tu email para confirmar tu cuenta.",
       );
       navigate("/login");
     } catch (error) {

@@ -6,8 +6,8 @@ export const useLoginRedirect = () => {
   const location = useLocation();
 
   const saveCurrentUrlForRedirect = (returnUrl) => {
+    // console.log(returnUrl);
     const urlToSave = returnUrl || location.pathname + location.search;
-    console.log("urlToSave", urlToSave);
     sessionStorage.setItem("redirectAfterLogin", urlToSave);
   };
 

@@ -1,158 +1,153 @@
-# 🎓 Edu-US - Plataforma de Oportunidades Educativas
+# 🎓 Edu-US — Plataforma de Oportunidades Educativas
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![React](https://img.shields.io/badge/React-19.2.3-61DAFB?logo=react)
-![Vite](https://img.shields.io/badge/Vite-6.2.0-646CFF?logo=vite)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.4.17-38B2AC?logo=tailwindcss)
-![Supabase](https://img.shields.io/badge/Supabase-2.49.3-3FCF8E?logo=supabase)
+> **Repositorio privado** · Uso interno del equipo de desarrollo.
 
-**Edu-US** es una plataforma web innovadora diseñada para conectar a jóvenes peruanos con oportunidades educativas y laborales. Nuestra misión es acompañar el desarrollo de habilidades en empleabilidad, tecnología digital e inteligencia artificial, actuando como un puente entre el talento emergente y las demandas del mercado actual.
+**Edu-US** es una plataforma web diseñada para conectar a jóvenes peruanos con oportunidades educativas y laborales. Acompaña el desarrollo de habilidades en empleabilidad, tecnología digital e inteligencia artificial, actuando como un puente entre el talento emergente y las demandas del mercado actual.
 
 ---
 
-## ✨ Características Principales
+## 📋 Tabla de Contenidos
 
-## 🔐 Autenticación y Autorización
-
-- Registro e login seguros con Supabase Auth
-- Verificación de email
-- Recuperación de contraseñas
-- Sistema de roles (Usuario, Admin)
-- Guards para rutas protegidas
-- Callbacks de autenticación OAuth
-
-### 🎯 EduTracker - Sistema de Oportunidades
-
-- **Catálogo dinámico** de oportunidades educativas y laborales
-- **Filtrado avanzado** por categoría y estado
-- **Paginación optimizada** para mejor UX
-- **Detalles completos** de cada oportunidad
-- **Estados de oportunidad**: Activas, Inactivas
-- **Recordatorios** personalizados para no perder plazos
-
-### 👤 Perfiles de Usuario
-
-- Panel de perfil personal
-- Gestión de información de contacto
-- Historial de oportunidades guardadas
-- Preferencias personalizadas
-
-### 🏢 Panel Administrativo
-
-- Dashboard completo para administradores
-- Gestión de oportunidades (CRUD)
-- Creación y edición de categorías
-- Monitoreo de usuarios
-- Reportes de engagement
-- Control de acceso basado en roles (RBAC)
-
-### 🎨 Interfaz Responsive
-
-- Diseño mobile-first
-- Navegación adaptativa para dispositivos móviles
-- Modo oscuro/claro
-- Componentes reutilizables
-- Accesibilidad mejorada
-
-### 📝 Contenido Estático
-
-- Página de Inicio con hero section
-- Página "Nosotros" con historia y valores
-- Galería de Proyectos
-- Sección de Testimonios
-- Términos y Condiciones
-- Política de Privacidad
-
----
-
-## 📁 Estructura del Proyecto
-
-El proyecto sigue una estructura organizada para facilitar la escalabilidad y el mantenimiento:
-
-```
-/src
-|-- /assets
-|-- /components
-|   |-- /admin
-|   |-- /auth
-|   |-- /layouts
-|   |-- /opportunities
-|   `-- /ui
-|-- /contexts
-|-- /data
-|-- /hooks
-|-- /lib
-|-- /pages
-|   |-- /admin
-|   `-- /opportunities
-|-- /routes
-|-- /services
-|-- /styles
-|-- /utils
-|-- App.jsx
-|-- main.jsx
-```
+- [Stack Tecnológico](#-stack-tecnológico)
+- [Arquitectura del Proyecto](#-arquitectura-del-proyecto)
+- [Configuración del Entorno](#-configuración-del-entorno)
+- [Variables de Entorno](#-variables-de-entorno)
+- [Scripts Disponibles](#-scripts-disponibles)
+- [Módulos Principales](#-módulos-principales)
+- [Base de Datos (Supabase)](#-base-de-datos-supabase)
+- [Flujo de Trabajo Git](#-flujo-de-trabajo-git)
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-### Frontend
-
-- **React 19:** Librería principal para la interfaz de usuario.
-- **Vite:** Herramienta de construcción y servidor de desarrollo.
-- **React Router:** Para la gestión de rutas en la aplicación.
-- **Tailwind CSS:** Framework de CSS para un diseño rápido y personalizable.
-- **Lucide React / React Icons:** Para la iconografía.
-
-### Backend & Base de Datos
-
-- **Supabase:** Plataforma de Backend as a Service (BaaS) que provee base de datos (PostgreSQL), autenticación y APIs.
-- **Cloudinary:** Para el almacenamiento y gestión de imágenes.
-
-### Herramientas de Desarrollo
-
-- **ESLint:** Para el análisis estático del código y mantenimiento de la calidad.
-- **Zod:** Para la validación de esquemas de datos.
+| Capa              | Tecnología                                          |
+| ----------------- | --------------------------------------------------- |
+| **UI Framework**  | React 19 + Vite 6                                   |
+| **Routing**       | React Router DOM v7                                 |
+| **Estilos**       | Tailwind CSS 3.4 + CSS Modules                      |
+| **Animaciones**   | Framer Motion 12                                    |
+| **Backend/BaaS**  | Supabase (PostgreSQL + Auth + Storage + Edge Fns)   |
+| **Imágenes**      | Cloudinary                                          |
+| **Iconos**        | Lucide React + React Icons                          |
+| **Validaciones**  | Zod                                                 |
+| **Notificaciones**| React Hot Toast                                     |
+| **Carrusel**      | Swiper 12                                           |
+| **Analytics**     | Vercel Analytics                                    |
+| **Linting**       | ESLint 9 (Flat Config)                              |
 
 ---
 
-## 🚀 Guía de Inicio Rápido
+## 📁 Arquitectura del Proyecto
 
-Para configurar y ejecutar el proyecto en tu entorno local, sigue estos pasos:
+```
+edu-us/
+├── api/                        # Scripts de utilidad del servidor (sitemap, etc.)
+├── supabase/                   # Configuración local de Supabase CLI
+│   ├── config.toml
+│   └── functions/              # Edge Functions de Supabase
+├── public/                     # Activos estáticos servidos directamente
+└── src/
+    ├── assets/                 # Imágenes, fuentes y recursos estáticos del proyecto
+    ├── components/
+    │   ├── admin/              # Componentes exclusivos del panel administrativo
+    │   │   ├── forms/          # Formularios del admin (EventForm, CategoryForm)
+    │   │   ├── tabs/           # Tabs del dashboard (RegistrationsTab, EventsAdminTab…)
+    │   │   ├── AdminPanelHeader.jsx
+    │   │   ├── EventBannerUpload.jsx
+    │   │   ├── EventDetailDrawer.jsx
+    │   │   ├── EventPreviewModal.jsx
+    │   │   ├── EventsRegistrationsTable.jsx
+    │   │   ├── OpportunityActionsMenu.jsx
+    │   │   ├── Sidebar.jsx
+    │   │   └── UserActionsMenu.jsx
+    │   ├── auth/               # Sub-componentes de autenticación (AuthError…)
+    │   ├── events/             # Componentes del módulo de eventos públicos
+    │   ├── home/               # Secciones específicas de la página Home
+    │   │   ├── AboutSection.jsx
+    │   │   ├── CallToAction.jsx
+    │   │   ├── ImpactCard.jsx
+    │   │   ├── ImpactSection.jsx
+    │   │   ├── OfferSection.jsx
+    │   │   └── TestimonialsSection.jsx
+    │   ├── layouts/            # Layouts y wrappers de estructura de página
+    │   │   ├── header/         # UserMenu y UserMenuMobile
+    │   │   ├── wrappers/       # DesktopOnlyWrapper, FooterWrapper, HeaderWrapper
+    │   │   └── PublicLayout.jsx
+    │   ├── opportunities/      # Catálogo, detalle y formulario de oportunidades
+    │   └── ui/                 # Componentes reutilizables (Button, Input, Modal…)
+    ├── contexts/               # Contextos globales de React (Auth, Theme, Opportunity)
+    ├── data/                   # Datos estáticos (offers.js, statsData.js, testimonials.js…)
+    ├── hooks/                  # Custom hooks (useEvents, useOpportunities, useReminders…)
+    ├── lib/                    # Clientes externos (supabase.js, cloudinary.js)
+    ├── pages/
+    │   ├── admin/              # AdminPanel.jsx
+    │   ├── opportunities/      # Opportunities.jsx
+    │   ├── Home.jsx
+    │   ├── About.jsx
+    │   ├── Projects.jsx
+    │   ├── Login.jsx
+    │   ├── Register.jsx
+    │   ├── Profile.jsx
+    │   ├── Privacy.jsx
+    │   ├── Terms.jsx
+    │   └── NotFound.jsx
+    ├── routes/                 # Guards de navegación únicamente
+    │   ├── RoleGuard.jsx       # Autorización por rol (admin / user)
+    │   ├── ProtectedRoute.jsx  # Requiere autenticación
+    │   ├── PublicRoute.jsx     # Solo para usuarios no autenticados
+    │   └── AuthCallback.jsx    # Callback OAuth de Supabase
+    ├── services/               # Capa de acceso a datos (Supabase queries)
+    │   ├── AuthService.js
+    │   ├── categoryService.js
+    │   ├── cloudinaryService.js
+    │   ├── dashboardService.js
+    │   ├── eventsService.js
+    │   ├── fetchOpportunityService.js
+    │   ├── opportunityService.js
+    │   ├── rolesService.js
+    │   └── userService.js
+    ├── utils/                  # Funciones de utilidad puras y constantes
+    │   ├── constants.js        # Constantes globales (ROLES, mensajes de error…)
+    │   ├── validationSchemas.js# Esquemas Zod (auth, oportunidades, eventos)
+    │   ├── events.js
+    │   ├── formatDate.js
+    │   ├── opportunity.js
+    │   ├── slugify.js
+    │   └── cloudinaryOptimize.js
+    ├── App.jsx
+    └── main.jsx
+```
+
+---
+
+## ⚙️ Configuración del Entorno
 
 ### Prerrequisitos
 
-- Node.js (v18 o superior)
-- npm, yarn, o pnpm
-- Una cuenta de Supabase para obtener las credenciales de la API.
+- **Node.js** v18 o superior
+- **npm** v9 o superior
+- Acceso al proyecto en **Supabase** (solicitar al líder técnico)
+- Acceso a la cuenta de **Cloudinary** del equipo
 
-### 1. Clonar el Repositorio
+### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/edu-us.git
+git clone <URL-del-repo-privado>
 cd edu-us
 ```
 
-### 2. Instalar Dependencias
+### 2. Instalar dependencias
 
 ```bash
 npm install
 ```
 
-### 3. Configurar Variables de Entorno
+### 3. Configurar las variables de entorno
 
-Crear archivo `.env.local` en la raíz:
+Crear un archivo `.env` en la raíz del proyecto (ver la sección siguiente). **Nunca subas este archivo al repositorio.**
 
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-```
-
-### 4. Ejecutar el Proyecto
-
-Una vez configurado, puedes iniciar el servidor de desarrollo:
+### 4. Iniciar el servidor de desarrollo
 
 ```bash
 npm run dev
@@ -162,39 +157,118 @@ La aplicación estará disponible en `http://localhost:5173`.
 
 ---
 
+## 🔑 Variables de Entorno
+
+El archivo `.env` ya está incluido en `.gitignore`. Las variables necesarias son:
+
+```env
+# Supabase
+VITE_SUPABASE_URL=           # URL del proyecto en Supabase
+VITE_SUPABASE_ANON_KEY=      # Anon key pública del proyecto
+
+# Cloudinary
+VITE_CLOUDINARY_CLOUD_NAME=  # Nombre del cloud en Cloudinary
+VITE_CLOUDINARY_UPLOAD_PRESET= # Upload preset sin firma (unsigned)
+```
+
+> **Nota:** Los valores reales se comparten internamente de forma segura (no en este README).
+
+---
+
 ## 📦 Scripts Disponibles
 
-| Comando           | Descripción                           |
-| ----------------- | ------------------------------------- |
-| `npm run dev`     | Inicia servidor de desarrollo con HMR |
-| `npm run build`   | Compila la aplicación para producción |
-| `npm run preview` | Previsualiza el build de producción   |
-| `npm run lint`    | Ejecuta ESLint para verificar código  |
+| Comando           | Descripción                                          |
+| ----------------- | ---------------------------------------------------- |
+| `npm run dev`     | Inicia el servidor de desarrollo con HMR             |
+| `npm run build`   | Genera el bundle optimizado para producción en `/dist`|
+| `npm run preview` | Sirve el build de producción localmente              |
+| `npm run lint`    | Ejecuta ESLint sobre todo el código fuente           |
 
 ---
 
-## 📚 Documentación Adicional
+## 🧩 Módulos Principales
 
-- [Supabase Docs](https://supabase.com/docs)
-- [React Documentation](https://react.dev)
-- [Vite Guide](https://vitejs.dev)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Cloudinary Docs](https://cloudinary.com/documentation)
+### 🔐 Autenticación (`AuthService.js` + `AuthContext`)
+- Login / Registro / Recuperación de contraseña vía **Supabase Auth**
+- Verificación de email
+- Sistema de roles: `user` y `admin`
+- Guards de rutas protegidas en `/routes`
+
+### 🎯 EduTracker — Oportunidades (`opportunityService.js`, `fetchOpportunityService.js`)
+- CRUD completo de oportunidades educativas y laborales
+- Filtrado por categoría y estado (activa/inactiva)
+- Paginación del lado del servidor
+- Recordatorios personalizados
+
+### 📅 Eventos (`eventsService.js`)
+- Creación y gestión de eventos educativos
+- Registro de participantes con datos universitarios
+- Panel de inscripciones con filtros y búsqueda en el admin
+
+### 🏢 Panel Administrativo (`/pages/admin`, `/components/admin`)
+- Dashboard con métricas de uso (`dashboardService.js`)
+- Gestión de oportunidades, categorías, usuarios y eventos
+- Control de acceso basado en roles (RBAC) mediante `RoleGuard.jsx`
+
+### 📸 Imágenes (`cloudinaryService.js`)
+- Upload directo desde el cliente usando un preset unsigned
+- Gestión y optimización de banners/imágenes de oportunidades
 
 ---
 
-## 🤝 Contribuciones
+## 🗄️ Base de Datos (Supabase)
 
-Las contribuciones son bienvenidas. Por favor:
+El esquema de la base de datos se gestiona desde el dashboard de Supabase o mediante la **Supabase CLI** (configuración local en `/supabase/config.toml`).
 
-1. Fork el proyecto
-2. Crear una rama (`git checkout -b feature/AmazingFeature`)
-3. Commit cambios (`git commit -m 'Add AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir un Pull Request
+Las **Edge Functions** del proyecto se encuentran en `/supabase/functions/`.
+
+Para acceder al panel de Supabase, solicitar acceso al líder técnico del proyecto.
 
 ---
 
-## 📄 Licencia
+## 🌿 Flujo de Trabajo Git
 
-Este proyecto está distribuido bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+Este repositorio sigue un flujo basado en ramas por funcionalidad:
+
+```
+main              ← rama de producción (protegida)
+└── dev           ← rama de integración / staging
+    └── feat/...  ← ramas de nuevas funcionalidades
+    └── fix/...   ← ramas de corrección de bugs
+    └── chore/... ← tareas de mantenimiento (deps, config, etc.)
+```
+
+### Convenciones de commits
+
+Se sigue el estándar **Conventional Commits**:
+
+```
+feat: agregar filtro por universidad en RegistrationsTab
+fix: corregir error en r.dni?.includes() con valores null
+chore: actualizar dependencias de Supabase
+refactor: extraer EventDetailDrawer a componente separado
+docs: actualizar README para repositorio privado
+```
+
+### Proceso para nuevas funcionalidades
+
+1. Crear rama desde `dev`: `git checkout -b feat/nombre-feature`
+2. Desarrollar y hacer commits descriptivos
+3. Abrir Pull Request hacia `dev`
+4. Code review por al menos un miembro del equipo
+5. Merge a `dev` → verificación en staging
+6. Merge a `main` → despliegue automático en Vercel
+
+---
+
+## 🚀 Despliegue
+
+El proyecto se despliega automáticamente en **Vercel** al hacer push a `main`.
+
+La configuración de rutas SPA está definida en `vercel.json`:
+
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```

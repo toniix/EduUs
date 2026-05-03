@@ -2,18 +2,18 @@ import { ArrowRight, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { m } from "framer-motion";
-import ImpactSection from "../components/ImpactSection";
-import AboutSection from "../components/AboutSection";
-import OfferSection from "../components/OfferSection";
+import ImpactSection from "../components/home/ImpactSection";
+import AboutSection from "../components/home/AboutSection";
+import OfferSection from "../components/home/OfferSection";
 import SEO from "../components/SEO";
 import FeaturedOpportunities from "../components/opportunities/FeaturedOpportunities";
 import EventsSection from "../components/events/EventsSection";
 import PromoModal from "../components/events/PromoModal";
 
 const TestimonialsSection = lazy(
-  () => import("../components/TestimonialsSection"),
+  () => import("../components/home/TestimonialsSection"),
 );
-const CallToAction = lazy(() => import("../components/CallToAction"));
+const CallToAction = lazy(() => import("../components/home/CallToAction"));
 
 const Home = () => {
   const heroImageBase =

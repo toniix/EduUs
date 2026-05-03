@@ -1,4 +1,4 @@
-import { categoryConfig } from "../../../utils/events";
+import { categoryConfig } from "../../utils/events";
 import { UserCheck, XCircle, CheckCircle2, Loader2 } from "lucide-react";
 
 function formatDate(iso) {

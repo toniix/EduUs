@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
-import ModalConfirmacion from "../../ModalConfirmacion";
-import { updateUserRole } from "../../../services/rolesService";
-import { deleteUser } from "../../../services/userService";
+import ModalConfirmacion from "../ui/ModalConfirmacion";
+import { updateUserRole } from "../../services/rolesService";
+import { deleteUser } from "../../services/userService";
 import toast from "react-hot-toast";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function UserActionsMenu({
   user,

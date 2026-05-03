@@ -4,7 +4,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
-import { testimonials } from "../data/testimonials";
+import { testimonials } from "../../data/testimonials";
 import { useRef } from "react";
 
 const TestimonialsSection = () => {

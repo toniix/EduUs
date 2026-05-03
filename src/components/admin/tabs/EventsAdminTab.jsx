@@ -18,9 +18,9 @@ import {
   getEventStatus,
   eventStatusConfig,
 } from "../../../utils/events";
-import EventForm from "./EventForm";
-import EventPreviewModal from "./EventPreviewModal";
-import EventDetailDrawer from "./EventDetailDrawer";
+import EventForm from "../forms/EventForm";
+import EventPreviewModal from "../EventPreviewModal";
+import EventDetailDrawer from "../EventDetailDrawer";
 import InlineLoader from "../../ui/LoadingSpinner";
 import { toast } from "react-hot-toast";
 import { useTheme } from "../../../contexts/ThemeContext";
