@@ -24,7 +24,7 @@ const TestimonialsSection = () => {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             <span className="relative inline-block">
               <span className="relative z-10">Testimonios</span>
-              <span className="absolute bottom-1 left-0 w-full h-3 bg-blue-100/70 -z-0 transform -rotate-1"></span>
+              {/* <span className="absolute bottom-1 left-0 w-full h-3 bg-blue-100/70 -z-0 transform -rotate-1"></span> */}
             </span>
           </h2>
 
@@ -33,7 +33,7 @@ const TestimonialsSection = () => {
             su formación gracias a nuestra iniciativa.
           </p>
 
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 mx-auto mt-6 rounded-full"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-primary/80 via-primary to-primary/90 mx-auto mt-6 rounded-full"></div>
         </div>
 
         {/* Testimonials Slider */}
@@ -42,7 +42,6 @@ const TestimonialsSection = () => {
           <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-18 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
           <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-18 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
 
-          {/* 🔥 BOTÓN IZQUIERDO MEJORADO */}
           <button
             ref={prevRef}
             className="absolute left-2 top-1/2 -translate-y-1/2 z-20 
@@ -64,7 +63,6 @@ const TestimonialsSection = () => {
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
-          {/* 🔥 BOTÓN DERECHO MEJORADO */}
           <button
             ref={nextRef}
             className="absolute right-2 top-1/2 -translate-y-1/2 z-20 
@@ -88,7 +86,7 @@ const TestimonialsSection = () => {
 
           <Swiper
             modules={[Pagination, Autoplay, Navigation]}
-            spaceBetween={40}
+            spaceBetween={16}
             slidesPerView={1}
             loop={true}
             autoplay={{
@@ -99,8 +97,8 @@ const TestimonialsSection = () => {
               clickable: true,
               el: ".testimonial-pagination",
               bulletClass:
-                "w-2.5 h-2.5 mx-1 rounded-full bg-gray-300 inline-block",
-              bulletActiveClass: "bg-blue-600 w-8",
+                "w-2.5 h-2.5 mx-1 rounded-full bg-gray-300 inline-block transition-all duration-300",
+              bulletActiveClass: "bg-primary w-8",
             }}
             navigation={{
               prevEl: prevRef.current,
@@ -113,13 +111,11 @@ const TestimonialsSection = () => {
             breakpoints={{
               640: {
                 slidesPerView: 1,
-                spaceBetween: 30,
-                centeredSlides: true,
+                spaceBetween: 24,
               },
               1024: {
-                slidesPerView: 1.5,
-                spaceBetween: 20,
-                centeredSlides: true,
+                slidesPerView: 2,
+                spaceBetween: 32,
               },
             }}
             slidesPerGroup={1}
@@ -127,15 +123,9 @@ const TestimonialsSection = () => {
           >
             {testimonials.map((testimonial) => (
               <SwiperSlide key={testimonial.id}>
-                <div className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(59,130,246,0.15)] p-8 h-full flex flex-col mx-auto max-w-md transition-all duration-300 hover:-translate-y-2 border border-transparent hover:border-blue-50 relative">
-                  <div className="flex-grow">
-                    <Quote className="w-8 h-8 text-blue-100 mb-4" />
-                    <p className="text-gray-600 mb-6 italic">
-                      "{testimonial.content}"
-                    </p>
-                  </div>
-
-                  <div className="flex items-center">
+                <div className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-xl hover:shadow-primary/10 p-8 h-full flex flex-col mx-auto max-w-md transition-all duration-300 hover:-translate-y-2 border border-transparent hover:border-primary/20 relative">
+                  {/* Profile Section Moved to Top */}
+                  <div className="flex items-center mb-6">
                     <img
                       src={testimonial.image}
                       alt={testimonial.name}
@@ -149,6 +139,14 @@ const TestimonialsSection = () => {
                         {testimonial.role}
                       </p>
                     </div>
+                  </div>
+
+                  {/* Testimonial Content */}
+                  <div className="flex-grow relative">
+                    <Quote className="w-8 h-8 text-primary/20 mb-4" />
+                    <p className="text-gray-600 italic">
+                      "{testimonial.content}"
+                    </p>
                   </div>
                 </div>
               </SwiperSlide>

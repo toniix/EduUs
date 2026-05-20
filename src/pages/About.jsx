@@ -149,12 +149,12 @@ const About = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className="relative bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 w-full flex flex-col">
+                <div className="relative bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 w-full flex flex-col hover:border-primary/20">
                   <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
                     <div
-                      className={`w-12 h-12 md:w-10 md:h-10 bg-gradient-to-r ${value.color} rounded-xl flex-shrink-0 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300`}
+                      className="w-12 h-12 md:w-10 md:h-10 bg-primary/10 group-hover:bg-primary rounded-xl flex-shrink-0 flex items-center justify-center transform group-hover:scale-105 transition-all duration-300"
                     >
-                      <value.icon className="w-5 h-5 text-white" />
+                      <value.icon className="w-5 h-5 text-primary group-hover:text-white transition-colors duration-300" />
                     </div>
                     <h3 className="text-2xl  font-bold text-gray-900">
                       {value.title}

@@ -7,7 +7,7 @@ const AboutSection = () => {
   const [hoveredCard, setHoveredCard] = React.useState(null);
 
   return (
-    <section className="py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-light">
+    <section className="py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-secondary/10">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16 max-w-4xl mx-auto">
@@ -18,7 +18,7 @@ const AboutSection = () => {
             Nuestra labor principal es conectar a jovenes peruanos con las
             mejores oportunidades académicas y de desarrollo.
           </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 mx-auto mt-6 rounded-full"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-primary/80 via-primary to-primary/90 mx-auto mt-6 rounded-full"></div>
         </div>
 
         {/* Cards Grid */}

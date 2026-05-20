@@ -5,58 +5,107 @@ import { ArrowRight } from "lucide-react";
 export default function ImprovedCTA() {
   return (
     <>
-      {/* CTA Section Rediseñada */}
-      <section className="relative bg-gradient-to-br from-secondary via-secondary/95 to-secondary/90 py-24 overflow-hidden">
-        {/* Elementos decorativos minimalistas */}
-        <div className="absolute inset-0 opacity-[0.05]">
-          <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 left-20 w-80 h-80 bg-white rounded-full blur-3xl"></div>
-        </div>
+      {/* CTA Section Rediseñada y Premium */}
+      <section className="relative py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="relative bg-secondary/15 rounded-[3rem] overflow-hidden px-6 py-16 sm:px-16 sm:py-24 shadow-2xl border border-secondary/30">
+            {/* Elementos decorativos premium */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[40rem] h-[40rem] bg-primary/10 rounded-full blur-3xl mix-blend-multiply pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[30rem] h-[30rem] bg-accent/10 rounded-full blur-3xl mix-blend-multiply pointer-events-none" />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            {/* Etiqueta pequeña */}
-            <div className="inline-block mb-6">
-              <span className="text-white/80 font-semibold text-sm tracking-widest uppercase">
-                Tu momento es ahora
-              </span>
+            <div className="relative z-10 max-w-3xl mx-auto text-center">
+              {/* Etiqueta tipo "Pill" */}
+              <m.div
+                initial={{ opacity: 0, y: -20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                viewport={{ once: true }}
+                className="inline-block px-5 py-2 rounded-full bg-secondary/10 border border-secondary/30 backdrop-blur-md mb-8"
+              >
+                <span className="text-slate-800 font-semibold text-sm tracking-widest uppercase">
+                  Tu momento es ahora
+                </span>
+              </m.div>
+
+              {/* Título principal */}
+              <m.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                viewport={{ once: true }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-8 leading-tight"
+              >
+                Abre puertas a un{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#b27a00]">
+                  futuro sin límites
+                </span>
+              </m.h2>
+
+              {/* Descripción */}
+              <m.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="text-lg sm:text-xl text-slate-700 mb-12 leading-relaxed font-medium"
+              >
+                Accede a becas, voluntariados y oportunidades internacionales
+                que otros no conocen. Descubre el camino hacia tu éxito global.
+              </m.p>
+
+              {/* Botón CTA */}
+              <m.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
+                <a
+                  href="https://www.whatsapp.com/channel/0029VbBbJtWAzNc3WLlNXR3H"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center bg-primary text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 group"
+                >
+                  Empieza tu viaje ahora
+                  <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
+                </a>
+              </m.div>
+
+              {/* Trust badges */}
+              <m.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                viewport={{ once: true }}
+                className="mt-12 pt-8 border-t border-secondary/35 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10"
+              >
+                {[
+                  "Acceso inmediato",
+                  "Comunidad activa",
+                  "Oportunidades premium",
+                ].map((badge, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center text-slate-800 text-base font-semibold tracking-wide"
+                  >
+                    <svg
+                      className="w-5 h-5 text-primary mr-3 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {badge}
+                  </div>
+                ))}
+              </m.div>
             </div>
-
-            {/* Título principal */}
-            <m.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight"
-            >
-              Abre puertas a un{" "}
-              <span className="text-primary">futuro sin límites</span>
-            </m.h2>
-
-            {/* Descripción */}
-            <p className="text-lg md:text-xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed">
-              Accede a becas, voluntariados y oportunidades internacionales que
-              otros no conocen. Descubre el camino hacia tu éxito global.
-            </p>
-
-            {/* Botón CTA */}
-            <m.a
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              href="https://www.whatsapp.com/channel/0029VbBbJtWAzNc3WLlNXR3H"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center bg-white text-secondary px-10 py-4 rounded-lg font-semibold text-lg hover:shadow-xl hover:shadow-white/20 transition-all duration-300 group"
-            >
-              Empieza tu viaje ahora
-              <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
-            </m.a>
-
-            {/* Trust badge */}
-            <p className="text-white/70 text-sm mt-8">
-              ✓ Acceso inmediato · ✓ Comunidad activa · ✓ Oportunidades premium
-            </p>
           </div>
         </div>
       </section>

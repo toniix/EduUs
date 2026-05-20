@@ -83,11 +83,11 @@ export default function Header() {
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 block 
+                    className={`relative px-4 py-2 text-sm font-medium transition-colors duration-200 block 
                       ${
                         active
-                          ? "text-secondary"
-                          : "text-gray-900 hover:text-secondary hover:bg-secondary/5"
+                          ? "text-primary"
+                          : "text-gray-600 hover:text-primary"
                       }
                       `}
                   >
@@ -96,11 +96,11 @@ export default function Header() {
                     {active && (
                       <m.span
                         layoutId="nav-indicator"
-                        className="absolute inset-0 rounded-lg bg-secondary/8 border border-secondary/15"
+                        className="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full"
                         transition={{
                           type: "spring",
                           stiffness: 380,
-                          damping: 34,
+                          damping: 30,
                         }}
                       />
                     )}
