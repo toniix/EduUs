@@ -57,7 +57,7 @@ export default function RegistrationsTab() {
     try {
       const data = await eventsService.getAllRegistrations();
       setRegistrations(data);
-    } catch (err) {
+    } catch {
       toast.error("Error al cargar inscripciones");
     } finally {
       setLoading(false);

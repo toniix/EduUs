@@ -46,7 +46,7 @@ const ProjectsSection = () => {
           {/* Grid de proyectos destacados */}
           <div className="w-full flex flex-col gap-6 mt-8 md:mt-0">
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {projects.slice(0, 4).map((project, index) => {
+              {projects.slice(0, 4).map((project) => {
                 const IconComponent = project.icon;
                 return (
                   <button

@@ -362,7 +362,6 @@ class EventsService {
       ends_at,
       capacity,
       price,
-      is_featured,
       promo_modal,
       registration_url,
       status,

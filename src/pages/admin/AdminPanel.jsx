@@ -93,7 +93,7 @@ const AdminPanel = () => {
     [filteredUsers, currentPageUsers]
   );
 
-  const fetchOpportunities = async () => {
+  const fetchOpportunities = useCallback(async () => {
     try {
       setLoadingOpportunities(true);
       const data = await opportunitiesService.getAllOpportunities();
@@ -107,12 +107,12 @@ const AdminPanel = () => {
     } finally {
       setLoadingOpportunities(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (activeTab !== "content" || opportunities.length > 0) return;
     fetchOpportunities();
-  }, [activeTab, opportunities.length]);
+  }, [activeTab, opportunities.length, fetchOpportunities]);
 
   const searchOpportunities = useCallback((term, opportunitiesList) => {
     if (!term || term.trim() === "") return opportunitiesList;
@@ -206,6 +206,10 @@ const AdminPanel = () => {
     paginatedOpportunities,
     totalPages,
     currentPage,
+    isAdmin,
+    loadingOpportunities,
+    opportunitiesError,
+    fetchOpportunities,
   ]);
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);

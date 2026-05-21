@@ -6,7 +6,7 @@ import { createSlug } from "../utils/slugify";
 async function getOrCreateCategory(name) {
   if (!name) return null;
   // Buscar categoría existente
-  let { data: category, error } = await supabase
+  let { data: category } = await supabase
     .from("categories")
     .select("id")
     .eq("name", name)
@@ -92,7 +92,7 @@ export async function createOpportunity(data) {
 // Busca o crea un tag y retorna su id
 async function getOrCreateTag(name) {
   if (!name) return null;
-  let { data: tag, error } = await supabase
+  let { data: tag } = await supabase
     .from("tags")
     .select("id")
     .eq("name", name)

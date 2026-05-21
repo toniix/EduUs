@@ -18,7 +18,6 @@ const OpportunityDetail = () => {
   const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedNetwork, setSelectedNetwork] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -27,7 +26,9 @@ const OpportunityDetail = () => {
   // Redirección 301 (Client-side): Si entra por ID o slug viejo, redirigir al slug actual
   useEffect(() => {
     if (opportunity && opportunity.slug && idOrSlug !== opportunity.slug) {
-      navigate(`/edutracker/oportunidad/${opportunity.slug}`, { replace: true });
+      navigate(`/edutracker/oportunidad/${opportunity.slug}`, {
+        replace: true,
+      });
     }
   }, [opportunity, idOrSlug, navigate]);
 
@@ -39,7 +40,6 @@ const OpportunityDetail = () => {
   // Función para cerrar el modal
   const closeShareModal = () => {
     setIsModalOpen(false);
-    setSelectedNetwork(null);
   };
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
@@ -51,7 +51,7 @@ const OpportunityDetail = () => {
   }
 
   if (error) {
-    return <OpportunityError />;
+    return <OpportunityError error={error} />;
   }
 
   if (!opportunity) {
@@ -75,7 +75,6 @@ const OpportunityDetail = () => {
     modality,
     audience,
   } = opportunity;
-
 
   // console.log("oportunity:", opportunity);
   // Supón que data.requirements viene como un string JSON

@@ -1,15 +1,34 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from "react";
 
 export const ThemeContext = createContext({
-  theme: "light",
-  toggleTheme: () => {},
-  isDarkMode: false,
+  isDark: false,
+  toggleDarkMode: () => {},
 });
 
 export const ThemeProvider = ({ children }) => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      return savedTheme === "dark";
+    }
+    const systemPrefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    return systemPrefersDark;
+  });
 
-  const toggleDarkMode = () => setIsDark(!isDark);
+  const toggleDarkMode = () => setIsDark((prev) => !prev);
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
 
   return (
     <ThemeContext.Provider value={{ toggleDarkMode, isDark }}>

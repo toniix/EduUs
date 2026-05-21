@@ -16,10 +16,6 @@ const Profile = () => {
   const userEmail = profile?.email;
   const userRole = profile?.role;
 
-  const handleChange = (e) => {
-    // setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
   // const handleEdit = () => setEditing(true);
   // const handleCancel = () => {
   //   setEditing(false);
@@ -93,8 +89,7 @@ const Profile = () => {
               label="Nombre completo"
               name="full_name"
               value={userName}
-              onChange={handleChange}
-              // disabled={!editing}
+              disabled
               required
             />
             <Input

@@ -8,7 +8,7 @@ export default function InactiveOpportunities() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  const { opportunities, totalCount, totalPages, loading, error, refetch } =
+  const { opportunities, totalCount, totalPages, loading, error } =
     useInactiveOpportunities({
       page: currentPage,
       limit: itemsPerPage,

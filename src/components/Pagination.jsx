@@ -22,7 +22,6 @@ function Pagination({
     const delta = 2; // Cuántas páginas mostrar a cada lado de la actual
     const range = [];
     const rangeWithDots = [];
-    let l;
 
     // Calcular el rango de páginas a mostrar
     for (

@@ -27,11 +27,6 @@ export default function ContentTab({
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [totalFeaturedCount, setTotalFeaturedCount] = useState(0);
 
-  // Contar oportunidades destacadas de la PÁGINA ACTUAL (para mostrar visualmente)
-  const featuredCountInPage = opportunities.filter(
-    (opp) => opp.is_featured,
-  ).length;
-
   // console.log(opportunities);
   // console.log(opportunities.map((opp) => opp.featured_order));
 

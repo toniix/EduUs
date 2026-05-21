@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { m, AnimatePresence } from "framer-motion";
 import UserMenu from "./layouts/header/UserMenu";
 import UserMenuMobile from "./layouts/header/UserMenuMobile";
@@ -112,6 +112,18 @@ export default function Header() {
 
           {/* ── Desktop CTA ── */}
           <div className="hidden md:flex items-center gap-3">
+            {/* <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-xl border transition-colors duration-200 ${
+                isDark
+                  ? "bg-gray-800 border-gray-700 text-yellow-400 hover:bg-gray-700"
+                  : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200"
+              }`}
+              aria-label="Cambiar tema"
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button> */}
+
             {isAuthenticated ? (
               <UserMenu />
             ) : (
@@ -194,7 +206,22 @@ export default function Header() {
         </nav>
 
         {/* Drawer footer */}
-        <div className="px-4 pb-6 pt-4 border-t border-gray-100">
+        <div className="px-4 pb-6 pt-4 border-t border-gray-100 space-y-4">
+          {/* <div className="flex items-center justify-between px-2">
+            <span className="text-sm font-medium text-gray-600">Modo Oscuro</span>
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-xl border transition-colors duration-200 ${
+                isDark
+                  ? "bg-gray-800 border-gray-700 text-yellow-400 hover:bg-gray-700"
+                  : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200"
+              }`}
+              aria-label="Cambiar tema"
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+          </div> */}
+
           {isAuthenticated ? (
             <UserMenuMobile onItemClick={() => setIsOpen(false)} />
           ) : (

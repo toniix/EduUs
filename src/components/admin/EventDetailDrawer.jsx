@@ -61,7 +61,6 @@ export default function EventDetailDrawer({
   onClose,
   onEdit,
   onDelete,
-  onRefetch,
 }) {
   const { isDark } = useTheme();
   const [registrations, setRegistrations] = useState([]);
@@ -118,7 +117,7 @@ export default function EventDetailDrawer({
     setUpdatingId(null);
   };
 
-  /* Exportar CSV */
+  /* Exportar CSV
   const exportCSV = () => {
     const headers = [
       "Nombre",
@@ -142,7 +141,7 @@ export default function EventDetailDrawer({
     a.download = `inscritos-${event.slug || event.id}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  };
+  }; */
 
   if (!event) return null;
 

@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useOpportunityForm } from "../../hooks/useOpportunityForm";
 import { categoryService } from "../../services/categoryService";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Button from "../ui/Button";
 import ImagePreview from "./OpportunityImagePreview";

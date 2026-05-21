@@ -27,10 +27,6 @@ export const useDeviceDetection = () => {
         );
       const isTabletUA = /ipad|android(?!.*mobile)|tablet/i.test(userAgent);
 
-      // Detectar por características táctiles
-      const isTouchDevice =
-        "ontouchstart" in window || navigator.maxTouchPoints > 0;
-
       // Combinación de criterios para mayor precisión
       setIsMobile(isMobileSize || (isMobileUA && !isTabletUA));
       setIsTablet((isTabletSize || isTabletUA) && !isMobileSize);

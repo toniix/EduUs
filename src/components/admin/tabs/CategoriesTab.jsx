@@ -96,7 +96,7 @@ const CategoriesTab = () => {
       dispatchData({ type: "FETCH_START" });
       const data = await categoryService.getCategories();
       dispatchData({ type: "FETCH_SUCCESS", payload: data });
-    } catch (err) {
+    } catch {
       dispatchData({
         type: "FETCH_ERROR",
         payload:
