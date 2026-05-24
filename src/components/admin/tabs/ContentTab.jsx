@@ -20,6 +20,19 @@ export default function ContentTab({
   totalPages,
   loading,
   fetchOpportunities,
+  categories = [],
+  categoryFilter,
+  setCategoryFilter,
+  modalityFilter,
+  setModalityFilter,
+  statusFilter,
+  setStatusFilter,
+  publishFilter,
+  setPublishFilter,
+  dateFilter,
+  setDateFilter,
+  featuredFilter,
+  setFeaturedFilter,
 }) {
   const { profile } = useAuth();
   const { isDark } = useContext(ThemeContext);
@@ -121,10 +134,193 @@ export default function ContentTab({
           </button>
         </div>
       </div>
-      <div className="flex-1 min-h-0 flex flex-col">
-        {loading && (
-          <InlineLoader message="Cargando oportunidades..." size="md" />
+
+      {/* Filtros de Oportunidades para el Administrador */}
+      <div className="flex flex-wrap gap-4 mb-6 items-center">
+        {/* Filtro por Categoría */}
+        <div className="flex flex-col gap-1 min-w-[160px]">
+          <span
+            className={`text-xs font-bold ${isDark ? "text-gray-400" : "text-gray-500"}`}
+          >
+            Categoría
+          </span>
+          <select
+            value={categoryFilter}
+            onChange={(e) => {
+              setCategoryFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className={`text-xs rounded-lg border px-3 py-2 outline-none transition-colors ${
+              isDark
+                ? "bg-gray-700 border-gray-600 text-gray-200 focus:border-primary"
+                : "bg-white border-gray-200 text-gray-700 focus:border-primary"
+            }`}
+          >
+            <option value="all">Todas las categorías</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Filtro por Modalidad */}
+        <div className="flex flex-col gap-1 min-w-[160px]">
+          <span
+            className={`text-xs font-bold ${isDark ? "text-gray-400" : "text-gray-500"}`}
+          >
+            Modalidad
+          </span>
+          <select
+            value={modalityFilter}
+            onChange={(e) => {
+              setModalityFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className={`text-xs rounded-lg border px-3 py-2 outline-none transition-colors ${
+              isDark
+                ? "bg-gray-700 border-gray-600 text-gray-200 focus:border-primary"
+                : "bg-white border-gray-200 text-gray-700 focus:border-primary"
+            }`}
+          >
+            <option value="all">Todas las modalidades</option>
+            <option value="presencial">Presencial</option>
+            <option value="virtual">Virtual</option>
+            <option value="híbrida">Híbrida</option>
+          </select>
+        </div>
+
+        {/* Filtro por Estado (Convocatoria) */}
+        <div className="flex flex-col gap-1 min-w-[160px]">
+          <span
+            className={`text-xs font-bold ${isDark ? "text-gray-400" : "text-gray-500"}`}
+          >
+            Estado Convocatoria
+          </span>
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className={`text-xs rounded-lg border px-3 py-2 outline-none transition-colors ${
+              isDark
+                ? "bg-gray-700 border-gray-600 text-gray-200 focus:border-primary"
+                : "bg-white border-gray-200 text-gray-700 focus:border-primary"
+            }`}
+          >
+            <option value="all">Todos los estados</option>
+            <option value="active">Activo</option>
+            <option value="expired">Expirado</option>
+          </select>
+        </div>
+
+        {/* Filtro por Visibilidad (Publicado / Borrador) */}
+        <div className="flex flex-col gap-1 min-w-[160px]">
+          <span
+            className={`text-xs font-bold ${isDark ? "text-gray-400" : "text-gray-500"}`}
+          >
+            Visibilidad
+          </span>
+          <select
+            value={publishFilter}
+            onChange={(e) => {
+              setPublishFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className={`text-xs rounded-lg border px-3 py-2 outline-none transition-colors ${
+              isDark
+                ? "bg-gray-700 border-gray-600 text-gray-200 focus:border-primary"
+                : "bg-white border-gray-200 text-gray-700 focus:border-primary"
+            }`}
+          >
+            <option value="all">Todas las visibilidades</option>
+            <option value="published">Publicado</option>
+            <option value="draft">Borrador</option>
+          </select>
+        </div>
+
+        {/* Filtro por Fecha de Publicación */}
+        <div className="flex flex-col gap-1 min-w-[160px]">
+          <span
+            className={`text-xs font-bold ${isDark ? "text-gray-400" : "text-gray-500"}`}
+          >
+            Fecha de Publicación
+          </span>
+          <select
+            value={dateFilter}
+            onChange={(e) => {
+              setDateFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className={`text-xs rounded-lg border px-3 py-2 outline-none transition-colors ${
+              isDark
+                ? "bg-gray-700 border-gray-600 text-gray-200 focus:border-primary"
+                : "bg-white border-gray-200 text-gray-700 focus:border-primary"
+            }`}
+          >
+            <option value="all">Cualquier fecha</option>
+            <option value="today">Publicadas hoy</option>
+            <option value="week">Publicadas esta semana</option>
+            <option value="month">Publicadas este mes</option>
+          </select>
+        </div>
+
+        {/* Filtro por Destacado */}
+        <div className="flex flex-col gap-1 min-w-[160px]">
+          <span
+            className={`text-xs font-bold ${isDark ? "text-gray-400" : "text-gray-500"}`}
+          >
+            Destacado
+          </span>
+          <select
+            value={featuredFilter}
+            onChange={(e) => {
+              setFeaturedFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className={`text-xs rounded-lg border px-3 py-2 outline-none transition-colors ${
+              isDark
+                ? "bg-gray-700 border-gray-600 text-gray-200 focus:border-primary"
+                : "bg-white border-gray-200 text-gray-700 focus:border-primary"
+            }`}
+          >
+            <option value="all">Todas las oportunidades</option>
+            <option value="featured">Destacadas</option>
+            <option value="not_featured">No destacadas</option>
+          </select>
+        </div>
+
+        {/* Botón Restablecer Filtros */}
+        {(categoryFilter !== "all" ||
+          modalityFilter !== "all" ||
+          statusFilter !== "all" ||
+          publishFilter !== "all" ||
+          dateFilter !== "all" ||
+          featuredFilter !== "all") && (
+          <button
+            type="button"
+            onClick={() => {
+              setCategoryFilter("all");
+              setModalityFilter("all");
+              setStatusFilter("all");
+              setPublishFilter("all");
+              setDateFilter("all");
+              setFeaturedFilter("all");
+              setCurrentPage(1);
+            }}
+            className="self-end px-4 py-2 text-xs font-bold rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors cursor-pointer"
+          >
+            Restablecer Filtros
+          </button>
         )}
+      </div>
+
+      <div className="flex-1 min-h-0 flex flex-col">
+        {/* {loading && (
+          <InlineLoader message="Cargando oportunidades..." size="md" />
+        )} */}
         <div className="w-full overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className={isDark ? "bg-gray-700" : "bg-gray-50"}>
@@ -155,6 +351,13 @@ export default function ContentTab({
                     isDark ? "text-gray-300" : "text-gray-500"
                   }`}
                 >
+                  Visibilidad
+                </th>
+                <th
+                  className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap ${
+                    isDark ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
                   Fecha de cierre
                 </th>
                 <th
@@ -176,7 +379,7 @@ export default function ContentTab({
               {opportunities.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className={`px-6 py-10 text-center text-lg ${
                       isDark ? "text-gray-400" : "text-gray-500"
                     }`}
@@ -235,6 +438,21 @@ export default function ContentTab({
                           }`}
                         >
                           {isExpired ? "Expirado" : "Activo"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            opportunity.is_published
+                              ? isDark
+                                ? "bg-blue-900/60 text-blue-200"
+                                : "bg-blue-100 text-blue-800"
+                              : isDark
+                                ? "bg-amber-900/60 text-amber-200"
+                                : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
+                          {opportunity.is_published ? "Publicado" : "Borrador"}
                         </span>
                       </td>
                       <td

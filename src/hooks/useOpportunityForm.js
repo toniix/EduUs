@@ -18,6 +18,7 @@ const initialState = {
   tags: [],
   is_featured: false,
   featured_order: null,
+  is_published: false,
 };
 
 export function useOpportunityForm(initial = {}, categories = []) {
@@ -98,8 +99,8 @@ export function useOpportunityForm(initial = {}, categories = []) {
   };
 
   // Validation con Zod
-  const validateForm = () => {
-    const result = opportunitySchema.safeParse(formData);
+  const validateForm = (dataToValidate = formData) => {
+    const result = opportunitySchema.safeParse(dataToValidate);
     if (!result.success) {
       // Mapear errores de Zod a objeto { campo: mensaje }
       const fieldErrors = {};
@@ -108,7 +109,7 @@ export function useOpportunityForm(initial = {}, categories = []) {
           fieldErrors[err.path[0]] = err.message;
         }
       });
-      // console.log(fieldErrors);
+      console.log(fieldErrors);
       setErrors(fieldErrors);
       // Devuelve mensaje general si hay muchos errores
       return "Corrige los errores del formulario.";
@@ -117,11 +118,16 @@ export function useOpportunityForm(initial = {}, categories = []) {
     return "";
   };
 
-  const submitForm = async (onSuccess) => {
+  const submitForm = async (onSuccess, overrideFields = {}) => {
     setError("");
     setSuccess("");
 
-    const validationError = validateForm();
+    const dataToSubmit = {
+      ...formData,
+      ...overrideFields,
+    };
+
+    const validationError = validateForm(dataToSubmit);
     if (validationError) {
       setError(validationError);
       return false;
@@ -131,8 +137,9 @@ export function useOpportunityForm(initial = {}, categories = []) {
     try {
       // Just pass the form data to the parent's onSubmit
       if (onSuccess) {
-        await onSuccess(formData);
+        await onSuccess(dataToSubmit);
       }
+      setFormData(dataToSubmit); // Sincronizar el estado del formulario
       return true;
     } catch (err) {
       console.error("Error in form submission:", err);
