@@ -218,7 +218,7 @@ const AdminPanel = () => {
     <DesktopOnlyWrapper>
       <div
         className={`flex h-screen ${
-          isDark ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+          isDark ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"
         }`}
       >
         {/* Sidebar - Fuera del contenedor principal */}
