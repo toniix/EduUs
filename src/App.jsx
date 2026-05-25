@@ -29,6 +29,7 @@ const OpportunityDetail = lazy(
   () => import("./components/opportunities/OpportunityDetail"),
 );
 const Profile = lazy(() => import("./pages/Profile"));
+const JoinUs = lazy(() => import("./pages/JoinUs"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Fallback global mientras se carga un chunk de ruta
@@ -53,6 +54,7 @@ function App() {
                       <Route path="/" element={<Home />} />
                       <Route path="/nosotros" element={<About />} />
                       <Route path="/proyectos" element={<Projects />} />
+                      <Route path="/unete" element={<JoinUs />} />
                       <Route
                         element={
                           <OpportunitiesProvider>

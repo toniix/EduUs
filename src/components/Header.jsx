@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { name: "Nosotros", path: "/nosotros" },
   { name: "Proyectos", path: "/proyectos" },
   { name: "Oportunidades", path: "/edutracker" },
+  { name: "Únete", path: "/unete" },
 ];
 
 export default function Header() {
