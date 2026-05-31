@@ -1,5 +1,10 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Outlet,
+} from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "react-hot-toast";
 import { LazyMotion, domAnimation } from "framer-motion";
@@ -18,7 +23,6 @@ import LoadingSpinner from "./components/ui/LoadingSpinner";
 // Páginas
 import Home from "./pages/Home";
 const About = lazy(() => import("./pages/About"));
-const Projects = lazy(() => import("./pages/Projects"));
 const Opportunities = lazy(() => import("./pages/opportunities/Opportunities"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -48,79 +52,78 @@ function App() {
             <Router>
               <ScrollToTop />
               <Suspense fallback={<PageLoader />}>
-                  <Routes>
-                    {/*  RUTAS PÚBLICAS */}
-                    <Route element={<PublicLayout />}>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/nosotros" element={<About />} />
-                      <Route path="/proyectos" element={<Projects />} />
-                      <Route path="/unete" element={<JoinUs />} />
+                <Routes>
+                  {/*  RUTAS PÚBLICAS */}
+                  <Route element={<PublicLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/nosotros" element={<About />} />
+                    <Route path="/unete" element={<JoinUs />} />
+                    <Route
+                      element={
+                        <OpportunitiesProvider>
+                          <Outlet />
+                        </OpportunitiesProvider>
+                      }
+                    >
+                      <Route path="/edutracker" element={<Opportunities />} />
                       <Route
-                        element={
-                          <OpportunitiesProvider>
-                            <Outlet />
-                          </OpportunitiesProvider>
-                        }
-                      >
-                        <Route path="/edutracker" element={<Opportunities />} />
-                        <Route
-                          path="/edutracker/oportunidad/:idOrSlug"
-                          element={<OpportunityDetail />}
-                        />
-                      </Route>
-                      <Route path="/terminos" element={<TermsPage />} />
-                      <Route path="/privacidad" element={<PrivacyPage />} />
-
-                      <Route
-                        path="/login"
-                        element={
-                          <PublicRoute>
-                            <Login />
-                          </PublicRoute>
-                        }
-                      />
-                      <Route
-                        path="/register"
-                        element={
-                          <PublicRoute>
-                            <Register />
-                          </PublicRoute>
-                        }
+                        path="/edutracker/oportunidad/:idOrSlug"
+                        element={<OpportunityDetail />}
                       />
                     </Route>
-
-                    {/* 🔒 RUTAS PRIVADAS */}
-                    <Route
-                      path="/perfil"
-                      element={
-                        <ProtectedRoute>
-                          <Profile />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <Route path="/terminos" element={<TermsPage />} />
+                    <Route path="/privacidad" element={<PrivacyPage />} />
 
                     <Route
-                      path="/adminpanel"
+                      path="/login"
                       element={
-                        <ProtectedRoute>
-                          <RoleGuard
-                            requiredRoles={["admin", "editor"]}
-                            fallback={<NoAccessFallback />}
-                          >
-                            <AdminPanel />
-                          </RoleGuard>
-                        </ProtectedRoute>
+                        <PublicRoute>
+                          <Login />
+                        </PublicRoute>
                       }
                     />
+                    <Route
+                      path="/register"
+                      element={
+                        <PublicRoute>
+                          <Register />
+                        </PublicRoute>
+                      }
+                    />
+                  </Route>
 
-                    <Route path="/auth/callback" element={<AuthCallback />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
+                  {/* 🔒 RUTAS PRIVADAS */}
+                  <Route
+                    path="/perfil"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Toaster position="bottom-right" />
-              </Router>
-            </ThemeProvider>
+                  <Route
+                    path="/adminpanel"
+                    element={
+                      <ProtectedRoute>
+                        <RoleGuard
+                          requiredRoles={["admin", "editor"]}
+                          fallback={<NoAccessFallback />}
+                        >
+                          <AdminPanel />
+                        </RoleGuard>
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+
+              <Toaster position="bottom-right" />
+            </Router>
+          </ThemeProvider>
           {/* </RoleProvider> */}
         </AuthProvider>
       </div>

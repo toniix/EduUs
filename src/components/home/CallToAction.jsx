@@ -8,10 +8,10 @@ export default function ImprovedCTA() {
       {/* CTA Section Rediseñada y Premium */}
       <section className="relative py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="relative bg-secondary/15 rounded-[3rem] overflow-hidden px-6 py-16 sm:px-16 sm:py-24 shadow-2xl border border-secondary/30">
+          <div className="relative bg-gradient-to-br from-secondary/15 via-secondary/5 to-accent/10 rounded-[3rem] overflow-hidden px-6 py-16 sm:px-16 sm:py-24 shadow-2xl border border-secondary/20">
             {/* Elementos decorativos premium */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[40rem] h-[40rem] bg-primary/10 rounded-full blur-3xl mix-blend-multiply pointer-events-none" />
-            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[30rem] h-[30rem] bg-accent/10 rounded-full blur-3xl mix-blend-multiply pointer-events-none" />
+            <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-secondary/10 blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-accent/10 blur-2xl pointer-events-none" />
 
             <div className="relative z-10 max-w-3xl mx-auto text-center">
               {/* Etiqueta tipo "Pill" */}
