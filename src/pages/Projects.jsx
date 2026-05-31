@@ -3,21 +3,40 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { projects } from "../data/projects";
 import { ArrowRightIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import EventsSection from "../components/events/Events";
+import { projectsService } from "../services/projectsService";
+import ProjectIcon from "../components/ProjectIcon";
+import { SectionLoader } from "../components/ui/LoadingSpinner";
 
 const ProjectsSection = () => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    // Precargar imágenes de fondo
-    projects.slice(0, 4).forEach((project) => {
-      if (project.fondo) {
-        const img = new Image();
-        img.src = project.fondo;
+    const fetchProjects = async () => {
+      try {
+        const data = await projectsService.getProjects();
+        setProjects(data || []);
+        
+        // Precargar imágenes de fondo de los primeros 4 proyectos
+        data.slice(0, 4).forEach((project) => {
+          if (project.fondo) {
+            const img = new Image();
+            img.src = project.fondo;
+          }
+        });
+      } catch (error) {
+        console.error("Error loading projects:", error);
+      } finally {
+        setLoading(false);
       }
-    });
+    };
+
+    fetchProjects();
   }, []);
+
   const scrollToProject = (projectId) => {
     const element = document.getElementById(projectId);
     if (element) {
@@ -43,61 +62,73 @@ const ProjectsSection = () => {
               próximos eventos de la organización.
             </p>
           </div>
+          
           {/* Grid de proyectos destacados */}
           <div className="w-full flex flex-col gap-6 mt-8 md:mt-0">
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {projects.slice(0, 4).map((project) => {
-                const IconComponent = project.icon;
-                return (
-                  <button
-                    key={project.id}
-                    onClick={() => scrollToProject(project.id)}
-                    className="group relative h-48 sm:h-56 w-full rounded-[2rem] overflow-hidden transition-all duration-500 hover:shadow-[0_15px_35px_rgb(0,0,0,0.6)] hover:-translate-y-2 border border-white/5 bg-[#0b1716] hover:border-secondary/50 focus:outline-none focus:ring-4 focus:ring-secondary/20"
-                  >
-                    {/* Animated Background Image Container */}
-                    <div 
-                       className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-110 opacity-30 group-hover:opacity-50"
-                       style={{ backgroundImage: project.fondo ? `url(${project.fondo})` : "none" }}
-                    />
-                    
-                    {/* Glowing Effect Inside */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
-                    {/* Dark gradient for text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+            {loading ? (
+              <div className="flex items-center justify-center h-48 bg-[#0b1716]/50 rounded-[2rem]">
+                <SectionLoader message="Cargando proyectos..." />
+              </div>
+            ) : projects.length === 0 ? (
+              <div className="text-center p-8 text-gray-400 bg-[#0b1716]/50 rounded-[2rem]">
+                No hay proyectos disponibles.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                {projects.slice(0, 4).map((project) => {
+                  return (
+                    <button
+                      key={project.id}
+                      onClick={() => scrollToProject(project.id)}
+                      className="group relative h-48 sm:h-56 w-full rounded-[2rem] overflow-hidden transition-all duration-500 hover:shadow-[0_15px_35px_rgb(0,0,0,0.6)] hover:-translate-y-2 border border-white/5 bg-[#0b1716] hover:border-secondary/50 focus:outline-none focus:ring-4 focus:ring-secondary/20"
+                    >
+                      {/* Animated Background Image Container */}
+                      <div 
+                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-110 opacity-30 group-hover:opacity-50"
+                         style={{ backgroundImage: project.fondo ? `url(${project.fondo})` : "none" }}
+                      />
+                      
+                      {/* Glowing Effect Inside */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      
+                      {/* Dark gradient for text readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-                    {/* Content Container */}
-                    <div className="relative z-10 h-full flex flex-col items-center justify-between p-4 sm:p-5">
-                      <div className="w-full flex justify-center mt-3 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]">
-                        <div className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] group-hover:border-secondary/40 group-hover:bg-secondary/20 group-hover:shadow-[0_0_20px_rgba(77,185,169,0.3)] transition-all duration-300">
-                          <IconComponent className="w-7 h-7 sm:w-8 sm:h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+                      {/* Content Container */}
+                      <div className="relative z-10 h-full flex flex-col items-center justify-between p-4 sm:p-5">
+                        <div className="w-full flex justify-center mt-3 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]">
+                          <div className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] group-hover:border-secondary/40 group-hover:bg-secondary/20 group-hover:shadow-[0_0_20px_rgba(77,185,169,0.3)] transition-all duration-300">
+                            <ProjectIcon name={project.icon} className="w-7 h-7 sm:w-8 sm:h-8 text-white/80 group-hover:text-white transition-colors duration-300" />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col items-center w-full">
+                          <h3 className="text-sm sm:text-base font-bold text-white mb-1 text-center leading-snug group-hover:-translate-y-1 transition-transform duration-300">
+                            {project.name}
+                          </h3>
+                          
+                          {/* Animated Text on Hover */}
+                          <div className="overflow-hidden h-5 flex items-center justify-center w-full">
+                             <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-secondary font-bold tracking-wider uppercase transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out">
+                               Explorar
+                               <ArrowRightIcon className="w-3.5 h-3.5 transform group-hover:translate-x-1.5 transition-transform duration-300" />
+                             </div>
+                          </div>
                         </div>
                       </div>
-
-                      <div className="flex flex-col items-center w-full">
-                        <h3 className="text-sm sm:text-base font-bold text-white mb-1 text-center leading-snug group-hover:-translate-y-1 transition-transform duration-300">
-                          {project.name}
-                        </h3>
-                        
-                        {/* Animated Text on Hover */}
-                        <div className="overflow-hidden h-5 flex items-center justify-center w-full">
-                           <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-secondary font-bold tracking-wider uppercase transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out">
-                             Explorar
-                             <ArrowRightIcon className="w-3.5 h-3.5 transform group-hover:translate-x-1.5 transition-transform duration-300" />
-                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="flex justify-end px-2 opacity-70 hover:opacity-100 transition-opacity">
-              <span className="flex items-center text-xs text-gray-300 tracking-wide font-light">
-                <span className="w-6 h-[1px] bg-secondary/80 mr-3"></span>
-                Haz click en un proyecto para ver los detalles
-              </span>
-            </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            {!loading && projects.length > 0 && (
+              <div className="flex justify-end px-2 opacity-70 hover:opacity-100 transition-opacity">
+                <span className="flex items-center text-xs text-gray-300 tracking-wide font-light">
+                  <span className="w-6 h-[1px] bg-secondary/80 mr-3"></span>
+                  Haz click en un proyecto para ver los detalles
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -125,177 +156,179 @@ const ProjectsSection = () => {
             </p>
           </div>
 
-          <div className="space-y-24">
-            {projects.map((project, index) => {
-              const IconComponent = project.icon;
-              const isEven = index % 2 === 0;
+          {loading ? (
+            <SectionLoader message="Cargando detalles de proyectos..." />
+          ) : (
+            <div className="space-y-24">
+              {projects.map((project, index) => {
+                const isEven = index % 2 === 0;
 
-              return (
-                <div key={project.id} id={project.id} className="scroll-mt-20">
-                  <div
-                    className={`flex flex-col ${
-                      isEven ? "lg:flex-row" : "lg:flex-row-reverse"
-                    } items-center gap-12 lg:gap-16`}
-                  >
-                    <div className="flex-1 space-y-6">
-                      <div className="flex items-center space-x-4">
-                        <div
-                          className="w-12 h-12 rounded-lg flex items-center justify-center"
-                          style={{ backgroundColor: "#fef4e6" }}
-                        >
-                          <IconComponent
-                            className="w-6 h-6"
-                            style={{ color: "#4db9a9" }}
-                          />
-                        </div>
-                        <h3
-                          className="text-2xl md:text-3xl font-bold"
-                          style={{ color: "#222222" }}
-                        >
-                          {project.name}
-                        </h3>
-                      </div>
-                      {/* 
-                    <p className="text-lg text-gray-600 font-medium pb-2 shadow-[0_2px_0_0_#ED441D] hover:shadow-[0_4px_0_0_#ED441D] transition-all duration-200">
-                      {project.description}
-                    </p> */}
-
-                      <p
-                        className="leading-relaxed text-lg"
-                        style={{ color: "#666666" }}
-                      >
-                        {project.details}
-                      </p>
-
-                      <div className="space-y-4">
-                        <h4 className="font-bold text-2xl pb-2 inline-block relative">
-                          Objetivos:
-                        </h4>
-                        <div className="flex flex-col gap-4">
-                          {project.objectives.map(
-                            (objective, objectiveIndex) => (
-                              <div
-                                key={objectiveIndex}
-                                className="shadow-md rounded-lg px-4 py-3 flex items-center  hover:scale-[1.02] hover:shadow-xl group backdrop-blur-sm"
-                                style={{
-                                  background:
-                                    "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(75,186,170,0.15) 100%)",
-                                  borderColor: "#4BBAAA",
-                                  color: "#444",
-                                  transition: "all 0.3s ease",
-                                  boxShadow: "0 4px 15px rgba(244,182,59,0.08)",
-                                }}
-                              >
-                                <span
-                                  className="mr-3 flex items-center justify-center w-8 h-8 rounded-full transform transition-all duration-300 group-hover:scale-110"
-                                  style={{
-                                    background:
-                                      "linear-gradient(135deg, #4BBAAA30 0%, #F4B63B20 100%)",
-                                    border: "2px solid rgba(75,186,170,0.2)",
-                                  }}
-                                >
-                                  <svg
-                                    width="20"
-                                    height="20"
-                                    fill="#4BBAAA"
-                                    viewBox="0 0 20 20"
-                                  >
-                                    <circle cx="10" cy="10" r="8" />
-                                  </svg>
-                                </span>
-                                <span className="text-base font-medium">
-                                  {objective}
-                                </span>
-                              </div>
-                            ),
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 bg-gradient-to-br from-secondary to-[#0b2826] p-6 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
-                        <div className="flex items-center space-x-3 mb-6">
-                          <h4 className="text-2xl font-bold text-white">
-                            Resultados
-                          </h4>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {project.results.map((result, resultIndex) => (
-                            <div
-                              key={resultIndex}
-                              className="flex items-start space-x-3 p-4 bg-gradient-to-br from-white/5 to-white/0 rounded-xl border border-white/10 hover:border-primary/40 transition-all duration-300 group hover:shadow-md hover:shadow-primary/10"
-                            >
-                              <div className="flex-shrink-0 mt-0.5">
-                                <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(77,185,169,0.5)]"></div>
-                              </div>
-                              <span className="text-gray-100 group-hover:text-white transition-colors duration-300 font-medium">
-                                {result}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="w-full lg:flex-1 lg:max-w-lg ">
-                      <div className="rounded-2xl overflow-hidden shadow-lg w-full p-2 bg-white">
-                        <Swiper
-                          modules={[Navigation, Pagination, Autoplay]}
-                          spaceBetween={0}
-                          slidesPerView={1}
-                          navigation
-                          pagination={{
-                            clickable: true,
-                            dynamicBullets: false,
-                          }}
-                          style={{
-                            "--swiper-pagination-bottom": "5px",
-                            "--swiper-pagination-color": "#3b82f6",
-                            "--swiper-pagination-bullet-inactive-color":
-                              "#9ca3af",
-                          }}
-                          autoplay={{
-                            delay: 4000,
-                            disableOnInteraction: true,
-                          }}
-                          className="project-swiper h-full"
-                        >
-                          {project.images.map((image, imageIndex) => (
-                            <SwiperSlide key={imageIndex}>
-                              <div className="relative aspect-square overflow-hidden rounded-lg">
-                                <img
-                                  src={image}
-                                  alt={`${project.name} - Imagen ${
-                                    imageIndex + 1
-                                  }`}
-                                  className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                              </div>
-                            </SwiperSlide>
-                          ))}
-                        </Swiper>
-                        <div className="p-6">
-                          <h4
-                            className="text-lg font-bold text-center mb-2"
+                return (
+                  <div key={project.id} id={project.id} className="scroll-mt-20">
+                    <div
+                      className={`flex flex-col ${
+                        isEven ? "lg:flex-row" : "lg:flex-row-reverse"
+                      } items-center gap-12 lg:gap-16`}
+                    >
+                      <div className="flex-1 space-y-6">
+                        <div className="flex items-center space-x-4">
+                          <div
+                            className="w-12 h-12 rounded-lg flex items-center justify-center"
+                            style={{ backgroundColor: "#fef4e6" }}
+                          >
+                            <ProjectIcon
+                              name={project.icon}
+                              className="w-6 h-6"
+                              style={{ color: "#4db9a9" }}
+                            />
+                          </div>
+                          <h3
+                            className="text-2xl md:text-3xl font-bold"
                             style={{ color: "#222222" }}
                           >
                             {project.name}
+                          </h3>
+                        </div>
+
+                        <p
+                          className="leading-relaxed text-lg"
+                          style={{ color: "#666666" }}
+                        >
+                          {project.details}
+                        </p>
+
+                        <div className="space-y-4">
+                          <h4 className="font-bold text-2xl pb-2 inline-block relative">
+                            Objetivos:
                           </h4>
-                          <p
-                            className="text-center text-sm"
-                            style={{ color: "#666666" }}
-                          >
-                            Galería de {project.images.length} imágenes del
-                            proyecto
-                          </p>
+                          <div className="flex flex-col gap-4">
+                            {project.objectives?.map(
+                              (objective, objectiveIndex) => (
+                                <div
+                                  key={objectiveIndex}
+                                  className="shadow-md rounded-lg px-4 py-3 flex items-center hover:scale-[1.02] hover:shadow-xl group backdrop-blur-sm"
+                                  style={{
+                                    background:
+                                      "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(75,186,170,0.15) 100%)",
+                                    borderColor: "#4BBAAA",
+                                    color: "#444",
+                                    transition: "all 0.3s ease",
+                                    boxShadow: "0 4px 15px rgba(244,182,59,0.08)",
+                                  }}
+                                >
+                                  <span
+                                    className="mr-3 flex items-center justify-center w-8 h-8 rounded-full transform transition-all duration-300 group-hover:scale-110"
+                                    style={{
+                                      background:
+                                        "linear-gradient(135deg, #4BBAAA30 0%, #F4B63B20 100%)",
+                                      border: "2px solid rgba(75,186,170,0.2)",
+                                    }}
+                                  >
+                                    <svg
+                                      width="20"
+                                      height="20"
+                                      fill="#4BBAAA"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <circle cx="10" cy="10" r="8" />
+                                    </svg>
+                                  </span>
+                                  <span className="text-base font-medium">
+                                    {objective}
+                                  </span>
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="space-y-3 bg-gradient-to-br from-secondary to-[#0b2826] p-6 rounded-2xl border border-white/10 backdrop-blur-sm shadow-lg">
+                          <div className="flex items-center space-x-3 mb-6">
+                            <h4 className="text-2xl font-bold text-white">
+                              Resultados
+                            </h4>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {project.results?.map((result, resultIndex) => (
+                              <div
+                                key={resultIndex}
+                                className="flex items-start space-x-3 p-4 bg-gradient-to-br from-white/5 to-white/0 rounded-xl border border-white/10 hover:border-primary/40 transition-all duration-300 group hover:shadow-md hover:shadow-primary/10"
+                              >
+                                <div className="flex-shrink-0 mt-0.5">
+                                  <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(77,185,169,0.5)]"></div>
+                                </div>
+                                <span className="text-gray-100 group-hover:text-white transition-colors duration-300 font-medium">
+                                  {result}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="w-full lg:flex-1 lg:max-w-lg ">
+                        <div className="rounded-2xl overflow-hidden shadow-lg w-full p-2 bg-white">
+                          {project.images && project.images.length > 0 && (
+                            <Swiper
+                              modules={[Navigation, Pagination, Autoplay]}
+                              spaceBetween={0}
+                              slidesPerView={1}
+                              navigation
+                              pagination={{
+                                clickable: true,
+                                dynamicBullets: false,
+                              }}
+                              style={{
+                                "--swiper-pagination-bottom": "5px",
+                                "--swiper-pagination-color": "#3b82f6",
+                                "--swiper-pagination-bullet-inactive-color":
+                                  "#9ca3af",
+                              }}
+                              autoplay={{
+                                delay: 4000,
+                                disableOnInteraction: true,
+                              }}
+                              className="project-swiper h-full"
+                            >
+                              {project.images.map((image, imageIndex) => (
+                                <SwiperSlide key={imageIndex}>
+                                  <div className="relative aspect-square overflow-hidden rounded-lg">
+                                    <img
+                                      src={image}
+                                      alt={`${project.name} - Imagen ${
+                                        imageIndex + 1
+                                      }`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                  </div>
+                                </SwiperSlide>
+                              ))}
+                            </Swiper>
+                          )}
+                          <div className="p-6">
+                            <h4
+                              className="text-lg font-bold text-center mb-2"
+                              style={{ color: "#222222" }}
+                            >
+                              {project.name}
+                            </h4>
+                            <p
+                              className="text-center text-sm"
+                              style={{ color: "#666666" }}
+                            >
+                              Galería de {project.images?.length || 0} imágenes del
+                              proyecto
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

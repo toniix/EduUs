@@ -159,3 +159,15 @@ export const eventSchema = z.object({
     .or(z.null()),
   status: z.enum(["draft", "published", "cancelled", "finished"]).optional(),
 });
+
+// Esquema de validación para proyectos
+export const projectSchema = z.object({
+  name: z.string().min(1, "El nombre es obligatorio."),
+  description: z.string().min(1, "La descripción corta es obligatoria."),
+  details: z.string().min(1, "Los detalles son obligatorios."),
+  icon: z.string().min(1, "El icono es obligatorio."),
+  fondo: z.string().min(1, "La foto destacada es obligatoria."),
+  objectives: z.array(z.string()).default([]),
+  results: z.array(z.string()).default([]),
+  images: z.array(z.string()).default([]),
+});
