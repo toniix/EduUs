@@ -1,6 +1,5 @@
 import {
   Building2,
-  Handshake,
   TrendingUp,
   Eye,
   Award,
@@ -10,7 +9,6 @@ import {
   BadgeCheck,
   Rocket,
   Globe,
-  Sparkles,
 } from "lucide-react";
 
 export const partnerBenefits = [
@@ -67,21 +65,15 @@ export const volunteerBenefits = [
   },
 ];
 
-export const impactStats = [
-  { value: "+300", label: "Jóvenes Impactados" },
-  { value: "4", label: "Proyectos Realizados" },
-  { value: "+10", label: "Alianzas Activas" },
-  { value: "+150", label: "Libros Donados" },
-];
-
 export const partnerCTA = {
   icon: Building2,
   title: "Empresas y Organizaciones",
   subtitle: "Colabora con nosotros",
   description:
     "Únete como aliado estratégico y juntos impulsemos el desarrollo educativo y profesional de la juventud peruana. Tu apoyo genera un impacto real y sostenible.",
-  buttonText: "Contáctanos",
-  buttonLink: "mailto:eduus.contacto@gmail.com?subject=Colaboración%20con%20EDU-US",
+  buttonText: "Quiero ser aliado estratégico",
+  buttonLink:
+    "mailto:eduus.contacto@gmail.com?subject=Colaboración%20con%20EDU-US",
 };
 
 export const volunteerCTA = {
@@ -89,7 +81,7 @@ export const volunteerCTA = {
   title: "Jóvenes Voluntarios",
   subtitle: "Sé parte del cambio",
   description:
-    "Si eres un joven con ganas de crecer, aprender y contribuir al desarrollo de tu comunidad, EDU-US es tu espacio. Únete a nuestro equipo de voluntarios.",
+    "Desarrolla habilidades reales, amplía tu red y contribuye al desarrollo educativo del Perú. Únete a nuestro equipo de voluntarios.",
   buttonText: "Quiero ser voluntario",
   buttonLink:
     "https://wa.me/51999999999?text=Hola%2C%20me%20gustaría%20ser%20voluntario%20en%20EDU-US",

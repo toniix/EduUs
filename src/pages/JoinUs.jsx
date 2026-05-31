@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
@@ -21,7 +21,7 @@ import {
   Building2,
   Users,
 } from "lucide-react";
-import { projects } from "../data/projects";
+import { projectsService } from "../services/projectsService";
 import {
   partnerBenefits,
   volunteerBenefits,
@@ -30,8 +30,9 @@ import {
 } from "../data/joinUsData";
 import SEO from "../components/SEO";
 import ProjectDrawer from "../components/ProjectDrawer";
+import ProjectSlide from "../components/joinus/ProjectSlide";
+import BenefitCard from "../components/joinus/BenefitCard";
 
-// ─── Animation variants ────────────────────────────────────────
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i = 0) => ({
@@ -41,123 +42,38 @@ const fadeUp = {
   }),
 };
 
-// ─── Benefit Card ──────────────────────────────────────────────
-function BenefitCard({ benefit, index, variant = "light" }) {
-  const IconComponent = benefit.icon;
-  const isLight = variant === "light";
-  const isStaggered = index % 2 === 1;
-
-  return (
-    <m.div
-      className={`group relative ${isStaggered ? "sm:translate-y-4 lg:translate-y-6" : ""}`}
-      custom={index}
-      variants={fadeUp}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-    >
-      <div
-        className={`relative h-full p-6 rounded-2xl border transition-all duration-500 hover:-translate-y-1 ${
-          isLight
-            ? "bg-white border-gray-100 shadow-sm hover:shadow-xl hover:shadow-secondary/10 hover:border-secondary/30"
-            : "bg-white/[0.06] backdrop-blur-md border-white/10 hover:bg-white/[0.12] hover:border-primary/30 hover:shadow-[0_8px_32px_rgba(236,69,29,0.1)]"
-        }`}
-      >
-        <div
-          className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 ${
-            isLight
-              ? "bg-secondary/10 group-hover:bg-secondary group-hover:shadow-lg group-hover:shadow-secondary/25"
-              : "bg-primary/15 group-hover:bg-primary group-hover:shadow-lg group-hover:shadow-primary/25"
-          }`}
-        >
-          <IconComponent
-            className={`w-6 h-6 transition-colors duration-300 ${
-              isLight
-                ? "text-secondary group-hover:text-white"
-                : "text-primary group-hover:text-white"
-            }`}
-          />
-        </div>
-        <h4
-          className={`text-lg font-bold mb-2 ${
-            isLight ? "text-gray-900" : "text-white"
-          }`}
-        >
-          {benefit.title}
-        </h4>
-        <p
-          className={`text-sm leading-relaxed ${
-            isLight ? "text-gray-600" : "text-gray-300"
-          }`}
-        >
-          {benefit.description}
-        </p>
-      </div>
-    </m.div>
-  );
-}
-
-// ─── Project Slide ─────────────────────────────────────────────
-function ProjectSlide({ project, onSelect }) {
-  const IconComponent = project.icon;
-  const backgroundImage = project.images?.[0] || project.fondo;
-
-  return (
-    <m.div
-      onClick={onSelect}
-      whileTap={{ scale: 0.97 }}
-      className="relative h-[320px] sm:h-[380px] rounded-2xl overflow-hidden group cursor-pointer select-none border border-gray-100/10 hover:border-secondary/30 transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-xl"
-    >
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-105"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      />
-
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
-      <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-      {/* "Ver detalles" tooltip/cue at top right */}
-      <div className="absolute top-4 right-4 z-10 md:opacity-0 md:group-hover:opacity-100 md:translate-y-1 md:group-hover:translate-y-0 opacity-100 translate-y-0 transition-all duration-300">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-md text-gray-900 rounded-full text-xs font-bold shadow-md border border-white/20">
-          <Eye className="w-3.5 h-3.5 text-secondary animate-pulse" />
-          Ver detalles
-        </span>
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-end p-6 sm:p-8">
-        {/* Icon badge */}
-        <div className="mb-4 transform group-hover:-translate-y-1 transition-transform duration-500">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 group-hover:border-secondary/40 group-hover:bg-secondary/20 transition-all duration-300">
-            <IconComponent className="w-7 h-7 text-white/90" />
-          </div>
-        </div>
-
-        {/* Title & description */}
-        <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2 group-hover:-translate-y-1 transition-transform duration-300">
-          {project.name}
-        </h3>
-        <p className="text-gray-200 text-sm sm:text-base leading-relaxed max-w-lg mb-2">
-          {project.description}
-        </p>
-      </div>
-    </m.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ─── MAIN PAGE COMPONENT ──────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════
-
 const JoinUs = () => {
   const [selectedProject, setSelectedProject] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await projectsService.getProjects();
+        setProjects(data || []);
+      } catch (error) {
+        console.error("Error loading projects in JoinUs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  // For loop mode to function correctly with slidesPerView up to 2.1 (which requires 6 slides),
+  // we duplicate slides when we have 3-5 items, or disable loop mode if we have fewer.
+  const slidesToRender =
+    projects.length >= 3 && projects.length < 6
+      ? [...projects, ...projects]
+      : projects;
+
+  const shouldLoop = slidesToRender.length >= 6;
 
   return (
     <div className="min-h-screen">
@@ -165,11 +81,10 @@ const JoinUs = () => {
         title="Únete — EDU-US | Colabora o sé voluntario"
         description="Descubre cómo puedes unirte a EDU-US como empresa aliada o joven voluntario. Conoce nuestros proyectos de impacto y sé parte del cambio educativo en el Perú."
       />
-
       {/* ═══════════════════════════════════════════════════════ */}
       {/* STORYTELLING: CONTEXTUAL INTRO + PROJECTS CAROUSEL     */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <section className="relative pt-10 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 bg-gradient-to-b from-white via-secondary-light/20 to-white overflow-hidden">
+      <section className="relative py-10 sm:py-12 lg:py-16 bg-gradient-to-b from-white via-secondary-light/20 to-white overflow-hidden">
         {/* Subtle decorative bg */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-secondary/[0.04] blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-accent/[0.03] blur-3xl pointer-events-none" />
@@ -187,17 +102,16 @@ const JoinUs = () => {
               Únete a EDU-US
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
-              Lo que hemos logrado{" "}
+              EDU-US en acción.{" "}
               <span className="relative">
                 <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-secondary via-accent to-primary">
-                  juntos
+                  ¿Te unes al equipo?
                 </span>
                 <span className="absolute -bottom-1.5 left-0 w-full h-1 bg-gradient-to-r from-secondary/40 via-accent/40 to-primary/40 rounded-full" />
               </span>
             </h1>
             <p className="text-gray-600 text-lg leading-relaxed max-w-xl">
-              Cada proyecto cuenta una historia de impacto real. Descúbrelos y
-              encuentra tu lugar en el cambio.
+              Conoce lo que hemos construido y descubre cómo ser parte.
             </p>
           </m.div>
 
@@ -225,10 +139,10 @@ const JoinUs = () => {
                   </div>
                   <div>
                     <h4 className="text-sm font-bold text-gray-900 group-hover:text-secondary transition-colors">
-                      Soy Empresa
+                      Soy Organización
                     </h4>
                     <p className="text-xs text-gray-500 mt-0.5">
-                      Alianzas y RSE
+                      Ver cómo colaborar
                     </p>
                   </div>
                 </div>
@@ -248,7 +162,7 @@ const JoinUs = () => {
                       Soy Voluntario
                     </h4>
                     <p className="text-xs text-gray-500 mt-0.5">
-                      Voluntariado activo
+                      Ver cómo sumarme
                     </p>
                   </div>
                 </div>
@@ -260,48 +174,57 @@ const JoinUs = () => {
 
         {/* ── Immersive Projects Carousel ── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay, EffectCoverflow]}
-            effect="coverflow"
-            coverflowEffect={{
-              rotate: 0,
-              stretch: 0,
-              depth: 120,
-              modifier: 2,
-              slideShadows: false,
-            }}
-            centeredSlides={true}
-            slidesPerView={1.1}
-            spaceBetween={16}
-            breakpoints={{
-              640: { slidesPerView: 1.25, spaceBetween: 20 },
-              768: { slidesPerView: 1.5, spaceBetween: 24 },
-              1024: { slidesPerView: 2.1, spaceBetween: 28 },
-            }}
-            navigation
-            pagination={{ clickable: true, dynamicBullets: true }}
-            autoplay={{ delay: 5000, disableOnInteraction: true }}
-            loop={true}
-            className="joinus-swiper !overflow-visible !pb-14"
-          >
-            {projects.map((project) => (
-              <SwiperSlide key={project.id}>
-                <ProjectSlide
-                  project={project}
-                  onSelect={() => setSelectedProject(project)}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          {loading ? (
+            <div className="flex justify-center items-center h-[320px] sm:h-[380px]">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : projects.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">
+              No hay proyectos disponibles.
+            </div>
+          ) : (
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay, EffectCoverflow]}
+              effect="coverflow"
+              coverflowEffect={{
+                rotate: 0,
+                stretch: 0,
+                depth: 120,
+                modifier: 2,
+                slideShadows: false,
+              }}
+              centeredSlides={true}
+              slidesPerView={1.1}
+              spaceBetween={16}
+              breakpoints={{
+                640: { slidesPerView: 1.25, spaceBetween: 20 },
+                768: { slidesPerView: 1.5, spaceBetween: 24 },
+                1024: { slidesPerView: 2.1, spaceBetween: 28 },
+              }}
+              navigation
+              pagination={{ clickable: true, dynamicBullets: true }}
+              autoplay={{ delay: 5000, disableOnInteraction: true }}
+              loop={shouldLoop}
+              className="joinus-swiper !overflow-visible !pb-14"
+            >
+              {slidesToRender.map((project, idx) => (
+                <SwiperSlide key={`${project.id}-${idx}`}>
+                  <ProjectSlide
+                    project={project}
+                    onSelect={() => setSelectedProject(project)}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
         </div>
       </section>
-
       {/* ═══════════════════════════════════════════════════════ */}
       {/* CTA — EMPRESAS / ORGANIZACIONES                       */}
       {/* ═══════════════════════════════════════════════════════ */}
       <section
         id="cta-empresas"
-        className="pt-10 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 bg-white scroll-mt-16"
+        className="py-10 sm:py-12 lg:py-16 bg-white scroll-mt-16"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -358,19 +281,19 @@ const JoinUs = () => {
                   benefit={benefit}
                   index={index}
                   variant="light"
+                  fadeUp={fadeUp}
                 />
               ))}
             </div>
           </div>
         </div>
       </section>
-
       {/* ═══════════════════════════════════════════════════════ */}
       {/* CTA — JÓVENES VOLUNTARIOS                             */}
       {/* ═══════════════════════════════════════════════════════ */}
       <section
         id="cta-voluntarios"
-        className="relative pt-10 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 bg-gradient-to-br from-[#0b2826] via-[#1a4d47] to-[#0b2826] scroll-mt-16 overflow-hidden"
+        className="relative py-10 sm:py-12 lg:py-16 bg-gradient-to-br from-[#0b2826] via-[#1a4d47] to-[#0b2826] scroll-mt-16 overflow-hidden"
       >
         {/* Decorative bg elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -472,11 +395,10 @@ const JoinUs = () => {
           </div>
         </div>
       </section>
-
       {/* ═══════════════════════════════════════════════════════ */}
       {/* CLOSING CTA BANNER                                     */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <section className="pt-10 sm:pt-12 lg:pt-16 pb-12 sm:pb-16 lg:pb-20 bg-white">
+      <section className="py-10 sm:py-12 lg:py-16 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <m.div
             className="relative bg-gradient-to-br from-secondary/15 via-secondary/5 to-accent/10 rounded-[3rem] p-10 sm:p-14 border border-secondary/20 text-center overflow-hidden"
@@ -491,16 +413,14 @@ const JoinUs = () => {
 
             <div className="relative z-10">
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                ¿Listo para{" "}
+                El siguiente paso
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#b27a00]">
-                  transformar vidas
+                  {" "}
+                  es tuyo.
                 </span>
-                ?
               </h2>
               <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-                Cada acción cuenta. Ya sea como aliado estratégico o como
-                voluntario, tu participación genera un impacto real en la
-                educación peruana.
+                Únete como aliado estratégico o voluntario, cada acción cuenta.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a
@@ -509,7 +429,7 @@ const JoinUs = () => {
                   rel="noopener noreferrer"
                   className="group flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-bold hover:shadow-xl hover:shadow-primary/30 hover:bg-primary/90 active:scale-95 transition-all duration-300"
                 >
-                  Soy Empresa
+                  Quiero ser aliado
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </a>
                 <a
@@ -518,7 +438,7 @@ const JoinUs = () => {
                   rel="noopener noreferrer"
                   className="group flex items-center gap-2 bg-dark text-white px-8 py-4 rounded-xl font-bold hover:bg-dark/90 active:scale-95 transition-all duration-300"
                 >
-                  Soy Voluntario
+                  Quiero ser voluntario
                   <Heart className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                 </a>
               </div>
@@ -526,8 +446,6 @@ const JoinUs = () => {
           </m.div>
         </div>
       </section>
-
-      {/* Detailed Project Slide-over Drawer */}
       <AnimatePresence>
         {selectedProject && (
           <ProjectDrawer

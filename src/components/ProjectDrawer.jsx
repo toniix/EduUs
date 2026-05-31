@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { X, Target, Trophy, Sparkles, ZoomIn } from "lucide-react";
+import ProjectIcon from "./ProjectIcon";
+import { optimizeCloudinaryUrl } from "../utils/cloudinaryOptimize";
 
 export default function ProjectDrawer({ project, onClose }) {
   const [activeImage, setActiveImage] = useState(null);
@@ -34,8 +36,6 @@ export default function ProjectDrawer({ project, onClose }) {
 
   if (!project) return null;
 
-  const IconComponent = project.icon;
-
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop Overlay */}
@@ -59,7 +59,7 @@ export default function ProjectDrawer({ project, onClose }) {
         <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gray-100 flex-shrink-0 bg-white z-10">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-secondary/10 text-secondary border border-secondary/10 flex items-center justify-center">
-              <IconComponent className="w-5 h-5" />
+              <ProjectIcon name={project.icon} className="w-5 h-5" />
             </div>
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
               Detalles del Proyecto
@@ -157,7 +157,7 @@ export default function ProjectDrawer({ project, onClose }) {
                     className="relative aspect-video sm:aspect-square rounded-xl overflow-hidden group cursor-zoom-in border border-gray-100 shadow-sm"
                   >
                     <img
-                      src={img}
+                      src={optimizeCloudinaryUrl(img, { width: 400 })}
                       alt={`Galería ${project.name} ${i + 1}`}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
@@ -197,7 +197,7 @@ export default function ProjectDrawer({ project, onClose }) {
               animate={{ scale: 1 }}
               exit={{ scale: 0.95 }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              src={activeImage}
+              src={optimizeCloudinaryUrl(activeImage)}
               alt="Detalle del proyecto"
               className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl select-none"
             />

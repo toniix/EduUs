@@ -14,6 +14,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import CategoriesTab from "../../components/admin/tabs/CategoriesTab";
 import EventsAdminTab from "../../components/admin/tabs/EventsAdminTab";
 import RegistrationsTab from "../../components/admin/tabs/RegistrationsTab";
+import ProjectsTab from "../../components/admin/tabs/ProjectsTab";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -190,6 +191,9 @@ const AdminPanel = () => {
       case "registrations":
         if (!isAdmin) return <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>;
         return <RegistrationsTab />;
+      case "projects":
+        if (!isAdmin) return <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>;
+        return <ProjectsTab />;
       default:
         return <div>Pestaña no encontrada</div>;
     }
