@@ -15,7 +15,17 @@ class OpportunitiesService {
       sortOrder = "desc",
     } = pagination;
 
-    const { modality, country, location, category_id } = filters;
+    // console.log("filters", filters);
+    // console.log("pagination", pagination);
+
+    const {
+      modality,
+      country,
+      location,
+      category_id,
+      show_expired = false,
+      search,
+    } = filters;
 
     try {
       let query = supabase.from("opportunities").select(
@@ -26,20 +36,47 @@ class OpportunitiesService {
         { count: "exact" },
       );
 
-      const exactFilters = {
-        modality,
-        country,
-        location,
-        category_id,
-      };
+      // Filtros de igualdad exactos
+      if (modality) query = query.eq("modality", modality);
+      if (country) query = query.eq("country", country);
+      if (location) query = query.eq("location", location);
+      if (category_id) query = query.eq("category_id", category_id);
+      if (filters.created_by)
+        query = query.eq("created_by", filters.created_by);
 
-      Object.entries(exactFilters).forEach(([key, value]) => {
-        if (value) {
-          query = query.eq(key, value);
-        }
-      });
+      // Filtro administrativo (visibilidad)
+      if (filters.is_published !== undefined) {
+        query = query.eq("is_published", filters.is_published);
+      } else {
+        query = query.eq("is_published", true);
+      }
 
-      query = query.order(sortBy, { ascending: sortOrder === "asc" });
+      // Filtro de convocatorias activas (no vencidas)
+      const today = new Date().toISOString().split("T")[0];
+      if (show_expired === "only_expired") {
+        query = query.lt("deadline", today).not("deadline", "is", null);
+      } else if (!show_expired) {
+        // Por defecto: mostrar solo activas (deadline >= hoy o deadline es null)
+        query = query.or(`deadline.gte.${today},deadline.is.null`);
+      }
+
+      // Búsqueda por texto (título, descripción, ubicación o país)
+      if (search && search.trim() !== "") {
+        const term = `%${search.trim()}%`;
+        query = query.or(
+          `title.ilike.${term},description.ilike.${term},location.ilike.${term},country.ilike.${term}`,
+        );
+      }
+
+      // Ordenamiento en base de datos
+      if (sortBy === "deadline") {
+        query = query.order("deadline", {
+          ascending: sortOrder === "asc",
+          nullsFirst: false,
+        });
+      } else {
+        query = query.order(sortBy, { ascending: sortOrder === "asc" });
+      }
 
       // Paginación
       const from = (page - 1) * limit;
@@ -52,10 +89,9 @@ class OpportunitiesService {
       if (error) throw error;
 
       const transformedData = this.transformOpportunityData(data || []);
-      const sortedData = this.sortByDeadline(transformedData);
 
       return {
-        data: sortedData,
+        data: transformedData,
         total: count || 0,
         page,
         totalPages: Math.ceil((count || 0) / limit),
@@ -65,6 +101,13 @@ class OpportunitiesService {
       console.error("Error fetching opportunities with filters:", error);
       throw error;
     }
+  }
+
+  /**
+   * Helper para mantener compatibilidad con llamadas internas que usan getOpportunities
+   */
+  async getOpportunities(filters = {}, pagination = {}) {
+    return this.getOpportunitiesWithFilters(filters, pagination);
   }
 
   /**
@@ -182,6 +225,7 @@ class OpportunitiesService {
    * @returns {Promise<Object>} Estadísticas generales
    */
   async getOpportunityStats() {
+    const today = new Date().toISOString().split("T")[0];
     try {
       const [totalResult, activeResult, categoriesResult] = await Promise.all([
         supabase
@@ -190,7 +234,7 @@ class OpportunitiesService {
         supabase
           .from("opportunities")
           .select("id", { count: "exact", head: true })
-          .eq("status", "active"),
+          .or(`deadline.gte.${today},deadline.is.null`),
         supabase
           .from("opportunities")
           .select("category_id")
@@ -229,7 +273,7 @@ class OpportunitiesService {
    * @returns {Promise<Object>} Respuesta con datos de oportunidades inactivas
    */
   async getInactiveOpportunities(pagination = {}) {
-    return this.getOpportunities({ status: "inactive" }, pagination);
+    return this.getOpportunities({ show_expired: "only_expired" }, pagination);
   }
 
   /**
@@ -238,6 +282,7 @@ class OpportunitiesService {
    * @returns {Promise<Array>} Lista de oportunidades recientes
    */
   async getRecentOpportunities(limit = 5) {
+    const today = new Date().toISOString().split("T")[0];
     try {
       const { data, error } = await supabase
         .from("opportunities")
@@ -263,7 +308,7 @@ class OpportunitiesService {
           )
         `,
         )
-        .eq("status", "active")
+        .or(`deadline.gte.${today},deadline.is.null`)
         .order("created_at", { ascending: false })
         .limit(limit);
 
@@ -345,10 +390,18 @@ class OpportunitiesService {
         .not("location", "is", null)
         .order("location", { ascending: true });
 
+      // Obtener países únicos
+      const { data: countries } = await supabase
+        .from("opportunities")
+        .select("country")
+        .not("country", "is", null)
+        .order("country", { ascending: true });
+
       return {
         modalities: [...new Set(modalities.map((item) => item.modality))],
         categories,
         locations: [...new Set(locations.map((item) => item.location))],
+        countries: [...new Set(countries.map((item) => item.country))],
       };
     } catch (error) {
       console.error("Error fetching filter options:", error);

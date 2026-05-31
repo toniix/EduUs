@@ -71,6 +71,21 @@ const OpportunityForm = ({
     }
   };
 
+  const handleSubmitWithStatus = async (publishStatus) => {
+    const ok = await submitForm(
+      async (dataToSubmit) => {
+        if (onSuccess) {
+          await onSuccess(dataToSubmit);
+        }
+      },
+      { is_published: publishStatus },
+    );
+
+    if (ok && onClose) {
+      onClose();
+    }
+  };
+
   if (!showOpportunityForm) return null;
 
   return (
@@ -317,58 +332,51 @@ const OpportunityForm = ({
               </div>
             </div>
 
-            {/* Sección de Destacados - Solo visible para admins */}
-            {/* {isAdmin && (
-              <div className="mt-12 pt-8 border-t border-primary/20">
-                <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                  ⭐ Oportunidad Destacada
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20">
-                    <input
-                      type="checkbox"
-                      id="is_featured"
-                      name="is_featured"
-                      checked={formData.is_featured || false}
-                      onChange={handleChange}
-                      className="w-5 h-5 rounded border-primary cursor-pointer"
-                    />
-                    <label
-                      htmlFor="is_featured"
-                      className="text-sm font-semibold text-dark cursor-pointer flex-1"
-                    >
-                      Marcar como oportunidad destacada
-                    </label>
-                  </div>
-
-                  {formData.is_featured && (
-                    <div>
-                      <label className="block text-sm font-semibold text-dark mb-2">
-                        Posición destacada{" "}
-                        <span className="text-primary">*</span>
-                      </label>
-                      <select
-                        name="featured_order"
-                        value={formData.featured_order || ""}
-                        onChange={handleChange}
-                        className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
-                      >
-                        <option value="">Selecciona la posición</option>
-                        <option value="1">Posición 1 (Primera)</option>
-                        <option value="2">Posición 2 (Segunda)</option>
-                        <option value="3">Posición 3 (Tercera)</option>
-                        <option value="4">Posición 4 (Cuarta)</option>
-                      </select>
-                      {errors?.featured_order && (
-                        <div className="text-xs text-red-600 mt-1 font-semibold">
-                          {errors.featured_order}
-                        </div>
-                      )}
-                    </div>
-                  )}
+            {/* Estado de Publicación */}
+            <div className="mt-8 pt-6 border-t border-primary/20">
+              <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                📢 Estado de Publicación
+              </h3>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-primary/5 rounded-2xl border border-primary/20 transition-all hover:bg-primary/10">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="is_published"
+                    name="is_published"
+                    checked={formData.is_published || false}
+                    onChange={(e) => {
+                      handleChange({
+                        target: {
+                          name: "is_published",
+                          type: "checkbox",
+                          checked: e.target.checked,
+                        },
+                      });
+                    }}
+                    className="w-5 h-5 rounded border-primary cursor-pointer accent-primary focus:ring-primary/30"
+                  />
+                  <label
+                    htmlFor="is_published"
+                    className="text-sm font-semibold text-dark cursor-pointer select-none"
+                  >
+                    Publicar oportunidad (hacer visible en la plataforma)
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <span
+                    className={`px-3 py-1 text-xs font-bold rounded-full ${
+                      formData.is_published
+                        ? "bg-blue-100 text-blue-800 border border-blue-200"
+                        : "bg-amber-100 text-amber-800 border border-amber-200"
+                    }`}
+                  >
+                    {formData.is_published
+                      ? "Estado: Publicado"
+                      : "Estado: Borrador"}
+                  </span>
                 </div>
               </div>
-            )} */}
+            </div>
 
             {/* Quienes pueden postular */}
             <div className="mt-12 pt-8 border-t border-primary/20">
@@ -697,22 +705,41 @@ const OpportunityForm = ({
               )}
           </div>
 
-          <div className="flex justify-end space-x-4 pt-8">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-8 border-t border-primary/10">
             <Button
               variant="secondary"
               onClick={onClose}
               fullWidth={false}
-              className="px-6 rounded-full font-semibold"
+              className="px-6 rounded-full font-semibold order-last sm:order-none"
             >
               Cancelar
             </Button>
             <Button
-              type="submit"
+              type="button"
+              variant="secondary"
               disabled={loading}
+              onClick={() => handleSubmitWithStatus(false)}
               fullWidth={false}
-              className="px-8 rounded-full font-bold text-lg shadow-lg"
+              className="px-6 rounded-full font-semibold border border-primary/20 hover:bg-primary/5 text-primary"
             >
-              {loading ? "Guardando..." : "Guardar Oportunidad"}
+              {loading
+                ? "Guardando..."
+                : formData.is_published
+                  ? "Cambiar a Borrador"
+                  : "Guardar en Borrador"}
+            </Button>
+            <Button
+              type="button"
+              disabled={loading}
+              onClick={() => handleSubmitWithStatus(true)}
+              fullWidth={false}
+              className="px-8 rounded-full font-bold text-white bg-primary hover:bg-opacity-90 shadow-lg"
+            >
+              {loading
+                ? "Procesando..."
+                : formData.is_published
+                  ? "Guardar Cambios"
+                  : "Publicar"}
             </Button>
           </div>
         </form>

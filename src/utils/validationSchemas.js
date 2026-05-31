@@ -119,6 +119,7 @@ export const opportunitySchema = z.object({
   contact: z.object({ website: z.string().optional() }).optional(),
   is_featured: z.boolean().optional().default(false),
   featured_order: z.number().min(1).max(4).nullable().optional(),
+  is_published: z.boolean().optional().default(false),
 });
 
 // Esquema de validación para eventos

@@ -1,4 +1,14 @@
-import { Check } from "lucide-react";
+import {
+  Check,
+  Filter,
+  RotateCcw,
+  Globe,
+  SlidersHorizontal,
+  Briefcase,
+  Tag,
+  ChevronDown,
+} from "lucide-react";
+import CustomSelect from "../ui/CustomSelect";
 
 const FiltersComponent = ({
   onFilterChange,
@@ -6,123 +16,207 @@ const FiltersComponent = ({
   clearFilters,
   localFilters,
   setLocalFilters,
+  hideHeader = false,
 }) => {
-  const { modalities = [], locations = [], categories = [] } = filterOptions;
+  const { modalities = [], categories = [], countries = [] } = filterOptions;
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setLocalFilters((prev) => ({
-      ...prev,
+    const nextFilters = {
+      ...localFilters,
       [name]: value,
-    }));
+    };
+    setLocalFilters(nextFilters);
+    onFilterChange(nextFilters);
   };
 
-  const handleFilterSubmit = (e) => {
-    e.preventDefault();
-    const cleanFilters = Object.fromEntries(
-      Object.entries(localFilters).filter(([_, value]) => value !== "")
-    );
-    onFilterChange(cleanFilters);
+  const toggleShowExpired = (value) => {
+    const nextFilters = {
+      ...localFilters,
+      show_expired: value,
+    };
+    setLocalFilters(nextFilters);
+    onFilterChange(nextFilters);
   };
 
   const handleFilterReset = () => {
     setLocalFilters({
-      type: "",
       modality: "",
       location: "",
       category_id: "",
+      country: "",
+      show_expired: false,
+      sort: "created_at_desc",
     });
     clearFilters();
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Filtros</h3>
-        <button
-          type="button"
-          onClick={handleFilterReset}
-          className="text-sm text-primary font-bold hover:bg-primary/20 px-4 py-2 rounded-md hover:text-primary/80 transition-colors"
-        >
-          Limpiar filtros
-        </button>
-      </div>
+      {/* Header del sidebar */}
+      {!hideHeader && (
+        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+          <div className="flex items-center space-x-2">
+            <Filter className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-heading font-bold text-gray-900">
+              Filtros Avanzados
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={handleFilterReset}
+            className="text-xs flex items-center space-x-1 font-bold text-gray-500 hover:text-primary hover:bg-primary/5 px-2.5 py-1.5 rounded-lg transition-all duration-200"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span>Restablecer</span>
+          </button>
+        </div>
+      )}
 
-      <form onSubmit={handleFilterSubmit} className="space-y-4">
+      <div className="space-y-5">
+        {/* Ordenamiento */}
+        <div className="space-y-2">
+          <span className="flex items-center text-xs font-heading font-bold uppercase tracking-wider text-slate-400">
+            <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-slate-400" />
+            Ordenar por
+          </span>
+          <div className="flex flex-col gap-1.5">
+            {[
+              { value: "created_at_desc", label: "Más recientes" },
+              { value: "deadline_asc", label: "Próximas a cerrar" },
+              { value: "title_asc", label: "Título (A - Z)" },
+            ].map((option) => {
+              const isSelected = (localFilters.sort || "created_at_desc") === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleFilterChange({ target: { name: "sort", value: option.value } })}
+                  className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold border transition-all duration-200 ${
+                    isSelected
+                      ? "bg-primary/5 text-primary border-primary/20 shadow-sm"
+                      : "bg-slate-50/50 text-slate-500 border-slate-200/50 hover:bg-slate-50 hover:text-slate-800"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Estado de Convocatoria (Segmented Toggle Control) */}
+        <div className="space-y-2">
+          <span className="flex items-center text-xs font-heading font-bold uppercase tracking-wider text-slate-400">
+            Estado de Convocatoria
+          </span>
+          <div className="flex p-1 bg-slate-100/80 rounded-xl border border-slate-200/50">
+            <button
+              type="button"
+              onClick={() => toggleShowExpired(false)}
+              className={`flex-1 text-center py-2 text-xs font-bold rounded-lg transition-all duration-300 ${
+                !localFilters.show_expired
+                  ? "bg-white text-primary shadow-sm"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Abiertas
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleShowExpired(true)}
+              className={`flex-1 text-center py-2 text-xs font-bold rounded-lg transition-all duration-300 ${
+                localFilters.show_expired
+                  ? "bg-white text-primary shadow-sm"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Todas
+            </button>
+          </div>
+        </div>
+
         {/* Filtro por categoria*/}
         <div className="space-y-2">
-          <label htmlFor="filter-category" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="filter-category"
+            className="flex items-center text-xs font-heading font-bold uppercase tracking-wider text-slate-400"
+          >
+            <Tag className="h-3.5 w-3.5 mr-1.5 text-slate-400" />
             Categoría
           </label>
-          <select
-            id="filter-category"
+          <CustomSelect
             name="category_id"
             value={localFilters.category_id || ""}
             onChange={handleFilterChange}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          >
-            <option value="">Todas las categorías</option>
-            {categories?.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
-              </option>
-            ))}
-          </select>
+            placeholder="Todas las categorías"
+            options={[
+              { value: "", label: "Todas las categorías" },
+              ...(categories || []).map((category) => ({
+                value: category.id,
+                label: category.name.charAt(0).toUpperCase() + category.name.slice(1),
+              })),
+            ]}
+          />
         </div>
 
         {/* Filtro por modalidad */}
         <div className="space-y-2">
-          <label htmlFor="filter-modality" className="block text-sm font-medium text-gray-700">
+          <span className="flex items-center text-xs font-heading font-bold uppercase tracking-wider text-slate-400">
+            <Briefcase className="h-3.5 w-3.5 mr-1.5 text-slate-400" />
             Modalidad
-          </label>
-          <select
-            id="filter-modality"
-            name="modality"
-            value={localFilters.modality}
-            onChange={handleFilterChange}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          >
-            <option value="">Todas las modalidades</option>
-            {modalities.map((modality) => (
-              <option key={modality} value={modality}>
-                {modality.charAt(0).toUpperCase() + modality.slice(1)}
-              </option>
-            ))}
-          </select>
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              { value: "", label: "Todas" },
+              ...modalities.map((modality) => ({
+                value: modality,
+                label: modality.charAt(0).toUpperCase() + modality.slice(1),
+              })),
+            ].map((option) => {
+              const isSelected = (localFilters.modality || "") === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleFilterChange({ target: { name: "modality", value: option.value } })}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all duration-200 ${
+                    isSelected
+                      ? "bg-primary/5 text-primary border-primary/20 shadow-sm"
+                      : "bg-slate-50/50 text-slate-500 border-slate-200/50 hover:bg-slate-50 hover:text-slate-800"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Filtro por ubicación */}
+        {/* Filtro por pais */}
         <div className="space-y-2">
-          <label htmlFor="filter-location" className="block text-sm font-medium text-gray-700">
-            Ubicación
+          <label
+            htmlFor="filter-country"
+            className="flex items-center text-xs font-heading font-bold uppercase tracking-wider text-slate-400"
+          >
+            <Globe className="h-3.5 w-3.5 mr-1.5 text-slate-400" />
+            País de Destino
           </label>
-          <select
-            id="filter-location"
-            name="location"
-            value={localFilters.location}
+          <CustomSelect
+            name="country"
+            value={localFilters.country || ""}
             onChange={handleFilterChange}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          >
-            <option value="">Todas las ubicaciones</option>
-            {locations.map((location) => (
-              <option key={location} value={location}>
-                {location.charAt(0).toUpperCase() + location.slice(1)}
-              </option>
-            ))}
-          </select>
+            placeholder="Todos los países"
+            options={[
+              { value: "", label: "Todos los países" },
+              ...countries.map((country) => ({
+                value: country,
+                label: country.charAt(0).toUpperCase() + country.slice(1),
+              })),
+            ]}
+          />
         </div>
-
-        {/* Botón de aplicar filtros */}
-        <div className="pt-2">
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50"
-          >
-            <Check className="h-4 w-4 mr-2" />
-            Aplicar filtros
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };

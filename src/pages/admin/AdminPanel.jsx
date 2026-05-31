@@ -11,6 +11,7 @@ import { getAllProfiles } from "../../services/userService";
 import { opportunitiesService } from "../../services/fetchOpportunityService";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useAuth } from "../../contexts/AuthContext";
+import { categoryService } from "../../services/categoryService";
 import CategoriesTab from "../../components/admin/tabs/CategoriesTab";
 import EventsAdminTab from "../../components/admin/tabs/EventsAdminTab";
 import RegistrationsTab from "../../components/admin/tabs/RegistrationsTab";
@@ -37,6 +38,28 @@ const AdminPanel = () => {
   const [loadingOpportunities, setLoadingOpportunities] = useState(false);
   const [opportunitiesError, setOpportunitiesError] = useState(null);
   const { isDark } = useTheme();
+
+  // Filtros de administración para oportunidades
+  const [adminCategoryFilter, setAdminCategoryFilter] = useState("all");
+  const [adminModalityFilter, setAdminModalityFilter] = useState("all");
+  const [adminStatusFilter, setAdminStatusFilter] = useState("all");
+  const [adminPublishFilter, setAdminPublishFilter] = useState("all");
+  const [adminDateFilter, setAdminDateFilter] = useState("all");
+  const [adminFeaturedFilter, setAdminFeaturedFilter] = useState("all");
+  const [categories, setCategories] = useState([]);
+
+  // Cargar categorías para los filtros
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await categoryService.getCategories();
+        setCategories(data);
+      } catch (err) {
+        console.error("Error al cargar categorías en panel de admin:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Guardar la pestaña activa en localStorage cuando cambie
   useEffect(() => {
@@ -115,21 +138,88 @@ const AdminPanel = () => {
     fetchOpportunities();
   }, [activeTab, opportunities.length, fetchOpportunities]);
 
-  const searchOpportunities = useCallback((term, opportunitiesList) => {
-    if (!term || term.trim() === "") return opportunitiesList;
-
-    const searchLower = term.toLowerCase();
-    return opportunitiesList.filter(
-      (opp) => opp.title.toLowerCase().includes(searchLower)
-      // opp.location.toLowerCase().includes(searchLower) ||
-      // opp.tags?.some((tag) => tag.name.toLowerCase().includes(searchLower))
-    );
-  }, []);
   // Memoizar el contenido filtrado
-  const filteredOpportunities = useMemo(
-    () => searchOpportunities(searchTerm, opportunities),
-    [searchTerm, opportunities, searchOpportunities]
-  );
+  const filteredOpportunities = useMemo(() => {
+    let result = opportunities;
+
+    // Búsqueda por texto (título)
+    if (searchTerm && searchTerm.trim() !== "") {
+      const searchLower = searchTerm.toLowerCase();
+      result = result.filter((opp) => opp.title.toLowerCase().includes(searchLower));
+    }
+
+    // Filtro por Categoría
+    if (adminCategoryFilter !== "all") {
+      result = result.filter((opp) => opp.category_id === Number(adminCategoryFilter));
+    }
+
+    // Filtro por Modalidad
+    if (adminModalityFilter !== "all") {
+      result = result.filter((opp) => opp.modality === adminModalityFilter);
+    }
+
+    // Filtro por Estado (Convocatoria activa vs expirada)
+    if (adminStatusFilter !== "all") {
+      const today = new Date();
+      result = result.filter((opp) => {
+        const isExpired = new Date(opp.deadline) < today;
+        return adminStatusFilter === "expired" ? isExpired : !isExpired;
+      });
+    }
+
+    // Filtro por Visibilidad (Publicado vs Borrador)
+    if (adminPublishFilter !== "all") {
+      result = result.filter((opp) => {
+        const isPublished = opp.is_published;
+        return adminPublishFilter === "published" ? isPublished : !isPublished;
+      });
+    }
+
+    // Filtro por Fecha de Publicación (Creación)
+    if (adminDateFilter !== "all") {
+      const now = new Date();
+      result = result.filter((opp) => {
+        if (!opp.created_at) return false;
+        const createdDate = new Date(opp.created_at);
+
+        if (adminDateFilter === "today") {
+          const startOfToday = new Date();
+          startOfToday.setHours(0, 0, 0, 0);
+          return createdDate >= startOfToday;
+        }
+        if (adminDateFilter === "week") {
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setHours(0, 0, 0, 0);
+          sevenDaysAgo.setDate(now.getDate() - 7);
+          return createdDate >= sevenDaysAgo;
+        }
+        if (adminDateFilter === "month") {
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setHours(0, 0, 0, 0);
+          thirtyDaysAgo.setDate(now.getDate() - 30);
+          return createdDate >= thirtyDaysAgo;
+        }
+        return true;
+      });
+    }
+
+    // Filtro por Destacado
+    if (adminFeaturedFilter !== "all") {
+      const isFeatured = adminFeaturedFilter === "featured";
+      result = result.filter((opp) => opp.is_featured === isFeatured);
+    }
+
+    return result;
+  }, [
+    opportunities,
+    searchTerm,
+    adminCategoryFilter,
+    adminModalityFilter,
+    adminStatusFilter,
+    adminPublishFilter,
+    adminDateFilter,
+    adminFeaturedFilter,
+  ]);
 
   // Memoizar la paginación de oportunidades
   const { items: paginatedOpportunities, totalPages } = useMemo(
@@ -174,13 +264,25 @@ const AdminPanel = () => {
         return (
           <ContentTab
             opportunities={paginatedOpportunities}
-            // filteredContent={filteredContent}
             totalPages={totalPages}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             loading={loadingOpportunities}
             error={opportunitiesError}
             fetchOpportunities={fetchOpportunities}
+            categories={categories}
+            categoryFilter={adminCategoryFilter}
+            setCategoryFilter={setAdminCategoryFilter}
+            modalityFilter={adminModalityFilter}
+            setModalityFilter={setAdminModalityFilter}
+            statusFilter={adminStatusFilter}
+            setStatusFilter={setAdminStatusFilter}
+            publishFilter={adminPublishFilter}
+            setPublishFilter={setAdminPublishFilter}
+            dateFilter={adminDateFilter}
+            setDateFilter={setAdminDateFilter}
+            featuredFilter={adminFeaturedFilter}
+            setFeaturedFilter={setAdminFeaturedFilter}
           />
         );
       case "categories":
@@ -214,6 +316,13 @@ const AdminPanel = () => {
     loadingOpportunities,
     opportunitiesError,
     fetchOpportunities,
+    categories,
+    adminCategoryFilter,
+    adminModalityFilter,
+    adminStatusFilter,
+    adminPublishFilter,
+    adminDateFilter,
+    adminFeaturedFilter,
   ]);
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -222,7 +331,7 @@ const AdminPanel = () => {
     <DesktopOnlyWrapper>
       <div
         className={`flex h-screen ${
-          isDark ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+          isDark ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"
         }`}
       >
         {/* Sidebar - Fuera del contenedor principal */}
