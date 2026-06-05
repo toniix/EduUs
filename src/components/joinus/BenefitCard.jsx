@@ -3,11 +3,10 @@ import { m } from "framer-motion";
 const BenefitCard = ({ benefit, index, variant = "light", fadeUp }) => {
   const IconComponent = benefit.icon;
   const isLight = variant === "light";
-  const isStaggered = index % 2 === 1;
 
   return (
     <m.div
-      className={`group relative ${isStaggered ? "sm:translate-y-4 lg:translate-y-6" : ""}`}
+      className="group relative"
       custom={index}
       variants={fadeUp}
       initial="hidden"
