@@ -2,10 +2,31 @@ import { Target, Globe, Lightbulb } from "lucide-react";
 import { m } from "framer-motion";
 import { values } from "../data/eduUsValues";
 import { teamMembers } from "../data/teamMembers";
+import SEO from "../components/SEO";
+
+const aboutJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  name: "Sobre EDU-US | Misión, visión y equipo",
+  url: "https://eduus.club/nosotros",
+  description:
+    "Conoce la misión, visión, valores y equipo detrás de EDU-US, la organización juvenil que conecta a jóvenes latinoamericanos con oportunidades educativas internacionales.",
+  mainEntity: {
+    "@type": "Organization",
+    name: "EDU-US",
+    url: "https://eduus.club",
+    logo: "https://eduus.club/logo_1.png",
+  },
+};
 
 const About = () => {
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title="Sobre EDU-US | Misión, visión y equipo"
+        description="Conoce la misión, visión, valores y el equipo detrás de EDU-US. Capacitamos a jóvenes con herramientas blandas, técnicas y digitales para impulsar su potencial."
+        jsonLd={aboutJsonLd}
+      />
       {/* Hero Section - Mejorado */}
       <section
         className="relative overflow-hidden py-16"
@@ -149,12 +170,12 @@ const About = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className="relative bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 w-full flex flex-col">
+                <div className="relative bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 w-full flex flex-col hover:border-primary/20">
                   <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
                     <div
-                      className={`w-12 h-12 md:w-10 md:h-10 bg-gradient-to-r ${value.color} rounded-xl flex-shrink-0 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300`}
+                      className="w-12 h-12 md:w-10 md:h-10 bg-primary/10 group-hover:bg-primary rounded-xl flex-shrink-0 flex items-center justify-center transform group-hover:scale-105 transition-all duration-300"
                     >
-                      <value.icon className="w-5 h-5 text-white" />
+                      <value.icon className="w-5 h-5 text-primary group-hover:text-white transition-colors duration-300" />
                     </div>
                     <h3 className="text-2xl  font-bold text-gray-900">
                       {value.title}
@@ -271,11 +292,11 @@ const About = () => {
             <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4"></div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+          <div className="flex flex-wrap justify-center gap-12">
             {teamMembers.map((member, index) => (
               <m.div
                 key={index}
-                className="text-center"
+                className="text-center w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-xs"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.15 }}

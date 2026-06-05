@@ -143,7 +143,7 @@ const Login = () => {
         "Email de confirmación reenviado. Revisa tu bandeja de entrada.",
       );
       dispatch({ type: "RESEND_SUCCESS" });
-    } catch (error) {
+    } catch {
       toast.error("Error al reenviar el email. Inténtalo más tarde.");
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });

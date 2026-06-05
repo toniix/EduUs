@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import ModalConfirmacion from "../ui/ModalConfirmacion";
 import {
   deleteOpportunity,

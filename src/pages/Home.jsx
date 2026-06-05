@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { m } from "framer-motion";
 import ImpactSection from "../components/home/ImpactSection";
-import AboutSection from "../components/home/AboutSection";
 import OfferSection from "../components/home/OfferSection";
 import SEO from "../components/SEO";
 import FeaturedOpportunities from "../components/opportunities/FeaturedOpportunities";
@@ -76,11 +75,10 @@ const Home = () => {
             </m.div>
           </div>
         </section>
-        <ImpactSection />
-        <AboutSection />
-        <OfferSection />
         <FeaturedOpportunities />
         <EventsSection />
+        <OfferSection />
+        <ImpactSection />
         <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
           <TestimonialsSection />
         </Suspense>

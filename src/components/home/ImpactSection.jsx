@@ -4,21 +4,21 @@ import { m } from "framer-motion";
 
 const ImpactSection = () => {
   return (
-    <section className="py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-secondary/10">
+    <section className="py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 lg:mb-16 max-w-4xl mx-auto">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 mt-3">
             <span className="relative inline-block">
               <span className="relative z-10"> Nuestro Impacto</span>
-              <span className="absolute bottom-1 left-0 w-full h-3 bg-blue-100/70 -z-0 transform -rotate-1"></span>
+              <span className="absolute bottom-1 left-0 w-full h-3 bg-primary/20 -z-0 transform -rotate-1"></span>
             </span>
           </h2>
           <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto mt-4 px-4">
             Conoce los logros y resultados tangibles que hemos alcanzado junto a
             nuestra comunidad de estudiantes.
           </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 mx-auto mt-6 rounded-full"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-primary/80 via-primary to-primary/90 mx-auto mt-6 rounded-full"></div>
         </div>
 
         {/* Layout principal */}

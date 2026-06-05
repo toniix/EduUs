@@ -61,7 +61,7 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
       />
 
       {/* Overlay gradiente multicapa */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent" />
       {/* Glow de color en la parte inferior */}
       <div
         className={`absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t ${accent.glow} to-transparent opacity-30 group-hover:opacity-50 transition-opacity duration-400`}
@@ -88,35 +88,35 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
           </h3>
 
           {/* Metadatos */}
-          <div className="space-y-1.5 text-[11px] text-gray-200">
+          <div className="space-y-2 text-sm text-gray-100 drop-shadow-md">
             {deadline && (
-              <div className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 flex-shrink-0 text-white/60" />
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 flex-shrink-0 text-white/90" />
                 <span>
                   Límite:{" "}
-                  <span className="text-white font-medium">
+                  <span className="text-white font-semibold">
                     {formatDate(deadline)}
                   </span>
                 </span>
               </div>
             )}
             {modality && modalityConfig[modality] && (
-              <div className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-white/60" />
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 flex-shrink-0 text-white/90" />
                 <span>
                   Modalidad:{" "}
-                  <span className="text-white font-medium">
+                  <span className="text-white font-semibold">
                     {modalityConfig[modality].label}
                   </span>
                 </span>
               </div>
             )}
             {country && (
-              <div className="flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 flex-shrink-0 text-white/60" />
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 flex-shrink-0 text-white/90" />
                 <span>
                   País:{" "}
-                  <span className="text-white font-medium">{country}</span>
+                  <span className="text-white font-semibold">{country}</span>
                 </span>
               </div>
             )}
@@ -128,7 +128,7 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
             className={`group/btn flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-semibold text-sm text-white transition-all duration-300 shadow-lg ${accent.button}`}
           >
             Ver detalles
-            <ArrowUpRight className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-200" />
+            {/* <ArrowUpRight className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform duration-200" /> */}
           </Link>
         </div>
       </div>

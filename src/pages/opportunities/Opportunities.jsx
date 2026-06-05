@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { m, AnimatePresence } from "framer-motion";
 import FiltersComponent from "../../components/opportunities/FiltersComponent";
 import Pagination from "../../components/Pagination";
 import OpportunityList from "../../components/opportunities/OpportunityList";
@@ -7,14 +8,13 @@ import ResultsSummary from "../../components/opportunities/ResultsSummary";
 import InlineLoading from "../../components/ui/LoadingSpinner";
 import NotFoundOpportunities from "../../components/opportunities/NotFoundOpportunities";
 import { useOpportunities } from "../../hooks/useOpportunities";
-import { X } from "lucide-react";
+import { X, SlidersHorizontal, RotateCcw } from "lucide-react";
 import SEO from "../../components/SEO";
 
 const ITEMS_PER_PAGE = 12;
 
 const Opportunities = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [localSearch, setLocalSearch] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const {
@@ -28,13 +28,19 @@ const Opportunities = () => {
     updateFilters,
     clearFilters,
     updatePagination,
+    totalPages,
+    pagination,
   } = useOpportunities();
 
+  const currentPage = pagination.page || 1;
+
   const [localFilters, setLocalFilters] = useState({
-    type: globalFilters.type || "",
     modality: globalFilters.modality || "",
     location: globalFilters.location || "",
     category_id: globalFilters.category_id || "",
+    country: globalFilters.country || "",
+    show_expired: globalFilters.show_expired || false,
+    sort: globalFilters.sort || "created_at_desc",
   });
 
   // Sincronizar los filtros locales con los globales cuando cambien
@@ -45,84 +51,124 @@ const Opportunities = () => {
     }));
   }, [globalFilters]);
 
+  // Sincronizar la barra de búsqueda local con los filtros del contexto
+  useEffect(() => {
+    setLocalSearch(globalFilters.search || "");
+  }, [globalFilters.search]);
+
+  // Bloquear el scroll del body cuando los filtros móviles estén abiertos
+  useEffect(() => {
+    if (showMobileFilters) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showMobileFilters]);
+
   // Configurar la paginación inicial en el contexto
   useEffect(() => {
     updatePagination({
       page: 1,
-      limit: 1000,
+      limit: ITEMS_PER_PAGE,
+      sortBy: "created_at",
+      sortOrder: "desc",
     });
-  }, []);
+  }, [updatePagination]);
 
-  // Buscar oportunidades por término de búsqueda
-  const searchOpportunities = useCallback((term, opportunitiesList) => {
-    if (!term || term.trim() === "") return opportunitiesList;
-
-    const searchLower = term.toLowerCase();
-    return opportunitiesList.filter(
-      (opp) =>
-        opp.title.toLowerCase().includes(searchLower) ||
-        opp.description.toLowerCase().includes(searchLower) ||
-        opp.location.toLowerCase().includes(searchLower) ||
-        opp.tags?.some((tag) => tag.name.toLowerCase().includes(searchLower)),
-    );
-  }, []);
-
-  const filteredOpportunities = useMemo(
-    () => searchOpportunities(searchTerm, allOpportunities),
-    [searchTerm, allOpportunities, searchOpportunities],
+  // Determinar si estamos en modo búsqueda (si hay un filtro de búsqueda aplicado)
+  const isSearching = useMemo(
+    () => (globalFilters.search || "").trim() !== "",
+    [globalFilters.search],
   );
 
-  // Determinar si estamos en modo búsqueda
-  const isSearching = useMemo(() => searchTerm.trim() !== "", [searchTerm]);
-
-  // Oportunidades a mostrar según el modo
-  const displayOpportunities = useMemo(() => {
-    if (isSearching) {
-      return filteredOpportunities;
-    } else {
-      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-      return allOpportunities.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-    }
-  }, [isSearching, filteredOpportunities, allOpportunities, currentPage]);
-
-  // Calcular páginas para vista normal
-  const totalPages = useMemo(
-    () => Math.ceil(allOpportunities.length / ITEMS_PER_PAGE),
-    [allOpportunities.length],
-  );
+  const hasActiveFilters = useMemo(() => {
+    return Object.entries(globalFilters).some(([key, value]) => {
+      if (key === "sort") return false;
+      if (key === "search") return false;
+      return value !== "" && value !== false && value !== undefined;
+    });
+  }, [globalFilters]);
 
   // Handlers
-  const handleSearch = useCallback((term) => {
-    setSearchTerm(term);
+  const handleSearchChange = useCallback((term) => {
+    setLocalSearch(term);
   }, []);
 
-  const handlePageChange = useCallback((pageNumber) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  const handleSearchSubmit = useCallback(() => {
+    updateFilters({ search: localSearch });
+    updatePagination({ page: 1 });
+  }, [localSearch, updateFilters, updatePagination]);
+
+  const handleClearSearch = useCallback(() => {
+    setLocalSearch("");
+    updateFilters({ search: "" });
+    updatePagination({ page: 1 });
+  }, [updateFilters, updatePagination]);
+
+  const handlePageChange = useCallback(
+    (pageNumber) => {
+      updatePagination({ page: pageNumber });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [updatePagination],
+  );
 
   const handleFilterChange = useCallback(
     (newFilters) => {
-      // console.log("newFilters:", newFilters);
-      // Actualizar filtros en el contexto
-      updateFilters(newFilters);
-      setCurrentPage(1);
+      const { sort, ...restFilters } = newFilters;
+
+      // Traducir el ordenamiento de la UI a sortBy/sortOrder del API
+      if (sort) {
+        let sortBy = "created_at";
+        let sortOrder = "desc";
+        if (sort === "deadline_asc") {
+          sortBy = "deadline";
+          sortOrder = "asc";
+        } else if (sort === "created_at_desc") {
+          sortBy = "created_at";
+          sortOrder = "desc";
+        } else if (sort === "title_asc") {
+          sortBy = "title";
+          sortOrder = "asc";
+        }
+        updatePagination({
+          sortBy,
+          sortOrder,
+          page: 1,
+        });
+      } else {
+        updatePagination({ page: 1 });
+      }
+
+      updateFilters({
+        ...restFilters,
+        sort: sort || "created_at_desc",
+      });
     },
-    [updateFilters],
+    [updateFilters, updatePagination],
   );
 
   const handleClearFilters = useCallback(() => {
-    setSearchTerm("");
+    setLocalSearch("");
     setLocalFilters({
-      type: "",
       modality: "",
       location: "",
       category_id: "",
+      country: "",
+      show_expired: false,
+      sort: "created_at_desc",
     });
-    // Limpiar filtros en el contexto
     clearFilters();
-    setCurrentPage(1);
-  }, [clearFilters]);
+    updatePagination({
+      page: 1,
+      sortBy: "created_at",
+      sortOrder: "desc",
+      limit: ITEMS_PER_PAGE,
+    });
+  }, [clearFilters, updatePagination]);
 
   const handleRetry = useCallback(() => {
     refetch();
@@ -178,11 +224,8 @@ const Opportunities = () => {
           {/* Header Section */}
           <header className="mb-8 text-center">
             <h1 className="text-4xl font-bold text-primary mb-3 bg-gradient-to-r from-primary to-blue-600 text-transparent bg-clip-text">
-              Edutracker: oportunidades seguras en un solo lugar.
-            </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-6">
               Explora becas, talleres y experiencias únicas para tu futuro.
-            </p>
+            </h1>
           </header>
 
           {/* Barra de búsqueda con contador */}
@@ -190,9 +233,10 @@ const Opportunities = () => {
             <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
               <div className="w-full md:flex-1">
                 <SearchHeader
-                  searchTerm={searchTerm}
-                  onSearchChange={handleSearch}
-                  onClearSearch={() => setSearchTerm("")}
+                  searchTerm={localSearch}
+                  onSearchChange={handleSearchChange}
+                  onSearchSubmit={handleSearchSubmit}
+                  onClearSearch={handleClearSearch}
                   loading={loading}
                 />
               </div>
@@ -201,9 +245,10 @@ const Opportunities = () => {
                 <div className="w-full md:w-auto flex-shrink-0 mt-1 md:mt-0">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5 inline-flex items-center">
                     <span className="text-secondary text-sm font-medium">
-                      {filteredOpportunities.length} resultado
-                      {filteredOpportunities.length !== 1 ? "s" : ""}
-                      {searchTerm && ` para "${searchTerm}"`}
+                      {totalCount} resultado
+                      {totalCount !== 1 ? "s" : ""}
+                      {globalFilters.search &&
+                        ` para "${globalFilters.search}"`}
                     </span>
                   </div>
                 </div>
@@ -211,22 +256,23 @@ const Opportunities = () => {
             </div>
           </div>
 
-          {/* Mobile filter dialog */}
+          {/* Mobile filter button */}
           <div className="lg:hidden mb-6">
             <button
               type="button"
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-secundari hover:bg-gray-50"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-sm font-bold shadow-sm shadow-slate-950/10 active:scale-95 transition-all duration-150"
               onClick={() => setShowMobileFilters(true)}
             >
-              Filtros
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Filtros</span>
             </button>
           </div>
 
           {/* Sección de filtros y resultados */}
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Filtros - Sticky */}
-            <section className="hidden lg:block lg:w-1/4">
-              <div className="sticky top-24 bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
+            {/* Sidebar acordeón - Desktop */}
+            <section className="hidden lg:block lg:w-64 flex-shrink-0">
+              <div className="sticky top-24 bg-white px-5 py-5 rounded-2xl shadow-sm border border-gray-100">
                 <FiltersComponent
                   onFilterChange={handleFilterChange}
                   filterOptions={filterOptions}
@@ -237,29 +283,59 @@ const Opportunities = () => {
               </div>
             </section>
 
-            {/* Mobile Filters */}
-            {showMobileFilters && (
-              <section className="fixed inset-0 z-50 overflow-y-auto lg:hidden">
-                <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                  <div
-                    className="fixed inset-0 bg-secondary-light bg-opacity-75 transition-opacity"
+            {/* Mobile Filters Drawer */}
+            <AnimatePresence>
+              {showMobileFilters && (
+                <div className="fixed inset-0 z-50 lg:hidden">
+                  {/* Backdrop */}
+                  <m.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
                     onClick={() => setShowMobileFilters(false)}
-                    role="presentation"
-                    aria-hidden="true"
-                  ></div>
+                  />
 
-                  <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                    <div className="absolute top-0 right-0 pt-4 pr-4">
-                      <button
-                        type="button"
-                        className="bg-secondary rounded-md text-white"
-                        onClick={() => setShowMobileFilters(false)}
-                      >
-                        <X className="h-6 w-6" />
-                      </button>
+                  {/* Bottom Sheet */}
+                  <m.div
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                    className="fixed bottom-0 inset-x-0 bg-white rounded-t-[2rem] shadow-2xl border-t border-slate-100 flex flex-col max-h-[85vh] overflow-hidden"
+                  >
+                    {/* Pull indicator */}
+                    <div className="flex justify-center py-3 flex-shrink-0">
+                      <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
                     </div>
 
-                    <div className="mt-6">
+                    {/* Header */}
+                    <div className="flex justify-between items-center px-6 pb-4 border-b border-slate-100 flex-shrink-0">
+                      <h3 className="text-lg font-heading font-extrabold text-slate-800">
+                        Filtros
+                      </h3>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={handleClearFilters}
+                          className="text-xs flex items-center gap-1 font-bold text-slate-500 hover:text-primary hover:bg-primary/5 px-2.5 py-1.5 rounded-lg transition-all duration-200"
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                          <span>Restablecer</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 active:scale-95 transition-all duration-150"
+                          onClick={() => setShowMobileFilters(false)}
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 overflow-y-auto px-6 py-6 pb-12">
                       <FiltersComponent
                         onFilterChange={(filters) => {
                           handleFilterChange(filters);
@@ -269,12 +345,13 @@ const Opportunities = () => {
                         clearFilters={clearFilters}
                         localFilters={localFilters}
                         setLocalFilters={setLocalFilters}
+                        hideHeader={true}
                       />
                     </div>
-                  </div>
+                  </m.div>
                 </div>
-              </section>
-            )}
+              )}
+            </AnimatePresence>
 
             {/* Contenido Principal */}
             <main className="flex-1">
@@ -285,31 +362,29 @@ const Opportunities = () => {
                   {/* Resumen de resultados */}
                   <ResultsSummary
                     totalCount={totalCount}
-                    filteredCount={displayOpportunities.length}
+                    filteredCount={allOpportunities.length}
                     onClearFilters={handleClearFilters}
-                    hasActiveFilters={
-                      Object.keys(globalFilters).length > 0 || isSearching
-                    }
+                    hasActiveFilters={hasActiveFilters || isSearching}
                     isSearching={isSearching}
-                    searchTerm={searchTerm}
+                    searchTerm={globalFilters.search || ""}
                   />
 
                   {/* Lista de oportunidades */}
                   <section className="mt-6">
-                    {displayOpportunities.length > 0 ? (
+                    {allOpportunities.length > 0 ? (
                       <>
                         <OpportunityList
-                          opportunities={displayOpportunities}
+                          opportunities={allOpportunities}
                           onRetry={refetch}
                         />
 
-                        {/* Paginación: SOLO mostrar si NO estamos buscando */}
-                        {!isSearching && totalPages > 1 && (
+                        {/* Paginación */}
+                        {totalPages > 1 && (
                           <div className="mt-8">
                             <Pagination
                               currentPage={currentPage}
                               totalPages={totalPages}
-                              totalItems={allOpportunities.length}
+                              totalItems={totalCount}
                               onPageChange={handlePageChange}
                               itemsPerPage={ITEMS_PER_PAGE}
                             />
@@ -321,8 +396,8 @@ const Opportunities = () => {
                           <div className="mt-8 text-center">
                             <p className="text-gray-600 text-sm">
                               Mostrando todos los resultados de búsqueda (
-                              {filteredOpportunities.length} de{" "}
-                              {allOpportunities.length} oportunidades)
+                              {allOpportunities.length} de {totalCount}{" "}
+                              oportunidades)
                             </p>
                           </div>
                         )}
@@ -330,9 +405,9 @@ const Opportunities = () => {
                     ) : (
                       <NotFoundOpportunities
                         isSearching={isSearching}
-                        searchTerm={searchTerm}
+                        searchTerm={globalFilters.search || ""}
                         handleClearFilters={handleClearFilters}
-                        setSearchTerm={setSearchTerm}
+                        setSearchTerm={handleClearSearch}
                       />
                     )}
                   </section>

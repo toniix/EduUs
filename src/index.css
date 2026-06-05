@@ -70,3 +70,78 @@
 .project-swiper .swiper-pagination {
   bottom: 10px;
 }
+
+/* Estilos para el carrusel de Únete */
+.joinus-swiper .swiper-button-next,
+.joinus-swiper .swiper-button-prev {
+  color: #ffffff;
+  background: rgba(77, 185, 169, 0.8);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.joinus-swiper .swiper-button-next:after,
+.joinus-swiper .swiper-button-prev:after {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.joinus-swiper .swiper-button-next:hover,
+.joinus-swiper .swiper-button-prev:hover {
+  background: rgba(77, 185, 169, 1);
+  box-shadow: 0 8px 24px rgba(77, 185, 169, 0.3);
+  transform: scale(1.05);
+}
+
+.joinus-swiper .swiper-pagination {
+  bottom: 0 !important;
+}
+
+.joinus-swiper .swiper-pagination-bullet {
+  background: rgba(77, 185, 169, 0.3);
+  opacity: 1;
+  width: 10px;
+  height: 10px;
+  transition: all 0.3s ease;
+}
+
+.joinus-swiper .swiper-pagination-bullet-active {
+  background: #4db9a9;
+  width: 28px;
+  border-radius: 5px;
+}
+
+.joinus-swiper .swiper-slide {
+  transition: all 0.4s ease;
+}
+
+.joinus-swiper .swiper-slide:not(.swiper-slide-active) {
+  opacity: 0.6;
+  filter: saturate(0.7);
+}
+
+.joinus-swiper .swiper-slide-active {
+  opacity: 1;
+  filter: saturate(1);
+}
+
+/* Custom scrollbar utility for scrollable panels */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* slate-300 */
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8; /* slate-400 */
+}
+

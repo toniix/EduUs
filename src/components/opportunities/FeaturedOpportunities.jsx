@@ -43,7 +43,7 @@ const FeaturedOpportunities = () => {
 
   if (loading) {
     return (
-      <section className="relative py-20 overflow-hidden">
+      <section className="relative py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8">
         {/* Fondo decorativo */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-secondary/5 pointer-events-none" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,14 +83,7 @@ const FeaturedOpportunities = () => {
   }
 
   return (
-    <section className="relative py-20 overflow-hidden">
-      {/* Fondo decorativo */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-secondary/5 pointer-events-none" />
-
-      {/* Círculos decorativos de fondo */}
-      <div className="absolute -top-32 -right-32 w-96 h-96 bg-secondary/8 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-primary/6 rounded-full blur-3xl pointer-events-none" />
-
+    <section className="py-12 sm:pt-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-light">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <m.div
@@ -98,36 +91,22 @@ const FeaturedOpportunities = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className="mb-12 flex flex-col gap-6 sm:gap-4 sm:flex-row sm:items-end sm:justify-between"
+          className="mb-12 flex flex-col items-center text-center sm:items-start sm:text-left"
         >
-          <div className="text-center sm:text-left">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-1.5 bg-secondary/10 border border-secondary/20 text-secondary px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase mb-4">
-              <Sparkles className="w-3 h-3" />
-              Descubre tu futuro
-            </div>
-
-            <div className="flex flex-wrap items-baseline justify-center sm:justify-start gap-x-3 gap-y-0">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
-                Oportunidades
-              </h2>
-              <span className="text-4xl sm:text-5xl font-medium italic text-secondary leading-tight">
-                Destacadas
-              </span>
-            </div>
-
-            {/* <p className="mt-3 text-gray-500 text-sm sm:text-base max-w-md mx-auto sm:mx-0">
-              Las mejores oportunidades seleccionadas para impulsar tu carrera académica y profesional.
-            </p> */}
+          {/* Badge */}
+          <div className="inline-flex items-center gap-1.5 bg-secondary/10 border border-secondary/20 text-secondary px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase mb-4">
+            <Sparkles className="w-3 h-3" />
+            Descubre tu futuro
           </div>
 
-          <Link
-            to="/edutracker"
-            className="group inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 bg-gray-900 text-white text-sm sm:text-base rounded-full font-semibold hover:bg-gray-700 transition-all duration-300 whitespace-nowrap self-center sm:self-auto"
-          >
-            Explorar más
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-          </Link>
+          <div className="flex flex-wrap items-baseline justify-center sm:justify-start gap-x-3 gap-y-0">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
+              Oportunidades
+            </h2>
+            <span className="text-4xl sm:text-5xl font-medium italic text-secondary leading-tight">
+              Destacadas
+            </span>
+          </div>
         </m.div>
 
         {/* Grid de tarjetas */}
@@ -146,6 +125,17 @@ const FeaturedOpportunities = () => {
             />
           ))}
         </m.div>
+
+        {/* CTA Inferior */}
+        <div className="mt-12 flex justify-center">
+          <Link
+            to="/edutracker"
+            className="group inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-100 text-gray-800 text-base rounded-full font-semibold hover:bg-gray-50 hover:border-gray-200 hover:shadow-md transition-all duration-300"
+          >
+            Ver todas las oportunidades
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+          </Link>
+        </div>
       </div>
     </section>
   );

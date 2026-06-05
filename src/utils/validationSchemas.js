@@ -119,6 +119,7 @@ export const opportunitySchema = z.object({
   contact: z.object({ website: z.string().optional() }).optional(),
   is_featured: z.boolean().optional().default(false),
   featured_order: z.number().min(1).max(4).nullable().optional(),
+  is_published: z.boolean().optional().default(false),
 });
 
 // Esquema de validación para eventos
@@ -158,4 +159,16 @@ export const eventSchema = z.object({
     .or(z.literal(""))
     .or(z.null()),
   status: z.enum(["draft", "published", "cancelled", "finished"]).optional(),
+});
+
+// Esquema de validación para proyectos
+export const projectSchema = z.object({
+  name: z.string().min(1, "El nombre es obligatorio."),
+  description: z.string().min(1, "La descripción corta es obligatoria."),
+  details: z.string().min(1, "Los detalles son obligatorios."),
+  icon: z.string().min(1, "El icono es obligatorio."),
+  fondo: z.string().min(1, "La foto destacada es obligatoria."),
+  objectives: z.array(z.string()).default([]),
+  results: z.array(z.string()).default([]),
+  images: z.array(z.string()).default([]),
 });

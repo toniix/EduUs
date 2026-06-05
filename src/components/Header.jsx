@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { m, AnimatePresence } from "framer-motion";
 import UserMenu from "./layouts/header/UserMenu";
 import UserMenuMobile from "./layouts/header/UserMenuMobile";
@@ -10,8 +10,8 @@ import logo from "../assets/logo_2.png";
 const NAV_ITEMS = [
   { name: "Inicio", path: "/" },
   { name: "Nosotros", path: "/nosotros" },
-  { name: "Proyectos", path: "/proyectos" },
   { name: "Oportunidades", path: "/edutracker" },
+  { name: "Únete", path: "/unete" },
 ];
 
 export default function Header() {
@@ -83,11 +83,11 @@ export default function Header() {
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 block 
+                    className={`relative px-4 py-2 text-sm font-medium transition-colors duration-200 block 
                       ${
                         active
-                          ? "text-secondary"
-                          : "text-gray-900 hover:text-secondary hover:bg-secondary/5"
+                          ? "text-primary"
+                          : "text-gray-600 hover:text-primary"
                       }
                       `}
                   >
@@ -96,11 +96,11 @@ export default function Header() {
                     {active && (
                       <m.span
                         layoutId="nav-indicator"
-                        className="absolute inset-0 rounded-lg bg-secondary/8 border border-secondary/15"
+                        className="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full"
                         transition={{
                           type: "spring",
                           stiffness: 380,
-                          damping: 34,
+                          damping: 30,
                         }}
                       />
                     )}
@@ -112,6 +112,18 @@ export default function Header() {
 
           {/* ── Desktop CTA ── */}
           <div className="hidden md:flex items-center gap-3">
+            {/* <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-xl border transition-colors duration-200 ${
+                isDark
+                  ? "bg-gray-800 border-gray-700 text-yellow-400 hover:bg-gray-700"
+                  : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200"
+              }`}
+              aria-label="Cambiar tema"
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button> */}
+
             {isAuthenticated ? (
               <UserMenu />
             ) : (
@@ -170,31 +182,55 @@ export default function Header() {
         </div>
 
         {/* Nav links */}
-        <nav className="flex-1 px-4 pt-4 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 px-4 pt-6 space-y-2 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.path);
             return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 ${
-                  active
-                    ? "text-primary bg-primary/8 border border-primary/15"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
-              >
-                {active && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-                )}
-                {item.name}
-              </Link>
+              <div key={item.path} className="relative">
+                <Link
+                  to={item.path}
+                  onClick={() => setIsOpen(false)}
+                  className={`px-4 py-3 text-sm font-medium transition-colors duration-200 block ${
+                    active
+                      ? "text-primary font-semibold"
+                      : "text-gray-600 hover:text-primary"
+                  }`}
+                >
+                  {item.name}
+                  {active && (
+                    <m.span
+                      layoutId="nav-indicator-mobile"
+                      className="absolute left-0 top-3 bottom-3 w-0.5 bg-primary rounded-full"
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </Link>
+              </div>
             );
           })}
         </nav>
 
         {/* Drawer footer */}
-        <div className="px-4 pb-6 pt-4 border-t border-gray-100">
+        <div className="px-4 pb-6 pt-4 border-t border-gray-100 space-y-4">
+          {/* <div className="flex items-center justify-between px-2">
+            <span className="text-sm font-medium text-gray-600">Modo Oscuro</span>
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-xl border transition-colors duration-200 ${
+                isDark
+                  ? "bg-gray-800 border-gray-700 text-yellow-400 hover:bg-gray-700"
+                  : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200"
+              }`}
+              aria-label="Cambiar tema"
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+          </div> */}
+
           {isAuthenticated ? (
             <UserMenuMobile onItemClick={() => setIsOpen(false)} />
           ) : (

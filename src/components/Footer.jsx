@@ -5,6 +5,7 @@ import {
   FaTiktok,
   FaYoutube,
 } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 import logo from "../assets/logo_3.png";
 const socialLinks = [
   {
@@ -96,12 +97,27 @@ const Footer = () => {
 
         {/* Copyright */}
         <div
-          className="mt-12 pt-8 border-t text-center"
+          className="mt-12 pt-8 border-t text-center flex flex-col sm:flex-row items-center justify-between gap-4"
           style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
         >
           <p className="text-gray-400 text-sm">
             © {new Date().getFullYear()} EDU-US. Todos los derechos reservados.
           </p>
+          <div className="flex gap-4 sm:gap-6 text-sm text-gray-400">
+            <Link
+              to="/terminos"
+              className="hover:text-primary transition-colors duration-200"
+            >
+              Términos y Condiciones
+            </Link>
+            <span className="text-gray-600">|</span>
+            <Link
+              to="/privacidad"
+              className="hover:text-primary transition-colors duration-200"
+            >
+              Política de Privacidad
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

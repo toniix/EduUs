@@ -22,6 +22,7 @@ const ALL_MENU_ITEMS = [
   { icon: <Tag />,           label: "Categorías",    value: "categories",    adminOnly: false },
   { icon: <Calendar />,      label: "Eventos",       value: "events",        adminOnly: true },
   { icon: <ClipboardList />, label: "Inscripciones", value: "registrations", adminOnly: true },
+  { icon: <Sparkles />,      label: "Proyectos",     value: "projects",      adminOnly: true },
 ];
 
 export default function Sidebar({

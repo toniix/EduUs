@@ -2,7 +2,6 @@ import { ThemeContext } from "../../contexts/ThemeContext";
 import { useContext } from "react";
 
 const FeaturedModal = ({
-  showFeaturedModal,
   setShowFeaturedModal,
   featuredForm,
   handleFeaturedChange,

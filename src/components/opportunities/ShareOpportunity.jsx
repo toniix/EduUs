@@ -27,12 +27,11 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
     const message =
       shareMessage || "¡Mira esta increíble oportunidad que encontré!";
 
-    const opportunityUrl = `${window.location.origin}/edutracker/oportunidad/${opportunity.id}`;
+    const opportunityUrl = `${window.location.origin}/edutracker/oportunidad/${opportunity.slug}`;
     const encodedUrl = encodeURIComponent(opportunityUrl);
 
     let shareUrl = "";
 
-    const title = opportunity.title;
     const hashtags = "educacion,oportunidades,aprendizaje";
 
     switch (selectedNetwork) {
@@ -111,9 +110,6 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
             </p>
             <p className="text-sm text-gray-600 line-clamp-2 mt-1">
               {opportunity.description}
-            </p>
-            <p className="text-xs text-[#4db9a9] font-medium mt-2 truncate">
-              {opportunity.url}
             </p>
           </div>
         </div>

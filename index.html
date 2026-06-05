@@ -3,13 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Search Console Verification -->
     <meta
       name="google-site-verification"
       content="3_MeO2HH6IEpodVg0oED97G-yY6EtQS4Ti3eDRBt9kM"
     />
-    <title>EDU-US</title>
+
+    <!-- Default SEO (overridden per-page by SEO.jsx) -->
+    <title>EDU-US | Becas y oportunidades internacionales 2026</title>
+    <meta
+      name="description"
+      content="Encuentra becas, voluntariados y oportunidades académicas internacionales actualizadas cada semana. EDU-US conecta jóvenes con su futuro."
+    />
+    <meta name="robots" content="index, follow, max-snippet:160, max-image-preview:large" />
+
+    <!-- Canonical (overridden per-page by SEO.jsx) -->
+    <link rel="canonical" href="https://eduus.club/" />
+
+    <!-- Favicons -->
     <link rel="icon" type="image/png" href="/logo_1.png" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="apple-touch-icon" href="/logo_1.png" />
+
+    <!-- Open Graph defaults -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="EDU-US" />
+    <meta property="og:locale" content="es_PE" />
+    <meta property="og:url" content="https://eduus.club/" />
+    <meta property="og:title" content="EDU-US | Becas y oportunidades internacionales 2026" />
+    <meta
+      property="og:description"
+      content="Encuentra becas, voluntariados y oportunidades académicas internacionales actualizadas cada semana. EDU-US conecta jóvenes con su futuro."
+    />
+    <meta property="og:image" content="https://eduus.club/logo_1.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card defaults -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@eduus_latam" />
+    <meta name="twitter:title" content="EDU-US | Becas y oportunidades internacionales 2026" />
+    <meta
+      name="twitter:description"
+      content="Encuentra becas, voluntariados y oportunidades académicas internacionales actualizadas cada semana. EDU-US conecta jóvenes con su futuro."
+    />
+    <meta name="twitter:image" content="https://eduus.club/logo_1.png" />
+
+    <!-- JSON-LD: Organization (permanente en todas las páginas) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "EDU-US",
+        "url": "https://eduus.club",
+        "logo": "https://eduus.club/logo_1.png",
+        "description": "Organización juvenil sin fines de lucro que conecta a jóvenes con becas, voluntariados y oportunidades académicas internacionales.",
+        "foundingLocation": {
+          "@type": "Country",
+          "name": "Perú"
+        },
+        "sameAs": [
+          "https://www.instagram.com/eduus.latam",
+          "https://www.linkedin.com/company/edu-us"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "eduus.latam@gmail.com",
+          "contactType": "customer service",
+          "availableLanguage": "Spanish"
+        }
+      }
+    </script>
+
+    <!-- Preconnect para recursos externos -->
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,6 +84,8 @@
       rel="stylesheet"
     />
 
+    <!-- Stylesheet global -->
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div id="root"></div>

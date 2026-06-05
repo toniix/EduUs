@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useState,
@@ -54,9 +55,21 @@ export const OpportunitiesProvider = ({ children }) => {
     filterOptions,
   } = state;
 
-  // Filtros y paginación controlados por el contexto
-  const [filters, setFilters] = useState({});
-  const [pagination, setPagination] = useState({});
+  // Filtros y paginación controlados por el contexto con valores por defecto
+  const [filters, setFilters] = useState({
+    modality: "",
+    country: "",
+    location: "",
+    category_id: "",
+    show_expired: false,
+    search: "",
+  });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 12,
+    sortBy: "created_at",
+    sortOrder: "desc",
+  });
 
   // Función para cargar oportunidades
   const fetchOpportunities = useCallback(async () => {
@@ -90,17 +103,32 @@ export const OpportunitiesProvider = ({ children }) => {
     }
   }, []);
 
-  // Función para actualizar filtros
+  // Función para actualizar filtros y reiniciar paginación a la página 1
   const updateFilters = useCallback((newFilters) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
       ...newFilters,
     }));
+    setPagination((prevPagination) => ({
+      ...prevPagination,
+      page: 1,
+    }));
   }, []);
 
-  // Función para limpiar filtros
+  // Función para limpiar filtros, restablecer a valores base y volver a página 1
   const clearFilters = useCallback(() => {
-    setFilters({});
+    setFilters({
+      modality: "",
+      country: "",
+      location: "",
+      category_id: "",
+      show_expired: false,
+      search: "",
+    });
+    setPagination((prevPagination) => ({
+      ...prevPagination,
+      page: 1,
+    }));
   }, []);
 
   // Función para actualizar paginación

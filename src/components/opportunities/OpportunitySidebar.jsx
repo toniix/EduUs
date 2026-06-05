@@ -1,5 +1,4 @@
-import { useState, useEffect, useReducer } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useReducer, useCallback } from "react";
 import { Calendar, ArrowRight, Mail, Globe } from "lucide-react";
 import { useReminders } from "../../hooks/useReminders";
 import toast from "react-hot-toast";
@@ -67,7 +66,7 @@ export default function OpportunitySidebar({
     reminderReducer,
     reminderInitialState,
   );
-  const { showReminderSetup, existingReminders, hasReminders, showSuccess } =
+  const { showReminderSetup, existingReminders, hasReminders } =
     reminderState;
 
   const [selectedDays, setSelectedDays] = useState(["7", "3", "1"]);
@@ -80,17 +79,17 @@ export default function OpportunitySidebar({
     { value: "1", label: "1 día", icon: "🚨" },
   ];
 
+  const loadExistingReminders = useCallback(async () => {
+    const existing = await checkExistingReminders(opportunityId);
+    dispatchReminder({ type: "LOAD_REMINDERS", payload: existing });
+  }, [opportunityId, checkExistingReminders]);
+
   // Cargar recordatorios existentes
   useEffect(() => {
     if (opportunityId && isAuthenticated) {
       loadExistingReminders();
     }
-  }, [opportunityId, isAuthenticated]);
-
-  const loadExistingReminders = async () => {
-    const existing = await checkExistingReminders(opportunityId);
-    dispatchReminder({ type: "LOAD_REMINDERS", payload: existing });
-  };
+  }, [opportunityId, isAuthenticated, loadExistingReminders]);
 
   const handleToggleReminder = (day) => {
     setSelectedDays((prev) =>
