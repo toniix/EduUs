@@ -10,12 +10,16 @@ export default function CustomSelect({
   placeholder = "Seleccionar...",
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenUp, setIsOpenUp] = useState(false);
   const containerRef = useRef(null);
 
   // Cerrar al hacer clic fuera del componente
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
         setIsOpen(false);
       }
     };
@@ -23,18 +27,30 @@ export default function CustomSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedOption = options.find((opt) => String(opt.value) === String(value));
+  const selectedOption = options.find(
+    (opt) => String(opt.value) === String(value),
+  );
 
   const handleSelect = (optionValue) => {
     onChange({ target: { name, value: optionValue } });
     setIsOpen(false);
   };
 
+  const handleToggle = () => {
+    if (!isOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      // Si el espacio debajo es menor que 260px (max-h-60 es 240px + margen), abrimos hacia arriba
+      setIsOpenUp(spaceBelow < 260);
+    }
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div ref={containerRef} className="relative w-full">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="w-full flex items-center justify-between pl-4 pr-4 py-3 bg-slate-50/80 hover:bg-slate-100/50 border border-slate-200 rounded-xl text-sm text-slate-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer font-medium text-left"
       >
         <span className="truncate">
@@ -48,7 +64,11 @@ export default function CustomSelect({
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1.5 bg-white border border-slate-100 rounded-xl shadow-xl max-h-60 overflow-y-auto py-1">
+        <div
+          className={`absolute z-50 w-full bg-white border border-slate-100 rounded-xl shadow-xl max-h-60 overflow-y-auto py-1 ${
+            isOpenUp ? "bottom-full mb-1.5" : "top-full mt-1.5"
+          }`}
+        >
           {options.map((option) => {
             const isSelected = String(option.value) === String(value);
             return (
@@ -63,7 +83,9 @@ export default function CustomSelect({
                 }`}
               >
                 <span className="truncate">{option.label}</span>
-                {isSelected && <Check className="h-4 w-4 text-primary flex-shrink-0 ml-2" />}
+                {isSelected && (
+                  <Check className="h-4 w-4 text-primary flex-shrink-0 ml-2" />
+                )}
               </button>
             );
           })}
@@ -77,9 +99,10 @@ CustomSelect.propTypes = {
   name: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
-      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
       label: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func.isRequired,

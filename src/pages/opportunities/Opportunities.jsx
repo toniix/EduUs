@@ -81,7 +81,7 @@ const Opportunities = () => {
   // Determinar si estamos en modo búsqueda (si hay un filtro de búsqueda aplicado)
   const isSearching = useMemo(
     () => (globalFilters.search || "").trim() !== "",
-    [globalFilters.search]
+    [globalFilters.search],
   );
 
   const hasActiveFilters = useMemo(() => {
@@ -224,11 +224,8 @@ const Opportunities = () => {
           {/* Header Section */}
           <header className="mb-8 text-center">
             <h1 className="text-4xl font-bold text-primary mb-3 bg-gradient-to-r from-primary to-blue-600 text-transparent bg-clip-text">
-              Edutracker: oportunidades seguras en un solo lugar.
-            </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-6">
               Explora becas, talleres y experiencias únicas para tu futuro.
-            </p>
+            </h1>
           </header>
 
           {/* Barra de búsqueda con contador */}
@@ -250,7 +247,8 @@ const Opportunities = () => {
                     <span className="text-secondary text-sm font-medium">
                       {totalCount} resultado
                       {totalCount !== 1 ? "s" : ""}
-                      {globalFilters.search && ` para "${globalFilters.search}"`}
+                      {globalFilters.search &&
+                        ` para "${globalFilters.search}"`}
                     </span>
                   </div>
                 </div>
@@ -272,9 +270,9 @@ const Opportunities = () => {
 
           {/* Sección de filtros y resultados */}
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Filtros - Sticky */}
-            <section className="hidden lg:block lg:w-1/4">
-              <div className="sticky top-24 bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
+            {/* Sidebar acordeón - Desktop */}
+            <section className="hidden lg:block lg:w-64 flex-shrink-0">
+              <div className="sticky top-24 bg-white px-5 py-5 rounded-2xl shadow-sm border border-gray-100">
                 <FiltersComponent
                   onFilterChange={handleFilterChange}
                   filterOptions={filterOptions}
