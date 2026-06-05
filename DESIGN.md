@@ -119,6 +119,10 @@ Evita crear degradados personalizados que no estén definidos a continuación:
     *   *Fórmula*: lineal de `#0b2826` (verde oscuro profundo) pasando por `#1a4d47` hacia `#0b2826`.
 3.  **Soft Card Overlay (Reverso de Tarjetas Interactivas)**:
     *   *Fórmula*: `linear-gradient(135deg, #fef2f2 0%, #f0fdfa 50%, #fef9e6 100%)` (Degradado muy sutil de rojo claro, turquesa claro y amarillo claro).
+4.  **Premium Card Overlay (Degradado de Secciones de Impacto y CTA)**:
+    *   *Fórmula*: `bg-gradient-to-br from-secondary/15 via-secondary/5 to-accent/10` (Fondo translúcido premium con bordes `#4db9a9/20` para contenedores sofisticados).
+5.  **Premium Text Gradient (Títulos en Contenedores Especiales)**:
+    *   *Fórmula*: `text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#b27a00]` (Degradado que combina el naranja primario con un tono ocre/dorado premium).
 
 ---
 
@@ -127,7 +131,17 @@ Evita crear degradados personalizados que no estén definidos a continuación:
 > [!NOTE]
 > El Modo Oscuro en EDU-US está implementado de forma exclusiva en el **Panel de Administración (Dashboard)**. La Landing Page y las vistas públicas operan únicamente en Modo Claro.
 
-En Figma, las pantallas administrativas deben contar con su respectiva variante en Modo Oscuro. La transición se realiza de forma automática en código mediante la directiva de clases de Tailwind (`dark:`):
+En Figma, las pantallas administrativas deben contar con su respectiva variante en Modo Oscuro. El sistema se gestiona a través del `ThemeContext` que proporciona los siguientes valores:
+*   `isDark` (boolean): Estado actual del tema oscuro (almacenado y sincronizado con `localStorage` y preferencias del sistema).
+*   `toggleDarkMode` (función): Alterna el estado del tema.
+
+La transición se realiza en código mediante la inyección condicional de la clase `dark` en el contenedor padre del panel de administración:
+```jsx
+// React Layout en AdminPanel.jsx
+<div className={`flex h-screen ${isDark ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
+  {/* El subárbol ahora responde a los estilos con prefijo dark: */}
+</div>
+```
 
 ### Tabla de Conversión Semántica (Claro ➡️ Oscuro)
 
@@ -152,7 +166,7 @@ El diseño de EDU-US tiene un enfoque moderno "Glassmorphic" y limpio, con esqui
 *   `rounded-md` (**6px**): Aplicado a campos de entrada de texto (`inputs`), áreas de selección (`select`) y botones secundarios pequeños.
 *   `rounded-xl` (**12px**): Aplicado a botones interactivos principales y contenedores de formularios internos.
 *   `rounded-2xl` (**16px**): Estándar para tarjetas de contenido (Tarjetas de Oportunidades, Testimonios, Secciones de Impacto).
-*   `rounded-[3rem]` (**48px**): Curvaturas extremas exclusivas para el final de secciones Hero y contenedores envolventes decorativos.
+*   `rounded-[3rem]` (**48px**): Curvaturas extremas exclusivas para el final de secciones Hero, contenedores decorativos y el contenedor premium de la sección de llamado a la acción (CTA).
 *   `rounded-full` (**9999px / Circular**): Insignias de estado (píldoras), tags, avatares de usuario e indicadores numéricos.
 
 ### B. Sombras y Profundidad (Shadows & Backdrops)
@@ -195,7 +209,15 @@ graph TD
     A -->|Disabled| E(Opacidad 50% / No interactivo)
 ```
 
-### B. Inputs de Formularios
+### B. Selector Personalizado (Custom Select)
+Basado en [CustomSelect.jsx](file:///home/anthony/dev/Projects/edu-us/src/components/ui/CustomSelect.jsx). Reemplaza al select nativo de HTML para ofrecer una experiencia visual coherente y premium.
+*   **Diseño**: Fondo grisáceo translúcido (`bg-slate-50/80`), bordes suavizados (`rounded-xl`), y transiciones de hover sutiles.
+*   **Comportamiento**:
+    *   Despliega un menú flotante absoluto (`z-50`) con sombras marcadas (`shadow-xl`) y bordes estilizados.
+    *   La opción seleccionada muestra una marca de verificación (`Check` de Lucide) a la derecha y se resalta en tono de marca translúcido (`bg-primary/5 text-primary`).
+    *   **Interactividad**: Implementa listeners globales para cerrarse automáticamente al hacer click fuera del componente (`mousedown`) o al presionar la tecla **Escape**.
+
+### C. Inputs de Formularios
 Basados en el componente global [Input.jsx](file:///home/anthony/dev/Projects/edu-us/src/components/ui/Input.jsx).
 
 *   **Paddings**: Horizontal `16px`, Vertical `10px`.
@@ -204,14 +226,14 @@ Basados en el componente global [Input.jsx](file:///home/anthony/dev/Projects/ed
     *   *Enfoque (Focus)*: Borde se oculta o cambia de color y se aplica un anillo exterior grueso primario (`focus:ring-2 focus:ring-primary`).
     *   *Error*: Borde de color rojo `#ef4444`, icono de alerta a la derecha, y texto descriptivo inferior en `#dc2626`.
 
-### C. Insignias de Estado (Badges)
+### D. Insignias de Estado (Badges)
 Píldoras circulares con textos cortos en mayúsculas (`text-xs font-semibold uppercase tracking-wider`).
 
 *   **Inscrito / Registrado**: Fondo `#eff6ff` (Azul claro), texto `#1d4ed8` (Azul oscuro).
 *   **Asistió / Completado**: Fondo `#d1fae5` (Verde claro), texto `#065f46` (Verde oscuro).
 *   **Cancelado / Inactivo**: Fondo `#fee2e2` (Rojo claro), texto `#991b1b` (Rojo oscuro).
 
-### D. Tarjeta de Oportunidades (Opportunity Card)
+### E. Tarjeta de Oportunidades (Opportunity Card)
 Componente estructurado en [OpportunityCard.jsx](file:///home/anthony/dev/Projects/edu-us/src/components/opportunities/OpportunityCard.jsx).
 
 *   **Estructura de Figma**:
@@ -220,7 +242,7 @@ Componente estructurado en [OpportunityCard.jsx](file:///home/anthony/dev/Projec
     *   Cuerpo: Padding interno `p-6` (24px).
     *   Interacción: Al hacer hover, la tarjeta debe elevarse verticalmente (`-translate-y-1`) y su sombra debe intensificarse a `shadow-lg`.
 
-### E. Tarjeta Giratoria (Flip Card / About Card)
+### F. Tarjeta Giratoria (Flip Card / About Card)
 Utilizada en la sección "Lo que hacemos hoy" ([AboutSection.jsx](file:///home/anthony/dev/Projects/edu-us/src/components/home/AboutSection.jsx)).
 
 *   **Comportamiento**: La tarjeta rota 180 grados sobre el eje Y al pasar el cursor (Hover).
@@ -228,6 +250,24 @@ Utilizada en la sección "Lo que hacemos hoy" ([AboutSection.jsx](file:///home/a
     *   Diseña dos caras con dimensiones exactas (`w-full` y altura fija de `384px` o `320px` según dispositivo).
     *   **Cara Frontal**: Imagen a sangre completa (`object-cover`), gradiente negro sutil superior con el título en texto blanco, e icono indicador en esquina superior derecha.
     *   **Cara Trasera**: Fondo degradado sutil (`#fef2f2` a `#f0fdfa` a `#fef9e6`), texto centrado, e icono decorativo superior.
+
+### G. Carrusel de Proyectos en Acción (Unete Carousel)
+Implementado en la vista de storytelling de la página de Únete ([JoinUs.jsx](file:///home/anthony/dev/Projects/edu-us/src/pages/JoinUs.jsx)).
+*   **Diseño Visual**: Carrusel inmersivo con diseño `EffectCoverflow` de Swiper.
+    *   Las tarjetas laterales no activas se atenúan al **60% de opacidad** (`opacity-60`) y reducen su saturación (`saturate-[0.7]`).
+    *   La tarjeta central (activa) resalta al **100% de opacidad y saturación**, ganando escala física y jerarquía.
+*   **Controles de Navegación**:
+    *   Flechas laterales con fondo esmerilado translúcido en color de marca (`bg-secondary/80`), bordes redondeados (`rounded-xl`), y efecto hover que amplía el tamaño de la sombra y escala ligeramente el control (`hover:scale-105`).
+    *   Indicadores de paginación inferiores (bullets): La bala de posición activa realiza un estiramiento elástico horizontal transicionando de `10px` a `28px` de ancho (`w-28 rounded-md bg-secondary`).
+
+### H. Panel Lateral de Detalle de Proyectos (Project Drawer)
+Implementado en [ProjectDrawer.jsx](file:///home/anthony/dev/Projects/edu-us/src/components/ProjectDrawer.jsx).
+*   **Efecto de Desplazamiento**: Panel lateral que se desliza desde el borde derecho (`x: "100%"` a `x: 0`) utilizando animaciones de resorte físico (Spring) controladas con Framer Motion (`damping: 30, stiffness: 280`).
+*   **Fondos**: Fondo oscuro de backdrop con desenfoque de fondo sutil (`bg-black/60 backdrop-blur-sm`).
+*   **Interacciones y Reglas**:
+    *   Bloquea el scroll del cuerpo (`overflow: hidden` en el tag body) para mejorar la usabilidad del panel.
+    *   Se cierra al presionar la tecla **Escape** o haciendo click en el fondo desenfocado (backdrop).
+    *   Incluye una galería de imágenes secundaria integrada basada en carrusel Swiper con bullets dinámicos.
 
 ---
 
@@ -261,14 +301,14 @@ En Figma, usa las siguientes curvas y tiempos al crear prototipos animados:
     *   *Propiedad*: `transition-colors` o `transition-all`.
     *   *Duración*: **200ms** (`duration-200`).
     *   *Curva*: `ease-in-out` (desaceleración y aceleración estándar).
+*   **Indicador de Navegación Activo (Header / Navbar)**:
+    *   *Comportamiento*: El navbar ya no usa una píldora de fondo. Ahora tiene una línea inferior minimalista de color primario (`absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full`).
+    *   *Framer Motion*: `type: "spring", stiffness: 380, damping: 30` (Efecto de muelle rápido con rebote mínimo controlado al saltar entre links activos). El texto de la sección activa cambia a `text-primary`.
 *   **Animación de Apertura (Modales y Desplegables)**:
     *   *Propiedad*: Opacidad y desplazamiento vertical leve (`translate-y-2` a `translate-y-0`).
     *   *Duración*: **300ms** (`duration-300`).
     *   *Curva*: `ease-out` (desaceleración rápida para dar sensación de inmediatez).
-*   **Indicador de Navegación Activo (Header / Navbar)**:
-    *   *Comportamiento*: Desplazamiento elástico ("Spring") al cambiar de pestaña activa.
-    *   *Framer Motion*: `stiffness: 380, damping: 30` (Efecto de muelle rápido con rebote mínimo controlado).
-*   **Giro Y (Flip Card de Proyectos)**:
+*   **Giro Y (Flip Card)**:
     *   *Propiedad*: Rotación 3D en eje Y (`rotateY(180deg)`).
     *   *Duración*: **700ms** (`duration-700`).
     *   *Curva*: Desaceleración suave para un movimiento fotográfico premium.
@@ -285,6 +325,9 @@ EDU-US tiene un fuerte compromiso social, por lo cual es obligatorio garantizar 
     *   Todo texto en Nunito o Space Grotesk debe mantener un contraste de color mínimo de **4.5:1** contra el fondo circundante.
     *   *Ejemplo aprobado*: Texto `#222222` sobre fondo `#FFFFFF`.
     *   *Ejemplo rechazado*: Texto `#4db9a9` (Turquesa) sobre fondo `#FFFFFF` (Falla el contraste para lectura de párrafos).
+*   **Teclado y Accesibilidad del Drawer / Dropdowns**:
+    *   Todos los selectores personalizados (`CustomSelect`) y paneles deslizantes (`ProjectDrawer`) deben cerrarse al presionar la tecla **Escape**.
+    *   Los menús desplegables deben evitar el foco oculto y ofrecer navegación estructurada.
 *   **Foco Visible de Teclado**:
     *   No elimines el contorno de enfoque (`focus:outline-none`) en Figma sin diseñar un reemplazo visible y nítido para los usuarios que navegan mediante tabulación de teclado.
 
@@ -293,12 +336,16 @@ EDU-US tiene un fuerte compromiso social, por lo cual es obligatorio garantizar 
 ## 10. Reglas de Oro para el Diseño (Do's & Don'ts)
 
 ### ✅ Permitido (Do's)
+*   **Hacer**: Utilizar el componente `CustomSelect` para dropdowns de filtros y formularios, asegurando consistencia estética con la marca.
 *   **Hacer**: Usar `Space Grotesk` con un peso Bold (700) o ExtraBold (800) para darle personalidad a los títulos.
+*   **Hacer**: Diseñar bloques de CTA envolventes con bordes muy redondeados (`rounded-[3rem]`) y degradados suaves transparentes (`bg-gradient-to-br from-secondary/15 via-secondary/5 to-accent/10`) en lugar de colores sólidos muy contrastantes.
 *   **Hacer**: Respetar el sistema de espaciado basado en 8px para asegurar alineación vertical.
 *   **Hacer**: Usar variantes translúcidas de los colores principales para los fondos de tarjetas (ej. `bg-primary/8` o `bg-secondary/10`) en lugar de colores planos fuertes.
-*   **Hacer**: Diseñar todas las pantallas de administración contemplando sus equivalencias exactas en Modo Oscuro.
+*   **Hacer**: Diseñar todas las pantallas de administración contemplando sus equivalencias exactas en Modo Oscuro administrado por la clase `.dark`.
 
 ### ❌ Prohibido (Don'ts)
+*   **No hacer**: Enlazar o diseñar para la ruta `/proyectos`. Esta página estática ha sido reemplazada por la sección dinámica interactiva "Únete en acción" en la ruta pública `/unete`.
+*   **No hacer**: Utilizar menús desplegables nativos de HTML (`<select>`) en la interfaz pública o áreas principales del sitio.
 *   **No hacer**: Utilizar más de un título `<h1>` por página (afecta la indexación SEO de la plataforma).
 *   **No hacer**: Introducir colores planos predeterminados de la paleta básica de Tailwind (ej. un rojo chillón `bg-red-500` o azul `bg-blue-600`) para elementos destacados del diseño principal. Usa siempre los HEX oficiales.
 *   **No hacer**: Usar la tipografía `Space Grotesk` para bloques largos de párrafos o contenido del cuerpo (dificulta la lectura fluida en pantallas pequeñas).

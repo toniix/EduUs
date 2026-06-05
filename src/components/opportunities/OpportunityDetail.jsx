@@ -98,11 +98,43 @@ const OpportunityDetail = () => {
     ? Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24))
     : null;
 
+  const opportunityJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "EducationEvent",
+    name: opportunity.title,
+    description: opportunity.description,
+    url: `https://eduus.club/edutracker/oportunidad/${opportunity.slug || opportunity.id}`,
+    organizer: {
+      "@type": "Organization",
+      name: opportunity.organization || "EDU-US",
+    },
+    ...(opportunity.image_url && { image: opportunity.image_url }),
+    ...(opportunity.deadline && {
+      endDate: new Date(opportunity.deadline).toISOString().split("T")[0],
+    }),
+    ...(opportunity.location && {
+      location: {
+        "@type": "Place",
+        name: opportunity.location,
+        address: {
+          "@type": "PostalAddress",
+          addressCountry: opportunity.country || "PE",
+        },
+      },
+    }),
+    ...(opportunity.modality === "virtual" || opportunity.modality === "online"
+      ? { eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode" }
+      : {}),
+  };
+
   return (
     <>
       <SEO
         title={`${opportunity.title} en ${opportunity.country} – Postulación abierta | EDU-US`}
-        description={`Postula a ${opportunity.title} en ${opportunity.country}. Conoce requisitos, beneficios y fecha límite. Convocatoria abierta.`}
+        description={`Postula a ${opportunity.title} en ${opportunity.country}. Conoce requisitos, beneficios y fecha límite. Convocatoria abierta en EDU-US.`}
+        image={opportunity.image_url}
+        type="article"
+        jsonLd={opportunityJsonLd}
       />
       <div className="min-h-screen bg-secondary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
 
+# Rutas privadas / de administración
+Disallow: /adminpanel
+Disallow: /perfil
+Disallow: /auth/
+
+# APIs internas
+Disallow: /api/
+
 Sitemap: https://eduus.club/api/sitemap

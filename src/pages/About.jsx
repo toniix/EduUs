@@ -2,10 +2,31 @@ import { Target, Globe, Lightbulb } from "lucide-react";
 import { m } from "framer-motion";
 import { values } from "../data/eduUsValues";
 import { teamMembers } from "../data/teamMembers";
+import SEO from "../components/SEO";
+
+const aboutJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  name: "Sobre EDU-US | Misión, visión y equipo",
+  url: "https://eduus.club/nosotros",
+  description:
+    "Conoce la misión, visión, valores y equipo detrás de EDU-US, la organización juvenil que conecta a jóvenes latinoamericanos con oportunidades educativas internacionales.",
+  mainEntity: {
+    "@type": "Organization",
+    name: "EDU-US",
+    url: "https://eduus.club",
+    logo: "https://eduus.club/logo_1.png",
+  },
+};
 
 const About = () => {
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title="Sobre EDU-US | Misión, visión y equipo"
+        description="Conoce la misión, visión, valores y el equipo detrás de EDU-US. Capacitamos a jóvenes con herramientas blandas, técnicas y digitales para impulsar su potencial."
+        jsonLd={aboutJsonLd}
+      />
       {/* Hero Section - Mejorado */}
       <section
         className="relative overflow-hidden py-16"
