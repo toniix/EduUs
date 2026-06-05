@@ -73,7 +73,7 @@ export const partnerCTA = {
     "Únete como aliado estratégico y juntos impulsemos el desarrollo educativo y profesional de la juventud peruana. Tu apoyo genera un impacto real y sostenible.",
   buttonText: "Quiero ser aliado estratégico",
   buttonLink:
-    "mailto:eduus.contacto@gmail.com?subject=Colaboración%20con%20EDU-US",
+    "https://docs.google.com/forms/d/e/1FAIpQLSdPvkWKDedhBptGvs8HfXsDZQXJYBPfKRu5Y9UkXR4FMlAyCg/viewform?usp=header",
 };
 
 export const volunteerCTA = {
@@ -83,6 +83,5 @@ export const volunteerCTA = {
   description:
     "Desarrolla habilidades reales, amplía tu red y contribuye al desarrollo educativo del Perú. Únete a nuestro equipo de voluntarios.",
   buttonText: "Quiero ser voluntario",
-  buttonLink:
-    "https://wa.me/51999999999?text=Hola%2C%20me%20gustaría%20ser%20voluntario%20en%20EDU-US",
+  buttonLink: "https://forms.gle/CRoTxG7BRz28u3E16",
 };
