@@ -9,4 +9,4 @@ Disallow: /auth/
 # APIs internas
 Disallow: /api/
 
-Sitemap: https://eduus.club/api/sitemap
+Sitemap: https://eduus.club/sitemap.xml
