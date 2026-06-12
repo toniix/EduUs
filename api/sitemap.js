@@ -29,38 +29,50 @@ export default async function handler(req, res) {
     { path: "/terminos",   changefreq: "yearly", priority: "0.3" },
   ];
 
+  // Generar XML de cada URL como bloque limpio y consistente
+  const buildUrlEntry = (loc, lastmod, changefreq, priority) =>
+    [
+      "  <url>",
+      `    <loc>${loc}</loc>`,
+      `    <lastmod>${lastmod}</lastmod>`,
+      `    <changefreq>${changefreq}</changefreq>`,
+      `    <priority>${priority}</priority>`,
+      "  </url>",
+    ].join("\n");
+
   const staticUrls = staticRoutes
-    .map(
-      (route) => `
-  <url>
-    <loc>${baseUrl}${route.path}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${route.changefreq}</changefreq>
-    <priority>${route.priority}</priority>
-  </url>`,
+    .map((route) =>
+      buildUrlEntry(
+        `${baseUrl}${route.path}`,
+        today,
+        route.changefreq,
+        route.priority,
+      ),
     )
-    .join("");
+    .join("\n");
 
   const opportunityUrls = (data || [])
-    .map(
-      (item) => `
-  <url>
-    <loc>${baseUrl}/edutracker/oportunidad/${item.slug || item.id}</loc>
-    <lastmod>${new Date(item.updated_at || today).toISOString().split("T")[0]}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`,
+    .map((item) =>
+      buildUrlEntry(
+        `${baseUrl}/edutracker/oportunidad/${item.slug || item.id}`,
+        new Date(item.updated_at || today).toISOString().split("T")[0],
+        "weekly",
+        "0.7",
+      ),
     )
-    .join("");
+    .join("\n");
 
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${staticUrls}
-${opportunityUrls}
-</urlset>`;
+  const sitemap = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    staticUrls,
+    opportunityUrls,
+    "</urlset>",
+  ].join("\n");
 
   // Cache de 24 horas (los crawlers revisan aprox. cada 24 h)
-  res.setHeader("Content-Type", "application/xml");
+  res.setHeader("Content-Type", "application/xml; charset=utf-8");
   res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate");
   res.status(200).send(sitemap);
 }
+
