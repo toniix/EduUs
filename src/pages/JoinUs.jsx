@@ -1,23 +1,15 @@
 import { useState, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Swiper, SwiperSlide } from "swiper/react";
-import {
-  Navigation,
-  Pagination,
-  Autoplay,
-  EffectCoverflow,
-} from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/effect-coverflow";
+// Workaround para compatibilidad react-fast-marquee + Vite 8
+import MarqueeLib from "react-fast-marquee";
+const Marquee = MarqueeLib.default ?? MarqueeLib;
+// import Marquee from "react-fast-marquee";
 import {
   ArrowRight,
   Sparkles,
   ArrowUpRight,
   Heart,
   ChevronRight,
-  Eye,
   Building2,
   Users,
 } from "lucide-react";
@@ -32,6 +24,8 @@ import SEO from "../components/SEO";
 import ProjectDrawer from "../components/ProjectDrawer";
 import ProjectSlide from "../components/joinus/ProjectSlide";
 import BenefitCard from "../components/joinus/BenefitCard";
+
+console.log(Marquee);
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -66,14 +60,16 @@ const JoinUs = () => {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // For loop mode to function correctly with slidesPerView up to 2.1 (which requires 6 slides),
-  // we duplicate slides when we have 3-5 items, or disable loop mode if we have fewer.
-  const slidesToRender =
-    projects.length >= 3 && projects.length < 6
-      ? [...projects, ...projects]
+  // Split projects into two rows for dual-marquee effect.
+  // Duplicate items if fewer than 6 to ensure a smooth infinite loop on wide screens.
+  const minItems = 6;
+  const normalizedProjects =
+    projects.length > 0 && projects.length < minItems
+      ? Array.from(
+          { length: Math.ceil(minItems / projects.length) },
+          () => projects,
+        ).flat()
       : projects;
-
-  const shouldLoop = slidesToRender.length >= 6;
 
   return (
     <div className="min-h-screen">
@@ -172,50 +168,42 @@ const JoinUs = () => {
           </m.div>
         </div>
 
-        {/* ── Immersive Projects Carousel ── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ── Immersive Projects Marquee ── */}
+        <div className="relative overflow-hidden">
+          {/* Edge fade — left */}
+          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 sm:w-40 bg-gradient-to-r from-white via-white/80 to-transparent" />
+          {/* Edge fade — right */}
+          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 sm:w-40 bg-gradient-to-l from-white via-white/80 to-transparent" />
+
           {loading ? (
             <div className="flex justify-center items-center h-[320px] sm:h-[380px]">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
           ) : projects.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
               No hay proyectos disponibles.
             </div>
           ) : (
-            <Swiper
-              modules={[Navigation, Pagination, Autoplay, EffectCoverflow]}
-              effect="coverflow"
-              coverflowEffect={{
-                rotate: 0,
-                stretch: 0,
-                depth: 120,
-                modifier: 2,
-                slideShadows: false,
-              }}
-              centeredSlides={true}
-              slidesPerView={1.1}
-              spaceBetween={16}
-              breakpoints={{
-                640: { slidesPerView: 1.25, spaceBetween: 20 },
-                768: { slidesPerView: 1.5, spaceBetween: 24 },
-                1024: { slidesPerView: 2.1, spaceBetween: 28 },
-              }}
-              navigation
-              pagination={{ clickable: true, dynamicBullets: true }}
-              autoplay={{ delay: 5000, disableOnInteraction: true }}
-              loop={shouldLoop}
-              className="joinus-swiper !overflow-visible !pb-14"
-            >
-              {slidesToRender.map((project, idx) => (
-                <SwiperSlide key={`${project.id}-${idx}`}>
-                  <ProjectSlide
-                    project={project}
-                    onSelect={() => setSelectedProject(project)}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+            <div className="flex flex-col">
+              <Marquee
+                speed={50}
+                pauseOnHover
+                gradient={false}
+                className="flex gap-4"
+              >
+                {normalizedProjects.map((project, idx) => (
+                  <div
+                    key={`project-${project.id}-${idx}`}
+                    className="mx-2.5 w-[300px] sm:w-[360px] lg:w-[400px] shrink-0"
+                  >
+                    <ProjectSlide
+                      project={project}
+                      onSelect={() => setSelectedProject(project)}
+                    />
+                  </div>
+                ))}
+              </Marquee>
+            </div>
           )}
         </div>
       </section>
