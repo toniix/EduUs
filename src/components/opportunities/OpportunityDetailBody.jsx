@@ -1,5 +1,12 @@
 import { motion } from "framer-motion";
-import { CheckCircle2, Star, Users, FileText, Sparkles, ShieldCheck, GraduationCap } from "lucide-react";
+import {
+  CheckCircle2,
+  Star,
+  FileText,
+  Sparkles,
+  ShieldCheck,
+  GraduationCap,
+} from "lucide-react";
 
 /* ─── Animación de entrada stagger ──────────────────────────── */
 const containerVariants = {
@@ -42,16 +49,18 @@ const DetailBody = ({
       {/* Sección 1: Descripción - Tarjeta Premium Ampliada */}
       <motion.div
         variants={itemVariants}
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 relative overflow-hidden"
+        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 relative overflow-hidden"
       >
         {/* Adorno visual moderno en el fondo */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-        
+
         <div className="flex items-center gap-3 mb-5">
           <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
             <FileText className="w-4 h-4 text-gray-500" />
           </div>
-          <h2 className="text-lg font-bold text-gray-900 heading">Descripción</h2>
+          <h2 className="text-lg font-bold text-gray-900 heading">
+            Descripción
+          </h2>
         </div>
         <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line max-w-prose relative z-10">
           {description}
@@ -66,7 +75,7 @@ const DetailBody = ({
         >
           {/* Ilustración o grid moderno decorativo en esquina */}
           <div className="absolute -right-4 -bottom-4 w-28 h-28 bg-secondary/10 rounded-full flex items-center justify-center blur-md pointer-events-none" />
-          
+
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-xl bg-white border border-secondary/25 flex items-center justify-center flex-shrink-0 shadow-sm">
               <GraduationCap className="w-5 h-5 text-secondary" />
@@ -94,14 +103,16 @@ const DetailBody = ({
           >
             {/* Bezel decorativo superior */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-primary/20" />
-            
+
             <div className="flex items-center gap-3 mb-5">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <ShieldCheck className="w-4.5 h-4.5 text-primary" />
               </div>
-              <h2 className="text-base font-bold text-gray-900 heading">Requisitos</h2>
+              <h2 className="text-base font-bold text-gray-900 heading">
+                Requisitos
+              </h2>
             </div>
-            
+
             <ul className="space-y-3.5">
               {parsedRequirements.map((req, i) => (
                 <motion.li
@@ -113,7 +124,9 @@ const DetailBody = ({
                   transition={{ duration: 0.3, delay: i * 0.05 }}
                 >
                   <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-600 leading-relaxed">{req}</span>
+                  <span className="text-sm text-gray-600 leading-relaxed">
+                    {req}
+                  </span>
                 </motion.li>
               ))}
             </ul>
@@ -128,14 +141,16 @@ const DetailBody = ({
           >
             {/* Bezel decorativo superior */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-secondary/20" />
-            
+
             <div className="flex items-center gap-3 mb-5">
               <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
                 <Star className="w-4.5 h-4.5 text-secondary fill-secondary/25" />
               </div>
-              <h2 className="text-base font-bold text-gray-900 heading">Beneficios</h2>
+              <h2 className="text-base font-bold text-gray-900 heading">
+                Beneficios
+              </h2>
             </div>
-            
+
             <ul className="space-y-3.5">
               {parsedBenefits.map((benefit, i) => (
                 <motion.li
@@ -149,7 +164,9 @@ const DetailBody = ({
                   <div className="w-4.5 h-4.5 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Star className="w-3 h-3 text-secondary fill-secondary" />
                   </div>
-                  <span className="text-sm text-gray-600 leading-relaxed">{benefit}</span>
+                  <span className="text-sm text-gray-600 leading-relaxed">
+                    {benefit}
+                  </span>
                 </motion.li>
               ))}
             </ul>

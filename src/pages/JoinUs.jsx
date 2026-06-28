@@ -73,21 +73,18 @@ const JoinUs = () => {
       : projects;
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden w-full max-w-full">
+    <div className="min-h-screen bg-secondary/10 text-gray-900 overflow-x-hidden w-full max-w-full">
       <SEO
         title="Únete — EDU-US | Colabora o sé voluntario"
         description="Descubre cómo puedes unirte a EDU-US como empresa aliada o joven voluntario. Conoce nuestros proyectos de impacto y sé parte del cambio educativo en el Perú."
       />
 
-      {/* ═══════════════════════════════════════════════════════ */}
-      {/* HERO / STORYTELLING SECTION                             */}
-      {/* ═══════════════════════════════════════════════════════ */}
-      <section className="relative py-20 lg:py-28 bg-gradient-to-b from-white via-secondary-light/20 to-white overflow-hidden">
+      <section className="relative py-8 lg:py-8 bg-gradient-to-b from-white via-secondary-light/20 to-white overflow-hidden">
         {/* Soft radial mesh orbs for premium visual depth */}
         <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-secondary/[0.06] blur-[120px] pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-accent/[0.04] blur-[100px] pointer-events-none" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Headline */}
           <m.div
             className="lg:col-span-7 space-y-6"
@@ -109,7 +106,8 @@ const JoinUs = () => {
               </span>
             </h1>
             <p className="text-gray-600 text-lg leading-relaxed max-w-lg font-light">
-              Explora los proyectos que hemos construido y descubre cómo transformar la educación y el desarrollo juvenil en el Perú.
+              Explora los proyectos que hemos construido y descubre cómo
+              transformar la educación y el desarrollo juvenil en el Perú.
             </p>
           </m.div>
 
@@ -118,7 +116,11 @@ const JoinUs = () => {
             className="lg:col-span-5"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.15, ease: [0.32, 0.72, 0, 1] }}
+            transition={{
+              duration: 0.8,
+              delay: 0.15,
+              ease: [0.32, 0.72, 0, 1],
+            }}
           >
             {/* Outer Bezel */}
             <div className="p-1.5 bg-gray-50 border border-gray-100 rounded-[2rem] shadow-xl shadow-gray-100/50">
@@ -130,7 +132,7 @@ const JoinUs = () => {
                     ¿Cómo quieres participar?
                   </span>
                 </div>
-                
+
                 <div className="flex flex-col gap-3.5">
                   <button
                     onClick={() => scrollTo("cta-empresas")}
@@ -181,7 +183,7 @@ const JoinUs = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16 flex items-center gap-3">
           <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
           <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400 font-heading">
-            Proyectos en marcha
+            Proyectos destacados
           </h3>
           <span className="h-[1px] bg-gray-200/60 flex-grow" />
         </div>
@@ -225,12 +227,9 @@ const JoinUs = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════ */}
-      {/* CTA — EMPRESAS / ORGANIZACIONES                       */}
-      {/* ═══════════════════════════════════════════════════════ */}
       <section
         id="cta-empresas"
-        className="py-20 lg:py-28 bg-white scroll-mt-16 border-t border-gray-100"
+        className="py-8 lg:py-10 bg-white scroll-mt-16 border-t border-gray-100"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -274,7 +273,9 @@ const JoinUs = () => {
                   rel="noopener noreferrer"
                   className="group inline-flex items-center justify-between bg-secondary text-white pl-7 pr-2.5 py-2.5 rounded-full font-bold text-base shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/30 hover:bg-secondary/95 active:scale-[0.98] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
                 >
-                  <span className="mr-6 font-heading">Ser aliado estratégico</span>
+                  <span className="mr-6 font-heading">
+                    Ser aliado estratégico
+                  </span>
                   <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:rotate-45">
                     <ArrowUpRight className="w-4.5 h-4.5 text-white" />
                   </div>
@@ -298,15 +299,11 @@ const JoinUs = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════ */}
-      {/* CTA — JÓVENES VOLUNTARIOS (FLOATING DARK CONTAINER)    */}
-      {/* ═══════════════════════════════════════════════════════ */}
       <section
         id="cta-voluntarios"
-        className="py-16 sm:py-20 lg:py-24 bg-white scroll-mt-16"
+        className="py-8 lg:py-10 bg-white scroll-mt-16"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Floating Dark Core Card Block to ensure Page Theme Lock */}
           <m.div
             className="relative bg-gradient-to-br from-[#0b2826] via-[#123e39] to-[#0b2826] rounded-[3rem] p-8 sm:p-12 lg:p-16 border border-[#1a4d47]/30 shadow-2xl shadow-[#0b2826]/25 overflow-hidden"
             initial={{ opacity: 0, y: 40 }}
@@ -319,7 +316,7 @@ const JoinUs = () => {
               <div className="absolute top-[-20%] right-[-10%] w-96 h-96 rounded-full bg-primary/10 blur-[80px]" />
               <div className="absolute bottom-[-25%] left-[-10%] w-96 h-96 rounded-full bg-secondary/15 blur-[90px]" />
             </div>
-            
+
             <div
               className="absolute inset-0 opacity-[0.03]"
               style={{
@@ -392,8 +389,8 @@ const JoinUs = () => {
                   </div>
                   <p className="text-sm text-gray-400">
                     Únete a los{" "}
-                    <span className="text-white font-bold">+30 jóvenes</span> que
-                    ya lideran el cambio
+                    <span className="text-white font-bold">+30 jóvenes</span>{" "}
+                    que ya lideran el cambio
                   </p>
                 </div>
               </div>
@@ -402,10 +399,7 @@ const JoinUs = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════ */}
-      {/* CLOSING CTA BANNER                                     */}
-      {/* ═══════════════════════════════════════════════════════ */}
-      <section className="py-20 lg:py-28 bg-white border-t border-gray-100">
+      <section className="py-8 lg:py-10 bg-white scroll-mt-16 border-t border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <m.div
             className="relative bg-gradient-to-br from-secondary/10 via-secondary/5 to-accent/10 rounded-[3rem] p-10 sm:p-16 border border-secondary/20 text-center overflow-hidden"
@@ -426,7 +420,8 @@ const JoinUs = () => {
                 </span>
               </h2>
               <p className="text-gray-600 text-lg max-w-2xl mx-auto font-light leading-relaxed">
-                Cada aporte e iniciativa cuenta. Elige cómo ser parte de nuestra red educativa de alto impacto.
+                Cada aporte e iniciativa cuenta. Elige cómo ser parte de nuestra
+                red educativa de alto impacto.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 {/* Secondary styled Button-in-Button */}
@@ -436,12 +431,14 @@ const JoinUs = () => {
                   rel="noopener noreferrer"
                   className="group w-full sm:w-auto inline-flex items-center justify-between bg-primary text-white pl-6 pr-2 py-2 rounded-full font-bold shadow-md shadow-primary/10 hover:shadow-xl hover:shadow-primary/20 hover:bg-primary/95 active:scale-[0.98] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
                 >
-                  <span className="mr-6 font-heading text-sm">Quiero ser aliado</span>
+                  <span className="mr-6 font-heading text-sm">
+                    Quiero ser aliado
+                  </span>
                   <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5">
                     <ArrowRight className="w-4 h-4 text-white" />
                   </div>
                 </a>
-                
+
                 {/* Dark styled Button-in-Button */}
                 <a
                   href={volunteerCTA.buttonLink}
@@ -449,7 +446,9 @@ const JoinUs = () => {
                   rel="noopener noreferrer"
                   className="group w-full sm:w-auto inline-flex items-center justify-between bg-dark text-white pl-6 pr-2 py-2 rounded-full font-bold hover:bg-dark/95 active:scale-[0.98] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
                 >
-                  <span className="mr-6 font-heading text-sm">Quiero ser voluntario</span>
+                  <span className="mr-6 font-heading text-sm">
+                    Quiero ser voluntario
+                  </span>
                   <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-110">
                     <Heart className="w-4 h-4 text-primary" />
                   </div>

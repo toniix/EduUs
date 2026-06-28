@@ -1,13 +1,6 @@
 import { useState, useEffect, useReducer, useCallback } from "react";
-import {
-  ArrowRight,
-  Mail,
-  Globe,
-  Facebook,
-  Instagram,
-  Linkedin,
-  FileText,
-} from "lucide-react";
+import { ArrowRight, Mail, Globe, FileText } from "lucide-react";
+import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useReminders } from "../../hooks/useReminders";
 import toast from "react-hot-toast";
@@ -16,22 +9,21 @@ import ReminderSection from "./OpportunityReminderSection";
 import SidebarDeadlineBlock from "./SidebarDeadlineBlock";
 import OpportunityProcessTimeline from "./OpportunityProcessTimeline";
 
-/* ─── Configuración de Iconos para Redes ─── */
 const SOCIAL_ICONS = {
   facebook: {
-    Icon: Facebook,
+    Icon: FaFacebook,
     color:
       "text-[#1877f2] bg-[#1877f2]/5 border-[#1877f2]/10 hover:bg-[#1877f2]/10 hover:border-[#1877f2]/20",
     label: "Facebook",
   },
   instagram: {
-    Icon: Instagram,
+    Icon: FaInstagram,
     color:
       "text-[#e1306c] bg-[#e1306c]/5 border-[#e1306c]/10 hover:bg-[#e1306c]/10 hover:border-[#e1306c]/20",
     label: "Instagram",
   },
   linkedin: {
-    Icon: Linkedin,
+    Icon: FaLinkedin,
     color:
       "text-[#0a66c2] bg-[#0a66c2]/5 border-[#0a66c2]/10 hover:bg-[#0a66c2]/10 hover:border-[#0a66c2]/20",
     label: "LinkedIn",

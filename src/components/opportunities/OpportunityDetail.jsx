@@ -16,56 +16,12 @@ import ShareOpportunity from "./ShareOpportunity";
 import SEO from "../SEO";
 import DetailHeader from "./OpportunityDetailHeader";
 import DetailBody from "./OpportunityDetailBody";
-
-// Nuevas secciones
 import OpportunityVideoSection from "./OpportunityVideoSection";
-import OpportunitySocialLinks from "./OpportunitySocialLinks";
 import OpportunityTimeline from "./OpportunityTimeline";
 import OpportunityAIAssistant from "./OpportunityAIAssistant";
 import { useAuth } from "../../contexts/AuthContext";
-
-/* ─── RegisterSidebarCTA ─────────────────────────────────────── */
-const RegisterSidebarCTA = () => {
-  return (
-    <motion.div
-      className="flex flex-col items-center gap-3.5 py-4 px-2 border-t border-gray-100 w-full"
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
-    >
-      {/* Fila superior: Imagen (55%) y Texto (40%) */}
-      <div className="flex items-center justify-center gap-3.5 w-full">
-        {/* Imagen */}
-        <div className="w-[55%] flex-shrink-0 select-none pointer-events-none">
-          <img
-            src="/CTA-img.png"
-            alt="Regístrate"
-            className="w-full h-auto object-contain"
-          />
-        </div>
-
-        {/* Texto */}
-        <div className="w-[40%] flex-1 min-w-0 space-y-0.5 text-left">
-          <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
-            ¡Encuentra más oportunidades como esta!
-          </h3>
-          <p className="text-[11px] sm:text-xs text-gray-500 leading-snug">
-            Crea tu cuenta para recibir alertas personalizadas y guardar tus
-            favoritas.
-          </p>
-        </div>
-      </div>
-
-      {/* Botón abajo */}
-      <Link
-        to="/register"
-        className="w-fit min-w-[165px] self-center flex items-center justify-center py-2.5 px-5 bg-primary text-white font-semibold text-xs rounded-xl shadow-sm shadow-primary/10 hover:bg-primary/95 transition-all duration-200"
-      >
-        Crear cuenta gratis
-      </Link>
-    </motion.div>
-  );
-};
+import OtherOpportunitiesList from "./OtherOpportunitiesList";
+import RegisterSidebarCTA from "./RegisterSidebarCTA";
 
 /* ─── OpportunityDetail ──────────────────────────────────────── */
 const OpportunityDetail = () => {
@@ -81,7 +37,12 @@ const OpportunityDetail = () => {
 
   // Redirección 301 (client-side): si entra por ID o slug viejo, redirigir al slug actual
   useEffect(() => {
-    if (opportunity && opportunity.slug && idOrSlug !== opportunity.slug) {
+    if (
+      opportunity &&
+      opportunity.slug &&
+      (idOrSlug === opportunity.id || idOrSlug === opportunity.slug) &&
+      idOrSlug !== opportunity.slug
+    ) {
       navigate(`/edutracker/oportunidad/${opportunity.slug}`, {
         replace: true,
       });
@@ -92,7 +53,6 @@ const OpportunityDetail = () => {
   if (error) return <OpportunityError error={error} />;
   if (!opportunity) return <OpportunityNotFound />;
 
-  /* ── Extraer campos ── */
   const {
     id: opportunityId,
     title,
@@ -110,7 +70,6 @@ const OpportunityDetail = () => {
     modality,
     audience,
     created_at,
-    // Nuevos campos opcionales (si el backend los provee)
     social_links,
     application_steps,
     documentation,
@@ -159,18 +118,15 @@ const OpportunityDetail = () => {
       : {}),
   };
 
-
-
   /* ── Normalizar redes sociales: acepta `social_links` o contacto directo ── */
   const resolvedSocials =
-    social_links && Object.keys(social_links).filter(k => social_links[k]).length > 0
+    social_links &&
+    Object.keys(social_links).filter((k) => social_links[k]).length > 0
       ? social_links
       : {};
 
   const resolvedSteps =
-    application_steps && application_steps.length > 0
-      ? application_steps
-      : [];
+    application_steps && application_steps.length > 0 ? application_steps : [];
 
   return (
     <>
@@ -182,7 +138,7 @@ const OpportunityDetail = () => {
         jsonLd={opportunityJsonLd}
       />
 
-      <div className="min-h-screen bg-gray-50/60">
+      <div className="min-h-screen bg-secondary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumb */}
           <motion.nav
@@ -244,11 +200,19 @@ const OpportunityDetail = () => {
 
               {/* Video secundario en el sidebar */}
               {opportunity.video_url && (
-                <OpportunityVideoSection video={{ url: opportunity.video_url, title: opportunity.title }} />
+                <OpportunityVideoSection
+                  video={{
+                    url: opportunity.video_url,
+                    title: opportunity.title,
+                  }}
+                />
               )}
 
               {/* CTA de Registro */}
               {!isAuthenticated && <RegisterSidebarCTA />}
+
+              {/* Otras oportunidades abiertas */}
+              <OtherOpportunitiesList currentOpportunityId={opportunityId} />
             </div>
           </div>
 

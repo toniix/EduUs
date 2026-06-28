@@ -1,5 +1,22 @@
 import { motion } from "framer-motion";
-import { Share2, Building, MapPin, Globe, BookOpen, Briefcase, Users, Trophy, Laptop, HeartHandshake, Medal, BadgeCheck, Plane, Award, CheckCircle, XCircle } from "lucide-react";
+import {
+  Share2,
+  Building,
+  MapPin,
+  Globe,
+  BookOpen,
+  Briefcase,
+  Users,
+  Trophy,
+  Laptop,
+  HeartHandshake,
+  Medal,
+  BadgeCheck,
+  Plane,
+  Award,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 import { modalityStyles } from "../../utils/opportunity";
 
@@ -89,7 +106,7 @@ const DetailHeader = ({
           </div>
 
           {/* Botón compartir flotante */}
-          <div className="absolute top-4 right-4">
+          {/* <div className="absolute top-4 right-4">
             <button
               onClick={openShareModal}
               className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white hover:bg-white/35 transition-all duration-200 active:scale-95"
@@ -97,7 +114,7 @@ const DetailHeader = ({
             >
               <Share2 className="h-4 w-4" />
             </button>
-          </div>
+          </div> */}
         </div>
       )}
 
@@ -158,10 +175,11 @@ const DetailHeader = ({
             <div className="ml-auto">
               <button
                 onClick={openShareModal}
-                className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 active:scale-95"
+                className="w-9 h-9 sm:w-auto sm:px-4 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center gap-2 text-gray-500 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 active:scale-95 font-medium text-sm"
                 aria-label="Compartir oportunidad"
               >
                 <Share2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Compartir</span>
               </button>
             </div>
           </div>
@@ -183,7 +201,9 @@ const DetailHeader = ({
                 <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium leading-none mb-0.5">
                   Institución
                 </p>
-                <p className="text-sm text-gray-700 font-medium truncate">{organization}</p>
+                <p className="text-sm text-gray-700 font-medium truncate">
+                  {organization}
+                </p>
               </div>
             </div>
           )}
@@ -197,7 +217,9 @@ const DetailHeader = ({
                 <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium leading-none mb-0.5">
                   Lugar
                 </p>
-                <p className="text-sm text-gray-700 font-medium truncate">{location}</p>
+                <p className="text-sm text-gray-700 font-medium truncate">
+                  {location}
+                </p>
               </div>
             </div>
           )}
@@ -211,7 +233,9 @@ const DetailHeader = ({
                 <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium leading-none mb-0.5">
                   País
                 </p>
-                <p className="text-sm text-gray-700 font-medium truncate">{country}</p>
+                <p className="text-sm text-gray-700 font-medium truncate">
+                  {country}
+                </p>
               </div>
             </div>
           )}
