@@ -24,7 +24,7 @@ import ProjectDrawer from "../components/ProjectDrawer";
 import ProjectSlide from "../components/joinus/ProjectSlide";
 import BenefitCard from "../components/joinus/BenefitCard";
 
-const transitionSpring = {
+const _transitionSpring = {
   type: "spring",
   stiffness: 100,
   damping: 20,

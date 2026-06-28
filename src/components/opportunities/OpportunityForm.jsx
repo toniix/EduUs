@@ -32,11 +32,62 @@ const OpportunityForm = ({
     success,
     handleChange,
     handleContactChange,
+    handleSocialLinksChange,
+    addApplicationStep,
+    removeApplicationStep,
+    addDocumentationItem,
+    removeDocumentationItem,
     handleArrayInput,
     removeArrayItem,
     submitForm,
     errors,
   } = useOpportunityForm(initialData, categories);
+
+  // Estados locales para los builders dinámicos
+  const [newStepTitle, setNewStepTitle] = useState("");
+  const [newStepDesc, setNewStepDesc] = useState("");
+  const [newStepDuration, setNewStepDuration] = useState("");
+  const [stepBuilderError, setStepBuilderError] = useState("");
+
+  const [newDocTitle, setNewDocTitle] = useState("");
+  const [newDocUrl, setNewDocUrl] = useState("");
+  const [docBuilderError, setDocBuilderError] = useState("");
+
+  const handleAddStep = (e) => {
+    e.preventDefault();
+    if (!newStepTitle.trim() || !newStepDesc.trim()) {
+      setStepBuilderError("El título y la descripción del paso son obligatorios.");
+      return;
+    }
+    addApplicationStep({
+      title: newStepTitle.trim(),
+      description: newStepDesc.trim(),
+      duration: newStepDuration.trim() || undefined,
+    });
+    setNewStepTitle("");
+    setNewStepDesc("");
+    setNewStepDuration("");
+    setStepBuilderError("");
+  };
+
+  const handleAddDoc = (e) => {
+    e.preventDefault();
+    if (!newDocTitle.trim() || !newDocUrl.trim()) {
+      setDocBuilderError("El título y la URL del documento son obligatorios.");
+      return;
+    }
+    if (!newDocUrl.startsWith("http://") && !newDocUrl.startsWith("https://")) {
+      setDocBuilderError("La URL del documento debe comenzar con http:// o https://");
+      return;
+    }
+    addDocumentationItem({
+      title: newDocTitle.trim(),
+      url: newDocUrl.trim(),
+    });
+    setNewDocTitle("");
+    setNewDocUrl("");
+    setDocBuilderError("");
+  };
 
   // Cargar categorías al montar el componente
   useEffect(() => {
@@ -90,7 +141,7 @@ const OpportunityForm = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-start justify-center z-[100] overflow-y-auto py-8">
-      <div className="bg-light rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl border border-primary/20 relative my-8">
+      <div className="bg-light rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl border border-primary/20 relative my-8">
         <div className="flex flex-col gap-2 mb-8">
           <div className="flex items-center justify-center relative">
             <button
@@ -136,31 +187,185 @@ const OpportunityForm = ({
             </h3>
             <hr className="mb-6 border-primary/30" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Basic Information */}
-              <div>
-                <label
-                  htmlFor="opp-title"
-                  className="block text-sm font-semibold text-dark mb-1"
-                >
-                  Título <span className="text-primary">*</span>
-                </label>
-                <input
-                  id="opp-title"
-                  type="text"
-                  name="title"
-                  // required
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  placeholder="Ej: Beca de excelencia académica"
-                  value={formData.title || ""}
-                  onChange={handleChange}
-                />
-                {errors?.title && (
-                  <div className="text-xs text-red-600 mt-1 font-semibold">
-                    {errors.title}
-                  </div>
-                )}
+              {/* Columna Izquierda: Campos cortos */}
+              <div className="space-y-6">
+                {/* Título */}
+                <div>
+                  <label
+                    htmlFor="opp-title"
+                    className="block text-sm font-semibold text-dark mb-1"
+                  >
+                    Título <span className="text-primary">*</span>
+                  </label>
+                  <input
+                    id="opp-title"
+                    type="text"
+                    name="title"
+                    className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                    placeholder="Ej: Beca de excelencia académica"
+                    value={formData.title || ""}
+                    onChange={handleChange}
+                  />
+                  {errors?.title && (
+                    <div className="text-xs text-red-600 mt-1 font-semibold">
+                      {errors.title}
+                    </div>
+                  )}
+                </div>
+
+                {/* Organización */}
+                <div>
+                  <label
+                    htmlFor="opp-organization"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Organización
+                  </label>
+                  <input
+                    id="opp-organization"
+                    type="text"
+                    name="organization"
+                    className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                    value={formData.organization || ""}
+                    onChange={handleChange}
+                  />
+                  {errors?.organization && (
+                    <div className="text-xs text-red-600 mt-1 font-semibold">
+                      {errors.organization}
+                    </div>
+                  )}
+                </div>
+
+                {/* Categoría */}
+                <div>
+                  <label
+                    htmlFor="opp-category"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Categoría
+                  </label>
+                  <select
+                    id="opp-category"
+                    name="category_id"
+                    className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                    value={formData.category_id || ""}
+                    onChange={handleChange}
+                    disabled={isLoadingCategories}
+                  >
+                    <option value="">Selecciona una categoría</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                  {isLoadingCategories && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      Cargando categorías...
+                    </div>
+                  )}
+                  {categoriesError && (
+                    <div className="text-xs text-red-600 mt-1 font-semibold">
+                      {categoriesError}
+                    </div>
+                  )}
+                  {errors?.category_id && (
+                    <div className="text-xs text-red-600 mt-1 font-semibold">
+                      {errors.category_id}
+                    </div>
+                  )}
+                </div>
+
+                {/* Modalidad */}
+                <div>
+                  <label
+                    htmlFor="opp-modality"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Modalidad
+                  </label>
+                  <select
+                    id="opp-modality"
+                    name="modality"
+                    className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                    value={formData.modality}
+                    onChange={handleChange}
+                  >
+                    <option value="virtual">Virtual</option>
+                    <option value="presencial">Presencial</option>
+                    <option value="hibrido">Híbrido</option>
+                  </select>
+                </div>
+
+                {/* País */}
+                <div>
+                  <label
+                    htmlFor="opp-country"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    País
+                  </label>
+                  <input
+                    id="opp-country"
+                    type="text"
+                    name="country"
+                    className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                    value={formData.country || ""}
+                    onChange={handleChange}
+                  />
+                  {errors?.country && (
+                    <div className="text-xs text-red-600 mt-1 font-semibold">
+                      {errors.country}
+                    </div>
+                  )}
+                </div>
+
+                {/* Ubicación */}
+                <div>
+                  <label
+                    htmlFor="opp-location"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Ubicación
+                  </label>
+                  <select
+                    id="opp-location"
+                    name="location"
+                    className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                    value={formData.location}
+                    onChange={handleChange}
+                  >
+                    <option value="national">Nacional</option>
+                    <option value="international">Internacional</option>
+                  </select>
+                </div>
+
+                {/* Fecha Límite */}
+                <div>
+                  <label
+                    htmlFor="opp-deadline"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Fecha Límite
+                  </label>
+                  <input
+                    id="opp-deadline"
+                    type="date"
+                    name="deadline"
+                    className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                    value={formData.deadline || ""}
+                    onChange={handleChange}
+                  />
+                  {errors?.deadline && (
+                    <div className="text-xs text-red-600 mt-1 font-semibold">
+                      {errors.deadline}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div>
+
+              {/* Columna Derecha: Descripción */}
+              <div className="flex flex-col h-full">
                 <label
                   htmlFor="opp-description"
                   className="block text-sm font-semibold text-dark mb-1"
@@ -170,163 +375,14 @@ const OpportunityForm = ({
                 <textarea
                   id="opp-description"
                   name="description"
-                  rows="4"
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400 resize-none"
+                  className="w-full flex-grow rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400 resize-none h-[calc(100%-2.5rem)] min-h-[480px]"
+                  placeholder="Describe detalladamente de qué trata la oportunidad..."
                   value={formData.description || ""}
                   onChange={handleChange}
                 />
                 {errors?.description && (
                   <div className="text-xs text-red-600 mt-1 font-semibold">
                     {errors.description}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="opp-organization"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Organización
-                </label>
-                <input
-                  id="opp-organization"
-                  type="text"
-                  name="organization"
-                  // required
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.organization || ""}
-                  onChange={handleChange}
-                />
-                {errors?.organization && (
-                  <div className="text-xs text-red-600 mt-1 font-semibold">
-                    {errors.organization}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="opp-category"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Categoría
-                </label>
-                <select
-                  id="opp-category"
-                  name="category_id"
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.category_id || ""}
-                  onChange={handleChange}
-                  disabled={isLoadingCategories}
-                >
-                  <option value="">Selecciona una categoría</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-                {isLoadingCategories && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    Cargando categorías...
-                  </div>
-                )}
-                {categoriesError && (
-                  <div className="text-xs text-red-600 mt-1 font-semibold">
-                    {categoriesError}
-                  </div>
-                )}
-                {errors?.category_id && (
-                  <div className="text-xs text-red-600 mt-1 font-semibold">
-                    {errors.category_id}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="opp-modality"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Modalidad
-                </label>
-                <select
-                  id="opp-modality"
-                  name="modality"
-                  // required
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.modality}
-                  onChange={handleChange}
-                >
-                  <option value="virtual">Virtual</option>
-                  <option value="presencial">Presencial</option>
-                  <option value="hibrido">Híbrido</option>
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="opp-country"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  País
-                </label>
-                <input
-                  id="opp-country"
-                  type="text"
-                  name="country"
-                  // required
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.country || ""}
-                  onChange={handleChange}
-                />
-                {errors?.country && (
-                  <div className="text-xs text-red-600 mt-1 font-semibold">
-                    {errors.country}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="opp-location"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Ubicación
-                </label>
-                <select
-                  id="opp-location"
-                  name="location"
-                  // required
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.location}
-                  onChange={handleChange}
-                >
-                  <option value="national">Nacional</option>
-                  <option value="international">Internacional</option>
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="opp-deadline"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Fecha Límite
-                </label>
-                <input
-                  id="opp-deadline"
-                  type="date"
-                  name="deadline"
-                  // required
-                  className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
-                  value={formData.deadline || ""}
-                  onChange={handleChange}
-                />
-                {errors?.deadline && (
-                  <div className="text-xs text-red-600 mt-1 font-semibold">
-                    {errors.deadline}
                   </div>
                 )}
               </div>
@@ -658,6 +714,265 @@ const OpportunityForm = ({
               ))}
             </div>
           </div>
+
+          {/* MEDIOS/REDES Y DOCUMENTACIÓN EN LA MISMA FILA */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            {/* Columna 1: Medios y Redes Sociales */}
+            <div className="p-6 rounded-2xl bg-white border border-primary/10 shadow-sm space-y-4 flex flex-col justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-primary">
+                  Medios y Redes Sociales
+                </h3>
+                <hr className="mb-4" />
+                
+                <div className="space-y-4">
+                  {/* Video URL */}
+                  <div>
+                    <label htmlFor="video_url" className="block text-sm font-medium text-gray-700 mb-1">
+                      URL del Video (Presentación o Guía)
+                    </label>
+                    <input
+                      id="video_url"
+                      type="url"
+                      name="video_url"
+                      className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      value={formData.video_url || ""}
+                      onChange={handleChange}
+                    />
+                    {errors?.video_url && (
+                      <div className="text-xs text-red-600 mt-1 font-semibold">
+                        {errors.video_url}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Redes Sociales: Facebook */}
+                  <div>
+                    <label htmlFor="fb_url" className="block text-sm font-medium text-gray-700 mb-1">
+                      Facebook de la institución
+                    </label>
+                    <input
+                      id="fb_url"
+                      type="url"
+                      name="facebook"
+                      className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                      placeholder="https://facebook.com/..."
+                      value={formData.social_links?.facebook || ""}
+                      onChange={handleSocialLinksChange}
+                    />
+                    {errors?.social_links?.facebook && (
+                      <div className="text-xs text-red-600 mt-1 font-semibold">
+                        {errors.social_links.facebook}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Redes Sociales: Instagram */}
+                  <div>
+                    <label htmlFor="ig_url" className="block text-sm font-medium text-gray-700 mb-1">
+                      Instagram de la institución
+                    </label>
+                    <input
+                      id="ig_url"
+                      type="url"
+                      name="instagram"
+                      className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                      placeholder="https://instagram.com/..."
+                      value={formData.social_links?.instagram || ""}
+                      onChange={handleSocialLinksChange}
+                    />
+                    {errors?.social_links?.instagram && (
+                      <div className="text-xs text-red-600 mt-1 font-semibold">
+                        {errors.social_links.instagram}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Redes Sociales: LinkedIn */}
+                  <div>
+                    <label htmlFor="in_url" className="block text-sm font-medium text-gray-700 mb-1">
+                      LinkedIn de la institución
+                    </label>
+                    <input
+                      id="in_url"
+                      type="url"
+                      name="linkedin"
+                      className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all placeholder:text-gray-400"
+                      placeholder="https://linkedin.com/company/..."
+                      value={formData.social_links?.linkedin || ""}
+                      onChange={handleSocialLinksChange}
+                    />
+                    {errors?.social_links?.linkedin && (
+                      <div className="text-xs text-red-600 mt-1 font-semibold">
+                        {errors.social_links.linkedin}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Columna 2: Documentos de la Oportunidad */}
+            <div className="p-6 rounded-2xl bg-white border border-primary/10 shadow-sm space-y-4 flex flex-col justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-primary">
+                  Documentos de la Oportunidad
+                </h3>
+                <hr className="mb-4" />
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Documentos de la Oportunidad (Bases, Anexos, Reglamentos, etc.)
+                    </label>
+                    
+                    <div className="flex flex-col gap-2">
+                      <input
+                        type="text"
+                        className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:outline-none placeholder:text-gray-400 text-sm"
+                        placeholder="Título del documento (ej. Anexo 1)"
+                        value={newDocTitle}
+                        onChange={(e) => setNewDocTitle(e.target.value)}
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="url"
+                          className="flex-1 rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:outline-none placeholder:text-gray-400 text-sm"
+                          placeholder="URL del documento"
+                          value={newDocUrl}
+                          onChange={(e) => setNewDocUrl(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddDoc}
+                          className="px-4 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-opacity-90 transition-all text-sm flex-shrink-0"
+                        >
+                          Agregar
+                        </button>
+                      </div>
+                    </div>
+
+                    {docBuilderError && (
+                      <div className="text-xs text-red-600 font-semibold">{docBuilderError}</div>
+                    )}
+
+                    {/* Listado de documentos agregados */}
+                    <div className="space-y-2 mt-3 max-h-[220px] overflow-y-auto pr-1">
+                      {formData.documentation?.map((doc, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100"
+                        >
+                          <div className="flex flex-col min-w-0 pr-4">
+                            <span className="text-sm font-bold text-gray-900 truncate">{doc.title}</span>
+                            <span className="text-xs text-gray-500 truncate">{doc.url}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeDocumentationItem(idx)}
+                            className="text-red-500 hover:text-red-700 p-1 flex-shrink-0"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* PASOS DEL PROCESO DE POSTULACIÓN */}
+          <div className="mt-8 p-6 rounded-2xl bg-white border border-primary/10 shadow-sm space-y-4">
+            <h3 className="text-lg font-semibold text-primary">
+              Pasos del Proceso de Postulación
+            </h3>
+            <hr />
+
+            <div className="space-y-4">
+              <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-150 space-y-3">
+                <p className="text-xs font-semibold text-gray-500">CREAR UN PASO</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="sm:col-span-2">
+                    <input
+                      type="text"
+                      className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:outline-none placeholder:text-gray-400 text-sm"
+                      placeholder="Título del paso (ej. Registro en línea)"
+                      value={newStepTitle}
+                      onChange={(e) => setNewStepTitle(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:outline-none placeholder:text-gray-400 text-sm"
+                      placeholder="Duración aproximada (ej. 15 minutos / Opcional)"
+                      value={newStepDuration}
+                      onChange={(e) => setNewStepDuration(e.target.value)}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <textarea
+                      rows="2"
+                      className="w-full rounded-xl border border-primary/20 bg-white text-dark px-4 py-2 shadow-sm focus:border-primary focus:outline-none placeholder:text-gray-400 text-sm"
+                      placeholder="Descripción del paso..."
+                      value={newStepDesc}
+                      onChange={(e) => setNewStepDesc(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-between items-center pt-1">
+                  {stepBuilderError ? (
+                    <div className="text-xs text-red-600 font-semibold">{stepBuilderError}</div>
+                  ) : (
+                    <div className="text-xs text-gray-400">Completa el paso e instálalo en el proceso</div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleAddStep}
+                    className="px-4 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-opacity-90 transition-all text-sm"
+                  >
+                    Agregar Paso
+                  </button>
+                </div>
+              </div>
+
+              {/* Listado de pasos agregados */}
+              <div className="space-y-3 mt-2">
+                {formData.application_steps?.map((step, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-2xl bg-white border border-gray-150 shadow-sm flex items-start gap-4"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-sm flex-shrink-0">
+                      {idx + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                        <h4 className="text-sm font-bold text-gray-900 truncate">{step.title}</h4>
+                        {step.duration && (
+                          <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md self-start sm:self-center">
+                            {step.duration}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 leading-relaxed whitespace-pre-line">{step.description}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeApplicationStep(idx)}
+                      className="text-red-500 hover:text-red-700 p-1 flex-shrink-0 mt-0.5"
+                    >
+                      <X className="w-4.5 h-4.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* Input para imagen al final del formulario */}
           <div className="mt-8">
             <label
