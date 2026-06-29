@@ -9,8 +9,8 @@ import logo from "../assets/logo_2.png";
 
 const NAV_ITEMS = [
   { name: "Inicio", path: "/" },
-  { name: "Nosotros", path: "/nosotros" },
   { name: "Oportunidades", path: "/edutracker" },
+  { name: "Nosotros", path: "/nosotros" },
   { name: "Únete", path: "/unete" },
 ];
 

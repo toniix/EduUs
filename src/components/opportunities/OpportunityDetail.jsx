@@ -232,7 +232,7 @@ const OpportunityDetail = () => {
       </div>
 
       {/* Asistente IA flotante (FAB) */}
-      <OpportunityAIAssistant opportunity={opportunity} />
+      {/* <OpportunityAIAssistant opportunity={opportunity} /> */}
     </>
   );
 };

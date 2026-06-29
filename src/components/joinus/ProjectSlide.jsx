@@ -46,7 +46,7 @@ const ProjectSlide = ({ project, onSelect }) => {
           <h3 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight font-heading group-hover:-translate-y-0.5 transition-transform duration-500">
             {project.name}
           </h3>
-          <p className="text-gray-250 text-sm sm:text-base font-light leading-relaxed max-w-sm mt-1 opacity-90">
+          <p className="text-secondary-light  text-sm sm:text-base font-light leading-relaxed max-w-sm mt-1 opacity-90">
             {project.description}
           </p>
         </div>

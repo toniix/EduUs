@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import MarqueeLib from "react-fast-marquee";
-const Marquee = MarqueeLib.default ?? MarqueeLib;
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, FreeMode } from "swiper/modules";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/autoplay";
 
 import {
   ArrowRight,
@@ -73,7 +78,7 @@ const JoinUs = () => {
       : projects;
 
   return (
-    <div className="min-h-screen bg-secondary/10 text-gray-900 overflow-x-hidden w-full max-w-full">
+    <div className="min-h-screen bg-secondary text-gray-900 overflow-x-hidden w-full max-w-full">
       <SEO
         title="Únete — EDU-US | Colabora o sé voluntario"
         description="Descubre cómo puedes unirte a EDU-US como empresa aliada o joven voluntario. Conoce nuestros proyectos de impacto y sé parte del cambio educativo en el Perú."
@@ -179,15 +184,6 @@ const JoinUs = () => {
           </m.div>
         </div>
 
-        {/* Nuestros Proyectos Highlights Header */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16 flex items-center gap-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-          <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400 font-heading">
-            Proyectos destacados
-          </h3>
-          <span className="h-[1px] bg-gray-200/60 flex-grow" />
-        </div>
-
         {/* ── Immersive Projects Marquee ── */}
         <div className="relative mt-6 overflow-hidden">
           {/* Edge fade gradient masks */}
@@ -203,25 +199,38 @@ const JoinUs = () => {
               No hay proyectos disponibles en este momento.
             </div>
           ) : (
-            <div className="flex flex-col">
-              <Marquee
-                speed={40}
-                pauseOnHover
-                gradient={false}
-                className="flex gap-6 py-8"
+            <div className="flex flex-col py-4 joinus-projects-swiper select-none">
+              <Swiper
+                modules={[Autoplay, FreeMode]}
+                slidesPerView="auto"
+                spaceBetween={24}
+                freeMode={{
+                  enabled: true,
+                  momentum: false,
+                  momentumBounce: false,
+                }}
+                loop={true}
+                speed={7500}
+                autoplay={{
+                  delay: 0,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+                }}
+                grabCursor={true}
+                className="w-full"
               >
                 {normalizedProjects.map((project, idx) => (
-                  <div
+                  <SwiperSlide
                     key={`project-${project.id}-${idx}`}
-                    className="mx-4 w-[280px] sm:w-[340px] lg:w-[380px] shrink-0"
+                    className="!w-[280px] sm:!w-[340px] lg:!w-[380px] shrink-0"
                   >
                     <ProjectSlide
                       project={project}
                       onSelect={() => setSelectedProject(project)}
                     />
-                  </div>
+                  </SwiperSlide>
                 ))}
-              </Marquee>
+              </Swiper>
             </div>
           )}
         </div>
