@@ -1,0 +1,15 @@
+# EDU-US
+
+> Plataforma y comunidad que conecta a jóvenes latinoamericanos con becas, voluntariados y oportunidades académicas internacionales actualizadas semanalmente.
+
+## Páginas Principales
+
+- [Inicio](https://eduus.club/): Acceso principal al buscador de becas y oportunidades académicas internacionales.
+- [Nosotros](https://eduus.club/nosotros): Información sobre la organización juvenil sin fines de lucro EDU-US, nuestra visión, misión e impacto.
+- [EduTracker](https://eduus.club/edutracker): Base de datos y buscador interactivo con filtros de oportunidades educativas nacionales e internacionales.
+- [Únete](https://eduus.club/unete): Formulario y detalles para unirse a la red de voluntarios y colaboradores.
+
+## Legal y Soporte
+
+- [Términos y Condiciones](https://eduus.club/terminos): Condiciones de uso de la plataforma.
+- [Política de Privacidad](https://eduus.club/privacidad): Información sobre el manejo de datos de usuarios.

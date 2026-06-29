@@ -78,3 +78,32 @@ export function useFeaturedEvent() {
 
   return { event, loading };
 }
+
+/**
+ * Hook para cargar un evento específico por su slug.
+ */
+export function useEventBySlug(slug) {
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!slug) return;
+    setLoading(true);
+    setError(null);
+    eventsService
+      .getEventBySlug(slug)
+      .then((data) => {
+        setEvent(data);
+      })
+      .catch((err) => {
+        console.error("Error al cargar evento:", err);
+        setError("No se pudo cargar el evento.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [slug]);
+
+  return { event, loading, error };
+}

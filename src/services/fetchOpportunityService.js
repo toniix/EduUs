@@ -294,16 +294,10 @@ class OpportunitiesService {
             name,
             description
           ),
-          creator:profiles!opportunities_created_by_fkey(
-            id,
-            full_name,
-            avatar_url
-          ),
           opportunity_tags(
             tag:tags(
               id,
-              name,
-              color
+              name
             )
           )
         `,

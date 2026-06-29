@@ -18,7 +18,7 @@ export default function ContentTab({
   currentPage,
   setCurrentPage,
   totalPages,
-  loading,
+  _loading,
   fetchOpportunities,
   categories = [],
   categoryFilter,

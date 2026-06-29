@@ -2,61 +2,56 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useOpportunity } from "../../hooks/useOpportunities";
 import { ChevronLeft } from "lucide-react";
+import { motion } from "framer-motion";
 import { statusColors } from "../../utils/opportunity";
+
+// Estados de carga / error
 import OpportunityLoading from "./OpportunityLoading";
 import OpportunityError from "./OpportunityError";
 import OpportunityNotFound from "./OpportunityNotFound";
+
+// Secciones principales
 import OpportunitySidebar from "./OpportunitySidebar";
 import ShareOpportunity from "./ShareOpportunity";
 import SEO from "../SEO";
 import DetailHeader from "./OpportunityDetailHeader";
 import DetailBody from "./OpportunityDetailBody";
+import OpportunityVideoSection from "./OpportunityVideoSection";
+import OpportunityTimeline from "./OpportunityTimeline";
+import OpportunityAIAssistant from "./OpportunityAIAssistant";
+import { useAuth } from "../../contexts/AuthContext";
+import OtherOpportunitiesList from "./OtherOpportunitiesList";
+import RegisterSidebarCTA from "./RegisterSidebarCTA";
 
+/* ─── OpportunityDetail ──────────────────────────────────────── */
 const OpportunityDetail = () => {
   const { idOrSlug } = useParams();
   const { opportunity, loading, error } = useOpportunity(idOrSlug);
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Redirección 301 (Client-side): Si entra por ID o slug viejo, redirigir al slug actual
+  // Redirección 301 (client-side): si entra por ID o slug viejo, redirigir al slug actual
   useEffect(() => {
-    if (opportunity && opportunity.slug && idOrSlug !== opportunity.slug) {
+    if (
+      opportunity &&
+      opportunity.slug &&
+      (idOrSlug === opportunity.id || idOrSlug === opportunity.slug) &&
+      idOrSlug !== opportunity.slug
+    ) {
       navigate(`/edutracker/oportunidad/${opportunity.slug}`, {
         replace: true,
       });
     }
   }, [opportunity, idOrSlug, navigate]);
 
-  // Función para abrir el modal
-  const openShareModal = () => {
-    setIsModalOpen(true);
-  };
-
-  // Función para cerrar el modal
-  const closeShareModal = () => {
-    setIsModalOpen(false);
-  };
-  const handleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
-    // Aquí implementarías la lógica para guardar/quitar de favoritos
-  };
-
-  if (loading) {
-    return <OpportunityLoading />;
-  }
-
-  if (error) {
-    return <OpportunityError error={error} />;
-  }
-
-  if (!opportunity) {
-    return <OpportunityNotFound />;
-  }
+  if (loading) return <OpportunityLoading />;
+  if (error) return <OpportunityError error={error} />;
+  if (!opportunity) return <OpportunityNotFound />;
 
   const {
     id: opportunityId,
@@ -74,30 +69,26 @@ const OpportunityDetail = () => {
     contact,
     modality,
     audience,
+    created_at,
+    social_links,
+    application_steps,
+    documentation,
   } = opportunity;
 
-  // console.log("oportunity:", opportunity);
-  // Supón que data.requirements viene como un string JSON
   const parsedRequirements =
     typeof requirements === "string" ? JSON.parse(requirements) : requirements;
-
   const parsedBenefits =
     typeof benefits === "string" ? JSON.parse(benefits) : benefits;
 
-  // console.log("requirements:", requirements);
-  // console.log("type:", typeof requirements);
-  // console.log("is array:", Array.isArray(requirements));
   const isExpired = deadline && new Date(deadline) < new Date();
-
   const status = isExpired ? "inactive" : "active";
-
   const statusConfig = statusColors[status] || statusColors.active;
-  const StatusIcon = statusConfig.icon;
 
   const daysUntilDeadline = deadline
     ? Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24))
     : null;
 
+  /* ── Schema.org ── */
   const opportunityJsonLd = {
     "@context": "https://schema.org",
     "@type": "EducationEvent",
@@ -127,6 +118,16 @@ const OpportunityDetail = () => {
       : {}),
   };
 
+  /* ── Normalizar redes sociales: acepta `social_links` o contacto directo ── */
+  const resolvedSocials =
+    social_links &&
+    Object.keys(social_links).filter((k) => social_links[k]).length > 0
+      ? social_links
+      : {};
+
+  const resolvedSteps =
+    application_steps && application_steps.length > 0 ? application_steps : [];
+
   return (
     <>
       <SEO
@@ -136,22 +137,30 @@ const OpportunityDetail = () => {
         type="article"
         jsonLd={opportunityJsonLd}
       />
+
       <div className="min-h-screen bg-secondary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumb */}
-          <nav className="mb-6">
+          <motion.nav
+            className="mb-6"
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+          >
             <Link
               to="/edutracker"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary hover:text-white border border-primary hover:bg-primary rounded-lg transition-all duration-200 ease-in-out group"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-gray-500 hover:text-primary border border-gray-200 hover:border-primary/30 hover:bg-primary/5 bg-white rounded-xl transition-all duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group active:scale-[0.98]"
             >
-              <ChevronLeft className="h-4 w-4 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200" />
-              <span>Volver a oportunidades</span>
+              <ChevronLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+              Volver a oportunidades
             </Link>
-          </nav>
+          </motion.nav>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Contenido Principal */}
-            <div className="lg:col-span-2 space-y-6">
+          {/* Layout principal: 2 col en desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* ── Columna de contenido (2/3) ── */}
+            <div className="lg:col-span-2 space-y-5">
+              {/* Header */}
               <DetailHeader
                 title={title}
                 image_url={image_url}
@@ -163,8 +172,10 @@ const OpportunityDetail = () => {
                 location={location}
                 country={country}
                 tags={tags}
-                openShareModal={openShareModal}
+                openShareModal={() => setIsModalOpen(true)}
               />
+
+              {/* Cuerpo: descripción, audiencia, requisitos, beneficios */}
               <DetailBody
                 description={description}
                 audience={audience}
@@ -173,23 +184,55 @@ const OpportunityDetail = () => {
               />
             </div>
 
-            <OpportunitySidebar
-              deadline={deadline}
-              contact={contact}
-              opportunityId={opportunityId}
-              isExpired={isExpired}
-              daysUntilDeadline={daysUntilDeadline}
-            />
+            {/* ── Sidebar (1/3) ── */}
+            <div className="space-y-6">
+              <OpportunitySidebar
+                deadline={deadline}
+                contact={contact}
+                social_links={resolvedSocials}
+                opportunityId={opportunityId}
+                isExpired={isExpired}
+                daysUntilDeadline={daysUntilDeadline}
+                organization={organization}
+                created_at={created_at}
+                documentation={documentation}
+              />
+
+              {/* Video secundario en el sidebar */}
+              {opportunity.video_url && (
+                <OpportunityVideoSection
+                  video={{
+                    url: opportunity.video_url,
+                    title: opportunity.title,
+                  }}
+                />
+              )}
+
+              {/* CTA de Registro */}
+              {!isAuthenticated && <RegisterSidebarCTA />}
+
+              {/* Otras oportunidades abiertas */}
+              <OtherOpportunitiesList currentOpportunityId={opportunityId} />
+            </div>
+          </div>
+
+          {/* Timeline del proceso de postulación (Ancho Completo) */}
+          <div className="mt-6">
+            <OpportunityTimeline steps={resolvedSteps} deadline={deadline} />
           </div>
         </div>
+
         {/* Modal de compartir */}
         {isModalOpen && (
           <ShareOpportunity
             opportunity={opportunity}
-            closeModal={closeShareModal}
+            closeModal={() => setIsModalOpen(false)}
           />
         )}
       </div>
+
+      {/* Asistente IA flotante (FAB) */}
+      {/* <OpportunityAIAssistant opportunity={opportunity} /> */}
     </>
   );
 };

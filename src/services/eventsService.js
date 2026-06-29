@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabase";
 import { createSlug } from "../utils/slugify";
+import { MOCK_EVENTS } from "../data/mockEvents";
 
 /**
  * SELECT base para eventos — incluye conteo de inscritos para calcular spots_left.
@@ -32,14 +33,28 @@ class EventsService {
    * Eventos públicos: solo los publicados, ordenados por fecha de inicio.
    */
   async getEvents() {
-    const { data, error } = await supabase
-      .from("events")
-      .select(EVENT_SELECT)
-      .eq("status", "published")
-      .order("starts_at", { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from("events")
+        .select(EVENT_SELECT)
+        .eq("status", "published")
+        .order("starts_at", { ascending: true });
 
-    if (error) throw new Error(`Error al obtener eventos: ${error.message}`);
-    return (data || []).map(transformEvent);
+      if (error) throw error;
+
+      // Si la base de datos no tiene eventos cargados, usamos los mocks para fines de UI/demo.
+      // if (!data || data.length === 0) {
+      //   return MOCK_EVENTS;
+      // }
+
+      return (data || []).map(transformEvent);
+    } catch (err) {
+      console.warn(
+        "Error con Supabase en getEvents, usando mocks locales:",
+        err,
+      );
+      // return MOCK_EVENTS;
+    }
   }
 
   /**
@@ -97,6 +112,36 @@ class EventsService {
 
     if (error) throw new Error(`Error al obtener evento: ${error.message}`);
     return data ? transformEvent(data) : null;
+  }
+
+  /**
+   * Obtiene un evento por SLUG.
+   */
+  async getEventBySlug(slug) {
+    try {
+      const { data, error } = await supabase
+        .from("events")
+        .select(EVENT_SELECT)
+        .eq("slug", slug)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        return transformEvent(data);
+      }
+
+      // Fallback a los mocks si no se encuentra en Supabase
+      const mockEvent = MOCK_EVENTS.find((e) => e.slug === slug);
+      return mockEvent || null;
+    } catch (err) {
+      console.warn(
+        `Error al obtener evento por slug (${slug}), buscando en mocks locales:`,
+        err,
+      );
+      const mockEvent = MOCK_EVENTS.find((e) => e.slug === slug);
+      return mockEvent || null;
+    }
   }
 
   // ─────────────────────────────────────────────

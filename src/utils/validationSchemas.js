@@ -120,6 +120,40 @@ export const opportunitySchema = z.object({
   is_featured: z.boolean().optional().default(false),
   featured_order: z.number().min(1).max(4).nullable().optional(),
   is_published: z.boolean().optional().default(false),
+  video_url: z
+    .string()
+    .url("La URL del video no es válida.")
+    .optional()
+    .or(z.literal(""))
+    .or(z.null()),
+  social_links: z
+    .object({
+      facebook: z.string().optional().or(z.literal("")),
+      instagram: z.string().optional().or(z.literal("")),
+      linkedin: z.string().optional().or(z.literal("")),
+    })
+    .optional()
+    .nullable(),
+  application_steps: z
+    .array(
+      z.object({
+        id: z.number().or(z.string()),
+        title: z.string().min(1, "El título del paso es obligatorio"),
+        description: z.string().min(1, "La descripción del paso es obligatoria"),
+        duration: z.string().optional().or(z.literal("")),
+      })
+    )
+    .optional()
+    .nullable(),
+  documentation: z
+    .array(
+      z.object({
+        title: z.string().min(1, "El título del documento es obligatorio"),
+        url: z.string().url("La URL del documento no es válida."),
+      })
+    )
+    .optional()
+    .nullable(),
 });
 
 // Esquema de validación para eventos

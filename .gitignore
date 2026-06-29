@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.antigravitycli
+.agents/*
 
 # Editor directories and files
 .vscode/*
@@ -25,6 +27,7 @@ dist-ssr
 .env
 .unlighthouse
 unlighthouse.config.ts
+
 
 # testSprite
 testsprite_tests

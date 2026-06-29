@@ -19,10 +19,27 @@ const initialState = {
   is_featured: false,
   featured_order: null,
   is_published: false,
+  video_url: "",
+  social_links: { facebook: "", instagram: "", linkedin: "" },
+  application_steps: [],
+  documentation: [],
 };
 
 export function useOpportunityForm(initial = {}, categories = []) {
-  const [formData, setFormData] = useState({ ...initialState, ...initial });
+  const [formData, setFormData] = useState(() => {
+    const base = { ...initialState, ...initial };
+    return {
+      ...base,
+      social_links: {
+        facebook: base.social_links?.facebook || "",
+        instagram: base.social_links?.instagram || "",
+        linkedin: base.social_links?.linkedin || "",
+      },
+      application_steps: Array.isArray(base.application_steps) ? base.application_steps : [],
+      documentation: Array.isArray(base.documentation) ? base.documentation : [],
+      video_url: base.video_url || "",
+    };
+  });
   const [currentBenefit, setCurrentBenefit] = useState("");
   const [currentTag, setCurrentTag] = useState("");
   const [currentRequirement, setCurrentRequirement] = useState("");
@@ -76,6 +93,57 @@ export function useOpportunityForm(initial = {}, categories = []) {
         ...prev.contact,
         [name]: value,
       },
+    }));
+  };
+
+  const handleSocialLinksChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      social_links: {
+        ...prev.social_links,
+        [name]: value,
+      },
+    }));
+  };
+
+  const addApplicationStep = (step) => {
+    setFormData((prev) => {
+      const steps = prev.application_steps || [];
+      const newStep = {
+        id: steps.length + 1,
+        ...step,
+      };
+      return {
+        ...prev,
+        application_steps: [...steps, newStep],
+      };
+    });
+  };
+
+  const removeApplicationStep = (index) => {
+    setFormData((prev) => {
+      const steps = (prev.application_steps || []).filter((_, i) => i !== index);
+      // Re-indexar IDs de pasos secuencialmente
+      const reindexedSteps = steps.map((s, idx) => ({ ...s, id: idx + 1 }));
+      return {
+        ...prev,
+        application_steps: reindexedSteps,
+      };
+    });
+  };
+
+  const addDocumentationItem = (item) => {
+    setFormData((prev) => ({
+      ...prev,
+      documentation: [...(prev.documentation || []), item],
+    }));
+  };
+
+  const removeDocumentationItem = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      documentation: (prev.documentation || []).filter((_, i) => i !== index),
     }));
   };
 
@@ -149,6 +217,7 @@ export function useOpportunityForm(initial = {}, categories = []) {
       setLoading(false);
     }
   };
+
   const resetForm = () => {
     setFormData(initialState);
     setCurrentBenefit("");
@@ -173,6 +242,11 @@ export function useOpportunityForm(initial = {}, categories = []) {
     success,
     handleChange,
     handleContactChange,
+    handleSocialLinksChange,
+    addApplicationStep,
+    removeApplicationStep,
+    addDocumentationItem,
+    removeDocumentationItem,
     handleArrayInput,
     removeArrayItem,
     submitForm,

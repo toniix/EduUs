@@ -82,9 +82,9 @@ const Home = () => {
         <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
           <TestimonialsSection />
         </Suspense>
-        <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse" />}>
+        {/* <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse" />}>
           <CallToAction />
-        </Suspense>
+        </Suspense> */}
       </div>
     </>
   );

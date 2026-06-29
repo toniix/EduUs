@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ["recordings-allen-python-favorite.trycloudflare.com"],
+    allowedHosts: ["zones-prefer-rules-clicking.trycloudflare.com"],
   },
 });
