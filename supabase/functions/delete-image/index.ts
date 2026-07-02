@@ -29,11 +29,25 @@ serve(async (req) => {
     }
 
     // Función para extraer public_id de URL de Cloudinary
-    const getPublicIdFromUrl = (url) => {
+    const getPublicIdFromUrl = (url: string) => {
       try {
-        const regex = /\/upload\/(?:v\d+\/)?([^\/\.]+)/;
-        const match = url.match(regex);
-        return match ? match[1] : null;
+        const uploadIndex = url.indexOf('/upload/');
+        if (uploadIndex === -1) return null;
+        
+        let path = url.substring(uploadIndex + '/upload/'.length);
+        
+        // Remover el segmento de versión (v1234567890/) si existe
+        if (path.match(/^v\d+\//)) {
+          path = path.replace(/^v\d+\//, '');
+        }
+        
+        // Quitar la extensión del archivo (ej. .jpg, .png)
+        const lastDotIndex = path.lastIndexOf('.');
+        if (lastDotIndex !== -1) {
+          path = path.substring(0, lastDotIndex);
+        }
+        
+        return path;
       } catch (error) {
         console.error('Error extracting public_id from URL:', error);
         return null;
@@ -110,7 +124,7 @@ serve(async (req) => {
 })
 
 // Función para generar signature SHA1
-async function generateSignature(publicId, timestamp, apiSecret) {
+async function generateSignature(publicId: string, timestamp: number, apiSecret: string) {
   const stringToSign = `public_id=${publicId}&timestamp=${timestamp}${apiSecret}`
   const msgBuffer = new TextEncoder().encode(stringToSign)
   const hashBuffer = await crypto.subtle.digest('SHA-1', msgBuffer)
