@@ -1,9 +1,13 @@
-// Configuración de Cloudinary (ajusta estos valores)
+/**
+ * Configuración de Cloudinary para el cliente.
+ * Solo se usa el cloudName para optimización de URLs (lectura).
+ * Los uploads se realizan a través de la Edge Function de Supabase
+ * para proteger las credenciales de Cloudinary.
+ */
 export const CLOUDINARY_CONFIG = {
   cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
-  uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
 };
 
-if (!CLOUDINARY_CONFIG.cloudName || !CLOUDINARY_CONFIG.uploadPreset) {
-  throw new Error("Missing Cloudinary environment variables");
+if (!CLOUDINARY_CONFIG.cloudName) {
+  throw new Error("Missing VITE_CLOUDINARY_CLOUD_NAME environment variable");
 }

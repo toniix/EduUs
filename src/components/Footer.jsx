@@ -58,6 +58,8 @@ const Footer = () => {
                 alt="EDU-US"
                 className="h-10 w-auto object-contain"
                 loading="lazy"
+                width="120"
+                height="40"
               />
             </div>
 

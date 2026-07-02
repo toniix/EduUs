@@ -166,12 +166,11 @@ El archivo `.env` ya está incluido en `.gitignore`. Las variables necesarias so
 VITE_SUPABASE_URL=           # URL del proyecto en Supabase
 VITE_SUPABASE_ANON_KEY=      # Anon key pública del proyecto
 
-# Cloudinary
+# Cloudinary (solo lectura — para optimización de URLs)
 VITE_CLOUDINARY_CLOUD_NAME=  # Nombre del cloud en Cloudinary
-VITE_CLOUDINARY_UPLOAD_PRESET= # Upload preset sin firma (unsigned)
 ```
 
-> **Nota:** Los valores reales se comparten internamente de forma segura (no en este README).
+> **Nota:** Los uploads de imágenes se realizan a través de la Edge Function `upload-image` de Supabase, que usa las credenciales de Cloudinary configuradas como variables de entorno del servidor (`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`). Esto protege las credenciales del lado del cliente.
 
 ---
 

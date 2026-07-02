@@ -68,11 +68,13 @@ export default function Header() {
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* ── Logo ── */}
           <Link to="/" className="flex items-center flex-shrink-0 group">
-            <img
-              src={logo}
-              alt="EDU-US"
-              className="h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
-            />
+              <img
+                src={logo}
+                alt="EDU-US"
+                className="h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+                width="120"
+                height="40"
+              />
           </Link>
 
           {/* ── Desktop nav ── */}
@@ -171,7 +173,7 @@ export default function Header() {
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <img src={logo} alt="EDU-US" className="h-9 w-auto object-contain" />
+          <img src={logo} alt="EDU-US" className="h-9 w-auto object-contain" width="108" height="36" />
           <button
             onClick={() => setIsOpen(false)}
             className="p-1.5 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"

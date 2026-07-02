@@ -9,4 +9,32 @@ Disallow: /auth/
 # APIs internas
 Disallow: /api/
 
+# AI Crawlers — acceso explícito para visibilidad en buscadores IA
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+# Bloquear rutas privadas para todos los bots (redundante pero explícito)
+User-agent: *
+Disallow: /adminpanel
+Disallow: /perfil
+Disallow: /auth/
+
 Sitemap: https://eduus.club/sitemap.xml

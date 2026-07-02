@@ -71,6 +71,9 @@ export default function EventPreviewModal({ event, onClose }) {
             src={event?.banner_url || PLACEHOLDER_SVG}
             alt={event?.title || "Vista previa"}
             className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+            width="600"
+            height="400"
             onError={(e) => {
               e.currentTarget.src = PLACEHOLDER_SVG;
             }}

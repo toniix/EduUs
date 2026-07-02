@@ -55,6 +55,9 @@ const AboutSection = () => {
                     src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    width="600"
+                    height="384"
                   />
                   <div className="absolute inset-0 bg-black/10" />
                   <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-6">

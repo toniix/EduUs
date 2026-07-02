@@ -23,6 +23,27 @@ const Home = () => {
       <SEO
         title="EDU-US | Becas y oportunidades internacionales 2026"
         description="Encuentra becas, voluntariados y oportunidades académicas internacionales actualizadas cada semana."
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "EDU-US",
+          url: "https://eduus.club",
+          description:
+            "Plataforma que conecta a jóvenes peruanos con becas, voluntariados y oportunidades académicas internacionales.",
+          publisher: {
+            "@type": "Organization",
+            name: "EDU-US",
+            logo: "https://eduus.club/logo_1.png",
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: "https://eduus.club/edutracker?search={search_term_string}",
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }}
       />
       {/* PromoModal se auto-controla con usePromoModal */}
       <PromoModal />

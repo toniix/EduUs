@@ -43,7 +43,7 @@ const UserMenu = () => {
         className="flex items-center space-x-2 hover:opacity-80"
       >
         {userImage ? (
-          <img src={userImage} alt="Profile" className="w-8 h-8 rounded-full" />
+          <img src={userImage} alt="Profile" className="w-8 h-8 rounded-full" loading="lazy" width="32" height="32" />
         ) : (
           <User className="h-8 w-8 text-gray-500" />
         )}

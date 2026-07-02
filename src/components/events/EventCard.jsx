@@ -117,6 +117,9 @@ export default function EventCard({
                 src={optimizeCloudinaryUrl(banner_url, { width: 600 }) || PLACEHOLDER}
                 alt={title}
                 className="w-full h-full object-contain"
+                loading="lazy"
+                width="600"
+                height="450"
               />
             </m.div>
 

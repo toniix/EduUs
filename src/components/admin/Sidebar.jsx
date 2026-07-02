@@ -58,6 +58,9 @@ export default function Sidebar({
             src={logo}
             alt="EDU-US"
             className="h-8 w-8 rounded-full shadow"
+            loading="lazy"
+            width="32"
+            height="32"
           />
           {!isCollapsed && (
             <div className="flex flex-col">

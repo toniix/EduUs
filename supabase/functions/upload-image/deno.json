@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "start": "supabase functions serve upload-image"
+  }
+}

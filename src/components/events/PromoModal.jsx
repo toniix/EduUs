@@ -113,6 +113,9 @@ export default function PromoModal() {
                   src={optimizeCloudinaryUrl(event.banner_url, { width: 800 }) || PLACEHOLDER_SVG}
                   alt={event.title}
                   className="max-w-full max-h-full object-contain shadow-2xl rounded-lg"
+                  loading="lazy"
+                  width="800"
+                  height="500"
                   onError={(e) => {
                     e.currentTarget.src = PLACEHOLDER_SVG;
                   }}

@@ -130,6 +130,9 @@ const TestimonialsSection = () => {
                       src={testimonial.image}
                       alt={testimonial.name}
                       className="w-12 h-12 rounded-full object-cover mr-4"
+                      loading="lazy"
+                      width="48"
+                      height="48"
                     />
                     <div>
                       <h4 className="font-semibold text-gray-900">

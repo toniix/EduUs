@@ -279,6 +279,9 @@ export default function EventsSection() {
                   src={optimizeCloudinaryUrl(event.banner_url, 800)}
                   alt={event.title}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  width="800"
+                  height="600"
                 />
                 {/* gradient overlay izquierdo para blend con card */}
                 <div

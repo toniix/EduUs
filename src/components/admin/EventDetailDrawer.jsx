@@ -237,6 +237,9 @@ export default function EventDetailDrawer({
                 src={event.banner_url}
                 alt={event.title}
                 className="w-full h-full object-cover"
+                loading="lazy"
+                width="600"
+                height="192"
               />
             </div>
           )}

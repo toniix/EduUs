@@ -54,6 +54,9 @@ export default function OpportunityCard({ opportunity }) {
           src={optimizeCloudinaryUrl(image_url, { width: 400 }) || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-cover"
+          loading="lazy"
+          width="400"
+          height="225"
         />
         <div className="absolute top-3 left-3">
           <span
