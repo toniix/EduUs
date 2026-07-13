@@ -27,7 +27,7 @@ serve(async (req) => {
     // 🔍 Obtener datos del evento
     const { data: event, error: eventError } = await supabase
       .from('events')
-      .select('title, starts_at, location')
+      .select('title, starts_at, location, modality, zoom_link, slug')
       .eq('id', record.event_id)
       .single()
 
@@ -45,6 +45,13 @@ serve(async (req) => {
       minute: '2-digit',
       hour12: true
     })
+
+    const isVirtual = event.modality === 'virtual';
+    const detailIcon = isVirtual ? '💻' : '📍';
+    const detailLabel = isVirtual ? 'Enlace de Zoom' : 'Ubicación';
+    const detailValue = isVirtual 
+      ? `<a href="${event.zoom_link}" style="color: #e6461e; text-decoration: underline; font-weight: 500;">${event.zoom_link || 'Se enviará antes del evento'}</a>`
+      : `<span style="color: #1f2937; font-weight: 500;">${event.location || 'Por confirmar'}</span>`;
 
     // 📩 Enviar email con Resend
     const res = await fetch('https://api.resend.com/emails', {
@@ -129,27 +136,45 @@ serve(async (req) => {
           <!-- Divisor -->
           <div style="height: 1px; background-color: #e2e8f0; margin-bottom: 16px;"></div>
 
-          <!-- Fila: Ubicación -->
+          <!-- Fila: Ubicación / Zoom Link -->
           <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
               <td width="48" valign="middle" style="padding-right: 12px;">
-                <div style="background-color: #fef2f2; width: 40px; height: 40px; border-radius: 8px; text-align: center; line-height: 40px; font-size: 20px;">📍</div>
+                <div style="background-color: #fef2f2; width: 40px; height: 40px; border-radius: 8px; text-align: center; line-height: 40px; font-size: 20px;">${detailIcon}</div>
               </td>
               <td valign="middle" style="word-break: break-word;">
-                <strong style="color: #374151; font-size: 13px; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Ubicación</strong>
-                <span class="detail-value" style="color: #1f2937; font-size: 16px; font-weight: 500;">${event.location}</span>
+                <strong style="color: #374151; font-size: 13px; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${detailLabel}</strong>
+                <span class="detail-value" style="color: #1f2937; font-size: 16px;">${detailValue}</span>
               </td>
             </tr>
           </table>
         </div>
 
-        <!-- Botón CTA -->
-        <div style="text-align: center; margin-top: 36px;">
-          <a
-            href="https://eduus.club"
-            style="background: linear-gradient(135deg, #e6461e 0%, #d83c16 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block;"
-            >Visitar EDU-US</a
-          >
+        <!-- Botones CTA en una sola fila -->
+        <div style="text-align: center; margin-top: 36px; margin-bottom: 8px;">
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto;">
+            <tr>
+              <!-- Botón Detalles del Evento -->
+              <td style="padding: 0 8px;">
+                <a
+                  href="https://eduus.club/eventos/${event.slug}"
+                  style="background: linear-gradient(135deg, #e6461e 0%, #d83c16 100%); color: #ffffff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-block; text-align: center; min-width: 140px;"
+                >
+                  Ver detalles
+                </a>
+              </td>
+              <!-- Botón WhatsApp -->
+              <td style="padding: 0 8px;">
+                <a
+                  href="https://chat.whatsapp.com/KLGckmNVzvO7nuqWURd1Pf?s=cl&p=i&mlu=3"
+                  target="_blank"
+                  style="background-color: #25D366; color: #ffffff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-block; text-align: center; min-width: 140px;"
+                >
+                  Grupo de WhatsApp
+                </a>
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
 

@@ -82,6 +82,19 @@ export default function EventsAdminTab() {
   const handleTogglePublish = async (event) => {
     const isPublished = event.status === "published";
     const action = isPublished ? "despublicar" : "publicar";
+
+    // Validar en el cliente antes de llamar a la API
+    if (!isPublished && event.starts_at) {
+      const starts = new Date(event.starts_at);
+      const now = new Date();
+      if (starts < now) {
+        toast.error(
+          "No puedes publicar un evento cuya fecha de inicio ya ha pasado."
+        );
+        return;
+      }
+    }
+
     const confirmed = window.confirm(
       `¿Estás seguro de que deseas ${action} "${event.title}"?`,
     );
@@ -105,6 +118,18 @@ export default function EventsAdminTab() {
     if (event.status !== "published") {
       toast.error("Debes publicar el evento antes de marcarlo como destacado.");
       return;
+    }
+
+    // Validar en el cliente antes de llamar a la API
+    if (event.starts_at) {
+      const starts = new Date(event.starts_at);
+      const now = new Date();
+      if (starts < now) {
+        toast.error(
+          "No puedes marcar un evento pasado como destacado o promocional.",
+        );
+        return;
+      }
     }
 
     const confirmed = window.confirm(

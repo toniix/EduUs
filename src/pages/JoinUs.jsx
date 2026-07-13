@@ -18,6 +18,7 @@ import {
   Users,
 } from "lucide-react";
 import { projectsService } from "../services/projectsService";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 import {
   partnerBenefits,
   volunteerBenefits,
@@ -191,8 +192,8 @@ const JoinUs = () => {
           <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-8 sm:w-48 bg-gradient-to-l from-white via-white/50 to-transparent" />
 
           {loading ? (
-            <div className="flex justify-center items-center h-[320px] sm:h-[380px]">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="flex justify-center items-center h-[320px] sm:h-[380px] w-full">
+              <LoadingSpinner message="Cargando proyectos..." size="md" />
             </div>
           ) : projects.length === 0 ? (
             <div className="text-center py-16 text-gray-500 font-light">

@@ -5,6 +5,6 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ["peace-bingo-never-entertaining.trycloudflare.com"],
+    allowedHosts: ["automotive-pas-retain-scope.trycloudflare.com"],
   },
 });

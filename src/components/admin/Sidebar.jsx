@@ -16,13 +16,28 @@ import { useTheme } from "../../contexts/ThemeContext";
 import logo from "../../assets/logo_1.png";
 
 const ALL_MENU_ITEMS = [
-  { icon: <Home />,          label: "Dashboard",     value: "dashboard",     adminOnly: false },
-  { icon: <Users />,         label: "Usuarios",      value: "users",         adminOnly: true },
-  { icon: <FileText />,      label: "Oportunidades", value: "content",       adminOnly: false },
-  { icon: <Tag />,           label: "Categorías",    value: "categories",    adminOnly: false },
-  { icon: <Calendar />,      label: "Eventos",       value: "events",        adminOnly: true },
-  { icon: <ClipboardList />, label: "Inscripciones", value: "registrations", adminOnly: true },
-  { icon: <Sparkles />,      label: "Proyectos",     value: "projects",      adminOnly: true },
+  { icon: <Home />, label: "Dashboard", value: "dashboard", adminOnly: false },
+  { icon: <Users />, label: "Usuarios", value: "users", adminOnly: true },
+  {
+    icon: <FileText />,
+    label: "Oportunidades",
+    value: "content",
+    adminOnly: false,
+  },
+  { icon: <Tag />, label: "Categorías", value: "categories", adminOnly: false },
+  { icon: <Calendar />, label: "Eventos", value: "events", adminOnly: true },
+  {
+    icon: <ClipboardList />,
+    label: "Inscripciones",
+    value: "registrations",
+    adminOnly: true,
+  },
+  {
+    icon: <Sparkles />,
+    label: "Proyectos",
+    value: "projects",
+    adminOnly: true,
+  },
 ];
 
 export default function Sidebar({
@@ -93,7 +108,9 @@ export default function Sidebar({
 
       {/* Menú principal */}
       <nav className="p-4 space-y-2">
-        {ALL_MENU_ITEMS.filter(item => !item.adminOnly || profile?.role === "admin").map((item) => (
+        {ALL_MENU_ITEMS.filter(
+          (item) => !item.adminOnly || profile?.role === "admin",
+        ).map((item) => (
           <div key={item.value}>
             <button
               onClick={() => handleItemClick(item)}
@@ -125,7 +142,9 @@ export default function Sidebar({
       </nav>
 
       {/* Acciones de navegación y logout */}
-      <div className={`absolute bottom-0 left-0 right-0 p-4 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+      <div
+        className={`absolute bottom-0 left-0 right-0 p-4 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}
+      >
         {!isCollapsed && (
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-2">
             Sitio Público
@@ -138,7 +157,9 @@ export default function Sidebar({
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
             } px-4 py-2.5 rounded-xl text-xs font-medium transition-all duration-300 ${
-              isDark ? "hover:bg-gray-800 text-gray-400" : "hover:bg-gray-50 text-gray-600"
+              isDark
+                ? "hover:bg-gray-800 text-gray-400"
+                : "hover:bg-gray-50 text-gray-600"
             } hover:text-primary`}
           >
             <Globe className="h-4 w-4" />
@@ -147,11 +168,13 @@ export default function Sidebar({
 
           {/* Ir a Proyectos/Eventos */}
           <button
-            onClick={() => navigate("/proyectos")}
+            onClick={() => navigate("/edutracker?tab=events")}
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
             } px-4 py-2.5 rounded-xl text-xs font-medium transition-all duration-300 ${
-              isDark ? "hover:bg-gray-800 text-gray-400" : "hover:bg-gray-50 text-gray-600"
+              isDark
+                ? "hover:bg-gray-800 text-gray-400"
+                : "hover:bg-gray-50 text-gray-600"
             } hover:text-primary`}
           >
             <Sparkles className="h-4 w-4" />
@@ -164,7 +187,9 @@ export default function Sidebar({
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
             } px-4 py-2.5 rounded-xl text-xs font-medium transition-all duration-300 ${
-              isDark ? "hover:bg-gray-800 text-gray-400" : "hover:bg-gray-50 text-gray-600"
+              isDark
+                ? "hover:bg-gray-800 text-gray-400"
+                : "hover:bg-gray-50 text-gray-600"
             } hover:text-primary mb-4`}
           >
             <Home className="h-4 w-4" />
