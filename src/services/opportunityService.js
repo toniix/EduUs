@@ -237,7 +237,7 @@ export async function updateOpportunity(id, data, userRole = null) {
     // console.log("Fetching opportunity with ID:", id);
     const { data: existingOpportunity, error: fetchError } = await supabase
       .from("opportunities")
-      .select("*")
+      .select("*, creator:profiles!opportunities_created_by_fkey(role)")
       .eq("id", id)
       .single();
 
@@ -248,16 +248,27 @@ export async function updateOpportunity(id, data, userRole = null) {
       };
     }
 
-    // Verificar que el usuario autenticado sea el creador de la oportunidad o un admin
-    // console.log("verificando permisos para usuario:", userData.user.id);
-    if (
-      existingOpportunity.created_by !== userData.user.id &&
-      userRole !== "admin"
-    ) {
+    const isCreator = existingOpportunity.created_by === userData.user.id;
+    const isOnlyFeaturedUpdate = Object.keys(data).every(
+      (key) => key === "is_featured" || key === "featured_order"
+    );
+
+    let canUserEdit = false;
+    if (isCreator) {
+      canUserEdit = true;
+    } else if (userRole === "admin") {
+      if (isOnlyFeaturedUpdate) {
+        canUserEdit = true;
+      } else {
+        canUserEdit = existingOpportunity.creator?.role === "editor";
+      }
+    }
+
+    if (!canUserEdit) {
       return {
         success: false,
         error:
-          "No tienes permiso para editar esta oportunidad. Solo el creador o un administrador puede modificarla.",
+          "No tienes permiso para modificar esta oportunidad. Solo el creador o un administrador (sobre oportunidades de editores) puede modificar sus detalles.",
       };
     }
 
@@ -456,7 +467,7 @@ export async function deleteOpportunity(id, userRole = null) {
     // 2. Obtener la oportunidad y verificar permisos
     const { data: opportunity, error: fetchError } = await supabase
       .from("opportunities")
-      .select("created_by, image_url, is_featured, featured_order")
+      .select("created_by, image_url, is_featured, featured_order, creator:profiles!opportunities_created_by_fkey(role)")
       .eq("id", id)
       .single();
 
@@ -464,10 +475,10 @@ export async function deleteOpportunity(id, userRole = null) {
       return { success: false, error: "No se encontró la oportunidad" };
     }
 
-    const isAdmin = userRole === "admin";
     const isCreator = opportunity.created_by === userData.user.id;
+    const canUserDelete = isCreator || userRole === "admin";
 
-    if (!isCreator && !isAdmin) {
+    if (!canUserDelete) {
       return {
         success: false,
         error: "No tienes permiso para eliminar esta oportunidad",

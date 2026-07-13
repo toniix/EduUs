@@ -28,7 +28,7 @@ class OpportunitiesService {
       let query = supabase.from("opportunities").select(
         `*,
         category:categories(id, name, color),
-        creator:profiles!opportunities_created_by_fkey(id, full_name),
+        creator:profiles!opportunities_created_by_fkey(id, full_name, role),
         opportunity_tags(tag:tags(id, name))`,
         { count: "exact" },
       );
@@ -123,7 +123,7 @@ class OpportunitiesService {
         .select(
           `*,
         category:categories(id, name),
-        creator:profiles!opportunities_created_by_fkey(id, full_name),
+        creator:profiles!opportunities_created_by_fkey(id, full_name, role),
         opportunity_tags(tag:tags(id, name))`,
         )
         .order("created_at", { ascending: false });
@@ -158,7 +158,7 @@ class OpportunitiesService {
         `
           *,
           category:categories(id, name),
-          creator:profiles!opportunities_created_by_fkey(id, full_name),
+          creator:profiles!opportunities_created_by_fkey(id, full_name, role),
           opportunity_tags(tag:tags(id, name))
         `,
       );
