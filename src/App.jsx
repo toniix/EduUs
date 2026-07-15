@@ -48,7 +48,6 @@ function App() {
       <div className="min-h-screen flex flex-col">
         <Analytics />
         <AuthProvider>
-          {/* <RoleProvider> */}
           <ThemeProvider>
             <Router>
               <ScrollToTop />
@@ -127,7 +126,6 @@ function App() {
               <Toaster position="bottom-right" />
             </Router>
           </ThemeProvider>
-          {/* </RoleProvider> */}
         </AuthProvider>
       </div>
     </LazyMotion>

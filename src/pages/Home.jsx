@@ -39,7 +39,8 @@ const Home = () => {
             "@type": "SearchAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: "https://eduus.club/edutracker?search={search_term_string}",
+              urlTemplate:
+                "https://eduus.club/edutracker?search={search_term_string}",
             },
             "query-input": "required name=search_term_string",
           },
@@ -103,9 +104,9 @@ const Home = () => {
         <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
           <TestimonialsSection />
         </Suspense>
-        {/* <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse" />}>
+        <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse" />}>
           <CallToAction />
-        </Suspense> */}
+        </Suspense>
       </div>
     </>
   );
