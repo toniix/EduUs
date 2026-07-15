@@ -296,11 +296,11 @@ export const eventRegistrationSchema = z
     career: z
       .string()
       .min(1, "La carrera o área de estudios es obligatoria.")
-      .max(25, "La carrera no puede exceder los 25 caracteres."),
+      .max(50, "La carrera no puede exceder los 50 caracteres."),
     interest_reason: z
       .string()
       .min(1, "Por favor, cuéntanos tu interés en participar.")
-      .max(100, "La carrera no puede exceder los 100 caracteres."),
+      .max(300, "La respuesta no puede exceder los 300 caracteres."),
     referral_source: z.string().min(1, "Selecciona cómo te enteraste."),
     dni: z.string().optional().nullable().or(z.literal("")),
     is_student_at_location: z.boolean().optional(),

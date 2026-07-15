@@ -26,6 +26,7 @@ import { toast } from "react-hot-toast";
 import { useTheme } from "../../../contexts/ThemeContext";
 import ActionBtn from "../../ui/ActionBtn";
 import { optimizeCloudinaryUrl } from "../../../utils/cloudinaryOptimize";
+import ModalConfirmacion from "../../ui/ModalConfirmacion";
 
 export default function EventsAdminTab() {
   const { isDark } = useTheme();
@@ -36,6 +37,12 @@ export default function EventsAdminTab() {
   const [selectedEvent, setSelectedEvent] = useState(null); // para editar
   const [previewEvent, setPreviewEvent] = useState(null); // para preview público
   const [drawerEvent, setDrawerEvent] = useState(null); // para el drawer de detalles
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
 
   // Filtrado local por título
   const filtered = useMemo(() => {
@@ -95,73 +102,94 @@ export default function EventsAdminTab() {
       }
     }
 
-    const confirmed = window.confirm(
-      `¿Estás seguro de que deseas ${action} "${event.title}"?`,
-    );
-    if (!confirmed) return;
+    setConfirmModal({
+      open: true,
+      title: isPublished ? "Despublicar evento" : "Publicar evento",
+      message: `¿Estás seguro de que deseas ${action} "${event.title}"?`,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, open: false }));
+        const { success, error } = await eventsService.updateEvent(event.id, {
+          status: isPublished ? "draft" : "published",
+        });
 
-    const { success, error } = await eventsService.updateEvent(event.id, {
-      status: isPublished ? "draft" : "published",
+        if (success) {
+          toast.success(
+            `Evento ${action === "publicar" ? "publicado" : "despublicado"} correctamente`,
+          );
+          refetch();
+        } else {
+          toast.error(error || "Error al actualizar el evento");
+        }
+      },
     });
-
-    if (success) {
-      toast.success(
-        `Evento ${action === "publicar" ? "publicado" : "despublicado"} correctamente`,
-      );
-      refetch();
-    } else {
-      toast.error(error || "Error al actualizar el evento");
-    }
   };
 
   const handleMarkAsPromo = async (event) => {
-    if (event.status !== "published") {
-      toast.error("Debes publicar el evento antes de marcarlo como destacado.");
-      return;
-    }
+    const isPromo = event.promo_modal;
 
-    // Validar en el cliente antes de llamar a la API
-    if (event.starts_at) {
-      const starts = new Date(event.starts_at);
-      const now = new Date();
-      if (starts < now) {
-        toast.error(
-          "No puedes marcar un evento pasado como destacado o promocional.",
-        );
+    if (!isPromo) {
+      if (event.status !== "published") {
+        toast.error("Debes publicar el evento antes de marcarlo como destacado.");
         return;
+      }
+
+      // Validar en el cliente antes de llamar a la API
+      if (event.starts_at) {
+        const starts = new Date(event.starts_at);
+        const now = new Date();
+        if (starts < now) {
+          toast.error(
+            "No puedes marcar un evento pasado como destacado o promocional.",
+          );
+          return;
+        }
       }
     }
 
-    const confirmed = window.confirm(
-      `¿Deseas marcar "${event.title}" como el modal promocional? Esto reemplazará el evento promo actual.`,
-    );
-    if (!confirmed) return;
+    const message = isPromo
+      ? `¿Deseas desmarcar "${event.title}" del modal promocional?`
+      : `¿Deseas marcar "${event.title}" como el modal promocional? Esto reemplazará el evento promo actual.`;
 
-    const { success, error } = await eventsService.updateEvent(event.id, {
-      promo_modal: true,
+    setConfirmModal({
+      open: true,
+      title: isPromo ? "Desmarcar destacado" : "Marcar destacado",
+      message,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, open: false }));
+        const { success, error } = await eventsService.updateEvent(event.id, {
+          promo_modal: !isPromo,
+        });
+
+        if (success) {
+          toast.success(
+            isPromo
+              ? "Evento desmarcado como promocional"
+              : "Evento marcado como promocional",
+          );
+          refetch();
+        } else {
+          toast.error(error || "Error al actualizar");
+        }
+      },
     });
-
-    if (success) {
-      toast.success("Evento marcado como promocional");
-      refetch();
-    } else {
-      toast.error(error || "Error al actualizar");
-    }
   };
 
   const handleDelete = async (event) => {
-    const confirmed = window.confirm(
-      `¿Estás seguro de eliminar "${event.title}"? Esta acción no se puede deshacer.`,
-    );
-    if (!confirmed) return;
-
-    const { success, error } = await eventsService.deleteEvent(event.id);
-    if (success) {
-      toast.success("Evento eliminado");
-      refetch();
-    } else {
-      toast.error(error || "Error al eliminar el evento");
-    }
+    setConfirmModal({
+      open: true,
+      title: "Eliminar Evento",
+      message: `¿Estás seguro de eliminar "${event.title}"? Esta acción no se puede deshacer.`,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, open: false }));
+        const { success, error } = await eventsService.deleteEvent(event.id);
+        if (success) {
+          toast.success("Evento eliminado");
+          refetch();
+        } else {
+          toast.error(error || "Error al eliminar el evento");
+        }
+      },
+    });
   };
 
   const containerClass = `rounded-lg shadow-md p-6 w-full h-full flex flex-col ${
@@ -465,6 +493,15 @@ export default function EventsAdminTab() {
           onClose={() => setPreviewEvent(null)}
         />
       )}
+
+      {/* Confirmation modal */}
+      <ModalConfirmacion
+        open={confirmModal.open}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
+      />
     </div>
   );
 }

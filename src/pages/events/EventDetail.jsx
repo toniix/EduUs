@@ -6,7 +6,6 @@ import {
   categoryConfig,
   modalityConfig,
 } from "../../utils/events";
-import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 import {
   Calendar,
   MapPin,
@@ -16,6 +15,13 @@ import {
   Users,
   CheckCircle,
   AlertTriangle,
+  Target,
+  Award,
+  Check,
+  Info,
+  FileText,
+  Download,
+  Video,
 } from "lucide-react";
 import { FaWhatsapp, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import EventRegistrationForm from "../../components/events/EventRegistrationForm";
@@ -116,6 +122,11 @@ export default function EventDetail() {
     price,
     description,
     banner_url,
+    directed_to,
+    benefits,
+    extra_details,
+    brochure_url,
+    zoom_link,
   } = event;
 
   const catCfg = categoryConfig[category] || {
@@ -233,6 +244,115 @@ export default function EventDetail() {
                     {description}
                   </div>
                 </div>
+
+                {/* Grid de detalles adicionales (Bento Grid) */}
+                {(directed_to ||
+                  brochure_url ||
+                  (benefits && benefits.some((b) => b && b.trim() !== "")) ||
+                  extra_details) && (
+                  <div className="border-t border-gray-100 dark:border-gray-850 pt-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Dirigido a */}
+                      {directed_to && (
+                        <div className="p-6 rounded-3xl bg-gray-50/40 dark:bg-gray-900/25 border border-gray-150 dark:border-gray-850 flex flex-col justify-between gap-4 group transition-all duration-300 hover:border-primary/20">
+                          <div className="space-y-3">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                              <Target className="w-5 h-5" />
+                            </div>
+                            <div className="space-y-1">
+                              <h3 className="font-bold text-sm text-gray-900 dark:text-light tracking-tight font-heading">
+                                Dirigido a
+                              </h3>
+                              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                {directed_to}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Brochure */}
+                      {brochure_url && (
+                        <div className="p-6 rounded-3xl bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/5 border border-primary/10 dark:border-primary/25 flex flex-col justify-between gap-4 group transition-all duration-300 hover:border-primary/30">
+                          <div className="space-y-3">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                              <FileText className="w-5 h-5" />
+                            </div>
+                            <div className="space-y-1">
+                              <h3 className="font-bold text-sm text-gray-900 dark:text-light tracking-tight font-heading">
+                                Cronograma del Evento
+                              </h3>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                Descarga el brochure con los horarios, temas y
+                                ponentes al detalle.
+                              </p>
+                            </div>
+                          </div>
+                          <a
+                            href={brochure_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-primary hover:bg-primary/95 text-white dark:bg-primary dark:hover:bg-primary/90 font-bold rounded-xl text-xs shadow-md shadow-primary/15 transition-all active:scale-[0.98]"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            Descargar Brochure
+                          </a>
+                        </div>
+                      )}
+
+                      {/* Beneficios */}
+                      {benefits &&
+                        benefits.some((b) => b && b.trim() !== "") && (
+                          <div className="p-6 rounded-3xl bg-gray-50/40 dark:bg-gray-900/25 border border-gray-150 dark:border-gray-850 md:col-span-2 space-y-4 group transition-all duration-300 hover:border-primary/20">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                                <Award className="w-5 h-5" />
+                              </div>
+                              <h3 className="font-bold text-sm text-gray-900 dark:text-light tracking-tight font-heading">
+                                Beneficios del evento
+                              </h3>
+                            </div>
+                            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {benefits.map(
+                                (benefit, idx) =>
+                                  benefit &&
+                                  benefit.trim() !== "" && (
+                                    <li
+                                      key={idx}
+                                      className="flex items-start gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400"
+                                    >
+                                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 shrink-0 mt-0.5 animate-[fadeIn_0.3s_ease]">
+                                        <Check className="w-3 h-3" />
+                                      </span>
+                                      <span className="leading-relaxed">
+                                        {benefit}
+                                      </span>
+                                    </li>
+                                  ),
+                              )}
+                            </ul>
+                          </div>
+                        )}
+
+                      {/* Detalles adicionales */}
+                      {extra_details && (
+                        <div className="p-5 rounded-2xl border-l-4 border-primary bg-primary/5 dark:bg-primary/5 md:col-span-2 flex gap-3.5 items-start">
+                          <div className="w-8 h-8 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                            <Info className="w-4 h-4" />
+                          </div>
+                          <div className="space-y-1">
+                            <h4 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-light tracking-tight font-heading">
+                              Detalles adicionales
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line leading-relaxed">
+                              {extra_details}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Ponente del Evento */}
                 {speaker && (
@@ -370,6 +490,37 @@ export default function EventDetail() {
                         un correo de confirmación con los detalles del evento.
                       </p>
                     </div>
+
+                    {(modality === "presencial" || modality === "hibrido") &&
+                      location && (
+                        <div className="w-full border-t border-gray-150/40 dark:border-gray-850 pt-4 mt-1 z-10 flex flex-col gap-2 text-left">
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+                            Dirección del evento presencial:
+                          </p>
+                          <div className="inline-flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 font-semibold px-4 py-3 rounded-xl bg-gray-50/50 dark:bg-gray-900/35 border border-gray-150/40 dark:border-gray-850 w-full">
+                            <MapPin className="w-4.5 h-4.5 text-primary shrink-0" />
+                            <span>{location}</span>
+                          </div>
+                        </div>
+                      )}
+
+                    {(modality === "virtual" || modality === "hibrido") &&
+                      zoom_link && (
+                        <div className="w-full border-t border-gray-150/40 dark:border-gray-850 pt-4 mt-1 z-10 flex flex-col gap-2">
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+                            Enlace de la sesión virtual (Zoom):
+                          </p>
+                          <a
+                            href={zoom_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 w-full rounded-xl bg-[#2D8CFF] hover:bg-[#1a7ee5] text-white font-bold text-xs transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-500/20"
+                          >
+                            <Video className="w-4 h-4 text-white" />
+                            Entrar a la sesión de Zoom
+                          </a>
+                        </div>
+                      )}
 
                     <div className="w-full border-t border-gray-150/40 dark:border-gray-850 pt-4 mt-1 z-10">
                       <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium mb-3">

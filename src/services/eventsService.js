@@ -1,6 +1,5 @@
 import { supabase } from "../lib/supabase";
 import { createSlug } from "../utils/slugify";
-import { MOCK_EVENTS } from "../data/mockEvents";
 
 /**
  * SELECT base para eventos — incluye conteo de inscritos para calcular spots_left.
@@ -43,18 +42,10 @@ class EventsService {
 
       if (error) throw error;
 
-      // Si la base de datos no tiene eventos cargados, usamos los mocks para fines de UI/demo.
-      // if (!data || data.length === 0) {
-      //   return MOCK_EVENTS;
-      // }
-
       return (data || []).map(transformEvent);
     } catch (err) {
-      console.warn(
-        "Error con Supabase en getEvents, usando mocks locales:",
-        err,
-      );
-      // return MOCK_EVENTS;
+      console.error("Error en getEvents:", err);
+      throw err;
     }
   }
 
@@ -128,20 +119,10 @@ class EventsService {
 
       if (error) throw error;
 
-      if (data) {
-        return transformEvent(data);
-      }
-
-      // Fallback a los mocks si no se encuentra en Supabase
-      const mockEvent = MOCK_EVENTS.find((e) => e.slug === slug);
-      return mockEvent || null;
+      return data ? transformEvent(data) : null;
     } catch (err) {
-      console.warn(
-        `Error al obtener evento por slug (${slug}), buscando en mocks locales:`,
-        err,
-      );
-      const mockEvent = MOCK_EVENTS.find((e) => e.slug === slug);
-      return mockEvent || null;
+      console.error(`Error al obtener evento por slug (${slug}):`, err);
+      throw err;
     }
   }
 
@@ -210,6 +191,15 @@ class EventsService {
         ...current,
         ...patch,
       };
+
+      // Si el estado resultante es borrador (draft) y está marcado como promo_modal, lo desmarcamos automáticamente
+      if (
+        mergedPayload.status === "draft" &&
+        mergedPayload.promo_modal === true
+      ) {
+        patch.promo_modal = false;
+        mergedPayload.promo_modal = false;
+      }
 
       // 4. Validar inconsistencias lógicas
       const validationError = this._validateEvent(mergedPayload);
