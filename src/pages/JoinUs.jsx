@@ -18,6 +18,7 @@ import {
   Users,
 } from "lucide-react";
 import { projectsService } from "../services/projectsService";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 import {
   partnerBenefits,
   volunteerBenefits,
@@ -140,6 +141,7 @@ const JoinUs = () => {
 
                 <div className="flex flex-col gap-3.5">
                   <button
+                    type="button"
                     onClick={() => scrollTo("cta-empresas")}
                     className="group flex items-center justify-between p-4 bg-gray-50 hover:bg-secondary/[0.03] rounded-2xl border border-gray-100 hover:border-secondary/30 text-left active:scale-[0.98] transition-all duration-300"
                   >
@@ -160,6 +162,7 @@ const JoinUs = () => {
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => scrollTo("cta-voluntarios")}
                     className="group flex items-center justify-between p-4 bg-gray-50 hover:bg-primary/[0.03] rounded-2xl border border-gray-100 hover:border-primary/30 text-left active:scale-[0.98] transition-all duration-300"
                   >
@@ -191,8 +194,8 @@ const JoinUs = () => {
           <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-8 sm:w-48 bg-gradient-to-l from-white via-white/50 to-transparent" />
 
           {loading ? (
-            <div className="flex justify-center items-center h-[320px] sm:h-[380px]">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="flex justify-center items-center h-[320px] sm:h-[380px] w-full">
+              <LoadingSpinner message="Cargando proyectos..." size="md" />
             </div>
           ) : projects.length === 0 ? (
             <div className="text-center py-16 text-gray-500 font-light">
@@ -387,7 +390,7 @@ const JoinUs = () => {
                   <div className="flex -space-x-2.5">
                     {["A", "M", "C", "J"].map((letter, i) => (
                       <div
-                        key={i}
+                        key={letter}
                         className="w-8 h-8 rounded-full border-[1.5px] border-[#0c2f2c] bg-gradient-to-br from-secondary/40 to-primary/30 flex items-center justify-center shadow-md shadow-black/10"
                       >
                         <span className="text-[10px] text-white font-bold tracking-tight">

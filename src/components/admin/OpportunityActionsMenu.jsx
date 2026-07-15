@@ -173,14 +173,26 @@ const OpportunityActionsMenu = ({
     }
   };
 
-  const isOwner = profile?.id === opportunity.created_by;
-  const editButtonClasses = getButtonClasses(!isOwner);
-  const deleteButtonClasses = getButtonClasses(isDeleting, true);
+  const canEdit =
+    profile?.id === opportunity.created_by ||
+    (profile?.role === "admin" && opportunity.creator?.role === "editor");
+
+  const canDelete =
+    profile?.id === opportunity.created_by ||
+    profile?.role === "admin";
+
+  const canFeatured =
+    profile?.id === opportunity.created_by ||
+    profile?.role === "admin";
+
+  const editButtonClasses = getButtonClasses(!canEdit);
+  const deleteButtonClasses = getButtonClasses(isDeleting || !canDelete, true);
 
   // acciones para destacar
-  const featuredButtonDisabled = !canMarkAsFeatured;
-  const featuredButtonTitle =
-    featuredButtonDisabled && !opportunity.is_featured
+  const featuredButtonDisabled = !canMarkAsFeatured || !canFeatured;
+  const featuredButtonTitle = !canFeatured
+    ? "No tienes permiso para destacar esta oportunidad"
+    : featuredButtonDisabled && !opportunity.is_featured
       ? `Ya hay 4 oportunidades destacadas (${featuredCount}). Libera un espacio para agregar más.`
       : "Marcar como destacado";
 
@@ -196,15 +208,15 @@ const OpportunityActionsMenu = ({
 
   return (
     <div className="flex space-x-2">
-      <button
+      <button type="button"
         className={editButtonClasses}
         title="Editar"
         onClick={() => handleEdit(opportunity)}
-        disabled={!isOwner}
+        disabled={!canEdit}
       >
         <Edit className="h-4 w-4" />
       </button>
-      <button
+      <button type="button"
         className={getButtonClasses(featuredButtonDisabled)}
         title={featuredButtonTitle}
         onClick={handleFeaturedClick}
@@ -214,11 +226,11 @@ const OpportunityActionsMenu = ({
           className={`h-4 w-4 ${opportunity.is_featured ? "fill-current" : ""}`}
         />
       </button>
-      <button
+      <button type="button"
         className={deleteButtonClasses}
         title="Eliminar"
         onClick={() => handleDeleteClick(opportunity)}
-        disabled={isDeleting}
+        disabled={isDeleting || !canDelete}
       >
         <Trash2 className="h-4 w-4" />
       </button>

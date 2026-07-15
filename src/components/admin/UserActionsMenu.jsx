@@ -54,7 +54,7 @@ export default function UserActionsMenu({
   return (
     <div className="flex space-x-2">
       {/* Cambiar rol */}
-      <button
+      <button type="button"
         className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-200"
         onClick={() => {
           setModalType("role");
@@ -65,7 +65,7 @@ export default function UserActionsMenu({
         <Edit className="h-4 w-4 text-indigo-600 hover:text-indigo-900" />
       </button>
       {/* Eliminar usuario */}
-      <button
+      <button type="button"
         className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-200"
         onClick={() => {
           setModalType("delete");

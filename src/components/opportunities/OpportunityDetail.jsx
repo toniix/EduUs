@@ -182,43 +182,54 @@ const OpportunityDetail = () => {
                 parsedRequirements={parsedRequirements}
                 parsedBenefits={parsedBenefits}
               />
+
+              {/* Timeline del proceso de postulación (Dentro de la primera columna) */}
+              <div className="mt-2">
+                <OpportunityTimeline steps={resolvedSteps} deadline={deadline} />
+              </div>
             </div>
 
             {/* ── Sidebar (1/3) ── */}
-            <div className="space-y-6">
-              <OpportunitySidebar
-                deadline={deadline}
-                contact={contact}
-                social_links={resolvedSocials}
-                opportunityId={opportunityId}
-                isExpired={isExpired}
-                daysUntilDeadline={daysUntilDeadline}
-                organization={organization}
-                created_at={created_at}
-                documentation={documentation}
-              />
+            <div className="flex flex-col gap-6 lg:block lg:space-y-6 lg:gap-0">
+              {/* Sidebar Info Principal */}
+              <div className="order-1 lg:order-none lg:mb-6">
+                <OpportunitySidebar
+                  deadline={deadline}
+                  contact={contact}
+                  social_links={resolvedSocials}
+                  opportunityId={opportunityId}
+                  isExpired={isExpired}
+                  daysUntilDeadline={daysUntilDeadline}
+                  organization={organization}
+                  created_at={created_at}
+                  documentation={documentation}
+                />
+              </div>
 
               {/* Video secundario en el sidebar */}
               {opportunity.video_url && (
-                <OpportunityVideoSection
-                  video={{
-                    url: opportunity.video_url,
-                    title: opportunity.title,
-                  }}
-                />
+                <div className="order-2 lg:order-none lg:mb-6">
+                  <OpportunityVideoSection
+                    video={{
+                      url: opportunity.video_url,
+                      title: opportunity.title,
+                    }}
+                  />
+                </div>
               )}
 
-              {/* CTA de Registro */}
-              {!isAuthenticated && <RegisterSidebarCTA />}
+              {/* CTA de Registro (Al final en móviles, pero antes de Otras Oportunidades en desktop) */}
+              {!isAuthenticated && (
+                <div className="order-4 lg:order-none lg:mb-6">
+                  <RegisterSidebarCTA />
+                </div>
+              )}
 
               {/* Otras oportunidades abiertas */}
-              <OtherOpportunitiesList currentOpportunityId={opportunityId} />
+              <div className="order-3 lg:order-none">
+                <OtherOpportunitiesList currentOpportunityId={opportunityId} />
+              </div>
             </div>
-          </div>
-
-          {/* Timeline del proceso de postulación (Ancho Completo) */}
-          <div className="mt-6">
-            <OpportunityTimeline steps={resolvedSteps} deadline={deadline} />
           </div>
         </div>
 

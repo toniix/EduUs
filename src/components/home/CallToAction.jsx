@@ -1,4 +1,3 @@
-import React from "react";
 import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
@@ -61,12 +60,12 @@ export default function ImprovedCTA() {
                 viewport={{ once: true }}
               >
                 <a
-                  href="https://www.whatsapp.com/channel/0029VbBbJtWAzNc3WLlNXR3H"
+                  href="https://chat.whatsapp.com/KLGckmNVzvO7nuqWURd1Pf?s=cl&p=i&mlu=3"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center bg-primary text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 group"
                 >
-                  Empieza tu viaje ahora
+                  Únete a la comunidad
                   <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
                 </a>
               </m.div>
@@ -85,7 +84,7 @@ export default function ImprovedCTA() {
                   "Oportunidades premium",
                 ].map((badge, i) => (
                   <div
-                    key={i}
+                    key={badge}
                     className="flex items-center text-slate-800 text-base font-semibold tracking-wide"
                   >
                     <svg
@@ -117,7 +116,7 @@ export default function ImprovedCTA() {
         transition={{ delay: 0.5, type: "spring" }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        href="https://www.whatsapp.com/channel/0029VbBbJtWAzNc3WLlNXR3H"
+        href="https://chat.whatsapp.com/KLGckmNVzvO7nuqWURd1Pf?s=cl&p=i&mlu=3"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-8 right-8 z-50 group"

@@ -160,7 +160,7 @@ const FeaturedModal = ({
 
         {/* Footer */}
         <div className={`flex gap-3 px-6 pb-6`}>
-          <button
+          <button type="button"
             onClick={() => setShowFeaturedModal(false)}
             disabled={isSavingFeatured}
             className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold border transition ${
@@ -171,7 +171,7 @@ const FeaturedModal = ({
           >
             Cancelar
           </button>
-          <button
+          <button type="button"
             onClick={handleFeaturedSave}
             disabled={
               isSavingFeatured ||

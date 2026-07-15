@@ -15,9 +15,6 @@ class OpportunitiesService {
       sortOrder = "desc",
     } = pagination;
 
-    // console.log("filters", filters);
-    // console.log("pagination", pagination);
-
     const {
       modality,
       country,
@@ -31,15 +28,15 @@ class OpportunitiesService {
       let query = supabase.from("opportunities").select(
         `*,
         category:categories(id, name, color),
-        creator:profiles!opportunities_created_by_fkey(id, full_name),
+        creator:profiles!opportunities_created_by_fkey(id, full_name, role),
         opportunity_tags(tag:tags(id, name))`,
         { count: "exact" },
       );
 
       // Filtros de igualdad exactos
       if (modality) query = query.eq("modality", modality);
-      if (country) query = query.eq("country", country);
       if (location) query = query.eq("location", location);
+      if (country) query = query.eq("country", country);
       if (category_id) query = query.eq("category_id", category_id);
       if (filters.created_by)
         query = query.eq("created_by", filters.created_by);
@@ -126,7 +123,7 @@ class OpportunitiesService {
         .select(
           `*,
         category:categories(id, name),
-        creator:profiles!opportunities_created_by_fkey(id, full_name),
+        creator:profiles!opportunities_created_by_fkey(id, full_name, role),
         opportunity_tags(tag:tags(id, name))`,
         )
         .order("created_at", { ascending: false });
@@ -161,7 +158,7 @@ class OpportunitiesService {
         `
           *,
           category:categories(id, name),
-          creator:profiles!opportunities_created_by_fkey(id, full_name),
+          creator:profiles!opportunities_created_by_fkey(id, full_name, role),
           opportunity_tags(tag:tags(id, name))
         `,
       );
@@ -377,13 +374,6 @@ class OpportunitiesService {
         .not("modality", "is", null)
         .order("modality", { ascending: true });
 
-      // Obtener ubicaciones únicas
-      const { data: locations } = await supabase
-        .from("opportunities")
-        .select("location")
-        .not("location", "is", null)
-        .order("location", { ascending: true });
-
       // Obtener países únicos
       const { data: countries } = await supabase
         .from("opportunities")
@@ -394,7 +384,6 @@ class OpportunitiesService {
       return {
         modalities: [...new Set(modalities.map((item) => item.modality))],
         categories,
-        locations: [...new Set(locations.map((item) => item.location))],
         countries: [...new Set(countries.map((item) => item.country))],
       };
     } catch (error) {

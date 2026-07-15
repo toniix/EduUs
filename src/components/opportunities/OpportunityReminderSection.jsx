@@ -38,7 +38,7 @@ const ReminderSection = ({
                   email.
                 </p>
                 <div className="flex justify-center">
-                  <button
+                  <button type="button"
                     onClick={handleLoginClick}
                     className="px-4 py-2 text-sm font-medium rounded-md text-white bg-[#4db9a9] hover:bg-[#3a9e8f]"
                   >
@@ -110,7 +110,7 @@ const ReminderSection = ({
               límite
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={() => dispatchReminder({ type: "SHOW_SETUP" })}
             className="w-full bg-gradient-to-r from-[#4db9a9] to-[#4db9a9]/90 hover:from-[#4db9a9]/90 hover:to-[#4db9a9] text-white py-3 px-4 rounded-xl font-medium text-sm transition-all duration-200 shadow-sm hover:shadow-md"
           >
@@ -138,7 +138,7 @@ const ReminderSection = ({
                 </p>
               </div>
             </div>
-            <button
+            <button type="button"
               onClick={() => dispatchReminder({ type: "SHOW_SETUP" })}
               className="flex items-center px-3 py-1.5 text-xs text-[#4db9a9] hover:text-[#4db9a9]/80 hover:bg-[#4db9a9]/10 rounded-lg transition-all duration-200"
             >
@@ -202,7 +202,7 @@ const ReminderSection = ({
                   : "Configurar recordatorios"}
               </h4>
             </div>
-            <button
+            <button type="button"
               onClick={() => dispatchReminder({ type: "HIDE_SETUP" })}
               className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200"
             >
@@ -252,7 +252,7 @@ const ReminderSection = ({
                   </div>
                 ))}
               </div>
-              <button
+              <button type="button"
                 onClick={handleDeleteReminders}
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-[#ec451d] to-[#ec451d]/90 hover:from-[#ec451d]/90 hover:to-[#ec451d] text-white py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
@@ -331,7 +331,7 @@ const ReminderSection = ({
               </div>
 
               <div className="flex space-x-3 pt-2">
-                <button
+                <button type="button"
                   onClick={handleCreateReminders}
                   disabled={loading || selectedDays.length === 0}
                   className="flex-1 bg-gradient-to-r from-[#4db9a9] to-[#4db9a9]/90 hover:from-[#4db9a9]/90 hover:to-[#4db9a9] text-white py-3 px-4 rounded-xl font-medium text-sm transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-400"
@@ -345,7 +345,7 @@ const ReminderSection = ({
                     `Crear ${selectedDays.length > 0 ? selectedDays.length + " " : ""}recordatorio${selectedDays.length > 1 ? "s" : ""}`
                   )}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => dispatchReminder({ type: "HIDE_SETUP" })}
                   className="px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-200"
                 >

@@ -219,7 +219,7 @@ export default function ProjectForm({ project = null, onClose, onSave }) {
               </p>
             </div>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
@@ -420,7 +420,7 @@ export default function ProjectForm({ project = null, onClose, onSave }) {
                 <ul className="space-y-2 border border-gray-100 dark:border-gray-700 rounded-xl p-3 bg-gray-50/50 dark:bg-gray-800/40">
                   {form.objectives.map((obj, idx) => (
                     <li
-                      key={idx}
+                      key={obj}
                       className="flex items-start justify-between gap-3 text-sm text-gray-600 dark:text-gray-300 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
                     >
                       <div className="flex items-start gap-2">
@@ -475,7 +475,7 @@ export default function ProjectForm({ project = null, onClose, onSave }) {
                 <ul className="space-y-2 border border-gray-100 dark:border-gray-700 rounded-xl p-3 bg-gray-50/50 dark:bg-gray-800/40">
                   {form.results.map((res, idx) => (
                     <li
-                      key={idx}
+                      key={res}
                       className="flex items-start justify-between gap-3 text-sm text-gray-600 dark:text-gray-300 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
                     >
                       <div className="flex items-start gap-2">
@@ -520,7 +520,7 @@ export default function ProjectForm({ project = null, onClose, onSave }) {
               {/* Fotos existentes en la galería */}
               {form.images.map((imgUrl, idx) => (
                 <div
-                  key={idx}
+                  key={imgUrl}
                   className="relative rounded-xl overflow-hidden aspect-square border border-gray-100 shadow-sm group bg-gray-100"
                 >
                   <img

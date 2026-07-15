@@ -89,7 +89,7 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
         aria-modal="true"
         aria-label="Compartir oportunidad"
       >
-        <button
+        <button type="button"
           className="absolute top-4 right-4 text-gray-500 hover:text-[#ec451d] transition-colors"
           onClick={closeModal}
         >
@@ -183,7 +183,7 @@ const ShareOpportunity = ({ opportunity, closeModal }) => {
         </div>
 
         <div className="flex justify-center">
-          <button
+          <button type="button"
             onClick={shareContent}
             disabled={!selectedNetwork}
             className={`px-8 py-3 rounded-full text-white font-medium transition-all shadow-md ${

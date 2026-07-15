@@ -144,7 +144,7 @@ const OpportunityForm = ({
       <div className="bg-light rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl border border-primary/20 relative my-8">
         <div className="flex flex-col gap-2 mb-8">
           <div className="flex items-center justify-center relative">
-            <button
+            <button type="button"
               onClick={onClose}
               className="absolute right-0 text-primary hover:text-white bg-secondary-light rounded-full p-2 transition-colors shadow hover:bg-primary"
               aria-label="Cerrar formulario"
@@ -593,7 +593,7 @@ const OpportunityForm = ({
               )}
               {formData.benefits.map((benefit, index) => (
                 <span
-                  key={index}
+                  key={benefit}
                   className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm flex items-center"
                 >
                   {benefit}
@@ -647,7 +647,7 @@ const OpportunityForm = ({
               )}
               {formData.requirements?.map((requirement, index) => (
                 <span
-                  key={index}
+                  key={requirement}
                   className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm flex items-center"
                 >
                   {requirement}
@@ -699,7 +699,7 @@ const OpportunityForm = ({
               )}
               {formData.tags?.map((tag, index) => (
                 <span
-                  key={index}
+                  key={tag}
                   className="bg-accent/10 text-accent px-3 py-1 rounded-full text-sm flex items-center"
                 >
                   {tag}
@@ -861,7 +861,7 @@ const OpportunityForm = ({
                     <div className="space-y-2 mt-3 max-h-[220px] overflow-y-auto pr-1">
                       {formData.documentation?.map((doc, idx) => (
                         <div
-                          key={idx}
+                          key={doc.url || `doc-${idx}`}
                           className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100"
                         >
                           <div className="flex flex-col min-w-0 pr-4">
@@ -943,7 +943,7 @@ const OpportunityForm = ({
               <div className="space-y-3 mt-2">
                 {formData.application_steps?.map((step, idx) => (
                   <div
-                    key={idx}
+                    key={step.title}
                     className="p-4 rounded-2xl bg-white border border-gray-150 shadow-sm flex items-start gap-4"
                   >
                     <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-sm flex-shrink-0">

@@ -70,7 +70,7 @@ export default function UsersTab({
         </h2>
         <div className="flex gap-2 flex-wrap">
           {roles.map((r) => (
-            <button
+            <button type="button"
               key={r.value}
               onClick={() => {
                 setRoleFilter(r.value);

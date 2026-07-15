@@ -1,52 +1,95 @@
 import { useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { eventsService } from "../../services/eventsService";
+import { toast } from "react-hot-toast";
+import { eventRegistrationSchema } from "../../utils/validationSchemas";
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const OCCUPATION_OPTIONS = [
+  "Estudiante Universitario(a)",
+  "Estudiante de Instituto",
+  "Egresado(a)",
+  "Bachiller",
+  "Otro",
+];
+
+const REFERRAL_OPTIONS = [
+  "Instagram",
+  "LinkedIn",
+  "Recomendación de un amigo/a",
+  "Sitio Web",
+  "Otro",
+];
 
 export default function EventRegistrationForm({ event, onSuccess }) {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    career: "",
-    university: "Universidad de Piura",
-    dni: "",
+    age: "",
     phone: "",
-    is_udep: true,
+    occupation: "",
+    career: "",
+    interest_reason: "",
+    referral_source: "",
+    dni: "",
+    is_student_at_location: false,
   });
+
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [apiError, setApiError] = useState("");
 
-  const validate = () => {
-    const newErrors = {};
-    if (!form.name.trim()) newErrors.name = "El nombre es obligatorio.";
-    if (!form.email.trim()) {
-      newErrors.email = "El correo es obligatorio.";
-    } else if (!EMAIL_REGEX.test(form.email)) {
-      newErrors.email = "Ingresa un correo válido.";
-    }
-    if (!form.career.trim()) newErrors.career = "La carrera es obligatoria.";
-    if (!form.is_udep && !form.university.trim())
-      newErrors.university = "La universidad es obligatoria.";
-    if (!form.dni.trim()) {
-      newErrors.dni = "El DNI es obligatorio.";
-    } else if (!/^\d{8}$/.test(form.dni.trim())) {
-      newErrors.dni = "Ingresa un DNI válido (8 dígitos).";
-    }
-    if (!form.phone.trim()) {
-      newErrors.phone = "El número es obligatorio.";
-    } else if (!/^\d{9}$/.test(form.phone.trim().replace(/\s/g, ""))) {
-      newErrors.phone = "Ingresa un número válido (9 dígitos).";
-    }
-    return newErrors;
+  const getCleanLocation = () => {
+    if (!event.location) return "el lugar del evento";
+    return event.location.split(",")[0]?.trim() || event.location;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
+
+    const result = eventRegistrationSchema.safeParse({
+      ...form,
+      modality: event.modality,
+    });
+
+    if (!result.success) {
+      const validationErrors = result.error.issues.reduce((acc, issue) => {
+        const field = issue.path[0];
+        if (field && !acc[field]) acc[field] = issue.message;
+        return acc;
+      }, {});
+
       setErrors(validationErrors);
+      console.log(validationErrors);
+
+      // Determinar si todos los campos requeridos están completamente vacíos
+      const requiredFields = [
+        "name",
+        "email",
+        "age",
+        "phone",
+        "occupation",
+        "career",
+        "interest_reason",
+        "referral_source",
+      ];
+      if (event.modality === "presencial") {
+        requiredFields.push("dni");
+      }
+
+      const allEmpty = requiredFields.every((field) => {
+        const val = form[field];
+        return typeof val === "string" ? !val.trim() : !val;
+      });
+
+      if (allEmpty) {
+        toast.error("Por favor, completa los campos requeridos correctamente.");
+      } else {
+        // Encontrar la primera alerta de error de Zod para mostrarla
+        const firstIssue = result.error.issues[0];
+        if (firstIssue) {
+          toast.error(firstIssue.message);
+        }
+      }
       return;
     }
 
@@ -57,30 +100,36 @@ export default function EventRegistrationForm({ event, onSuccess }) {
       name: form.name.trim(),
       email: form.email.trim(),
       career: form.career.trim(),
-      university: form.is_udep
-        ? "Universidad de Piura"
-        : form.university.trim(),
-      is_udep: form.is_udep,
-      dni: form.dni.trim(),
+      dni: event.modality === "presencial" ? form.dni.trim() : null,
       phone: form.phone.trim(),
+      age: Number(form.age),
+      occupation: form.occupation,
+      interest_reason: form.interest_reason.trim(),
+      referral_source: form.referral_source,
+      is_student_at_location: form.is_student_at_location,
     });
 
     if (success) {
       setStatus("success");
+      toast.success("¡Registro exitoso! Nos vemos en el evento.");
       if (onSuccess) onSuccess(form.name);
     } else {
       setStatus("error");
-      setApiError(
-        error || "Error al procesar tu inscripción. Intenta de nuevo.",
-      );
+      const errorMsg =
+        error || "Error al procesar tu inscripción. Intenta de nuevo.";
+      setApiError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    const newValue = type === "checkbox" ? checked : value;
+    setForm((prev) => ({ ...prev, [name]: newValue }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
+
+  const isPresencial = event.modality === "presencial";
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
@@ -91,12 +140,13 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         </div>
       )}
 
+      {/* 1. Nombres y Apellidos */}
       <div>
         <label
           htmlFor="reg-name"
           className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
         >
-          Nombre completo <span className="text-primary">*</span>
+          Nombres y Apellidos <span className="text-primary">*</span>
         </label>
         <input
           id="reg-name"
@@ -104,19 +154,16 @@ export default function EventRegistrationForm({ event, onSuccess }) {
           name="name"
           value={form.name}
           onChange={handleChange}
-          placeholder="Tu nombre"
+          placeholder="Tu nombre completo"
           disabled={status === "loading" || status === "success"}
-          className={`w-full rounded-xl border bg-white dark:bg-dark text-gray-900 dark:text-light px-4 py-2.5 text-sm outline-none transition-colors ${
-            errors.name
-              ? "border-red-400"
-              : "border-gray-200 dark:border-gray-700 focus:border-primary"
-          }`}
+          className={inputClass(errors.name)}
         />
         {errors.name && (
           <p className="text-xs text-red-600 mt-1">{errors.name}</p>
         )}
       </div>
 
+      {/* Correo Electrónico (Requerido implícito para el envío del link) */}
       <div>
         <label
           htmlFor="reg-email"
@@ -132,137 +179,73 @@ export default function EventRegistrationForm({ event, onSuccess }) {
           onChange={handleChange}
           placeholder="tu@correo.com"
           disabled={status === "loading" || status === "success"}
-          className={`w-full rounded-xl border bg-white dark:bg-dark text-gray-900 dark:text-light px-4 py-2.5 text-sm outline-none transition-colors ${
-            errors.email
-              ? "border-red-400"
-              : "border-gray-200 dark:border-gray-700 focus:border-primary"
-          }`}
+          className={inputClass(errors.email)}
         />
         {errors.email && (
           <p className="text-xs text-red-600 mt-1">{errors.email}</p>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label
-            htmlFor="reg-career"
-            className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
-          >
-            Carrera <span className="text-primary">*</span>
-          </label>
-          <input
-            id="reg-career"
-            type="text"
-            name="career"
-            value={form.career}
-            onChange={handleChange}
-            placeholder="Tu carrera"
-            disabled={status === "loading" || status === "success"}
-            className={`w-full rounded-xl border bg-white dark:bg-dark text-gray-900 dark:text-light px-4 py-2.5 text-sm outline-none transition-colors ${
-              errors.career
-                ? "border-red-400"
-                : "border-gray-200 dark:border-gray-700 focus:border-primary"
-            }`}
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="reg-dni"
-            className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
-          >
-            DNI <span className="text-primary">*</span>
-          </label>
-          <input
-            id="reg-dni"
-            type="text"
-            name="dni"
-            value={form.dni}
-            onChange={handleChange}
-            placeholder="12345678"
-            maxLength={8}
-            disabled={status === "loading" || status === "success"}
-            className={`w-full rounded-xl border bg-white dark:bg-dark text-gray-900 dark:text-light px-4 py-2.5 text-sm outline-none transition-colors ${
-              errors.dni
-                ? "border-red-400"
-                : "border-gray-200 dark:border-gray-700 focus:border-primary"
-            }`}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30">
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-              ¿Eres de la UDEP?
-            </span>
-            <span className="text-[10px] text-gray-500">
-              Universidad de Piura
-            </span>
-          </div>
-          <button
-            type="button"
-            disabled={status === "loading" || status === "success"}
-            onClick={() => {
-              const newValue = !form.is_udep;
-              setForm((prev) => ({
-                ...prev,
-                is_udep: newValue,
-                university: newValue ? "Universidad de Piura" : "",
-              }));
-            }}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-              form.is_udep ? "bg-primary" : "bg-gray-300 dark:bg-gray-700"
-            }`}
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                form.is_udep ? "translate-x-6" : "translate-x-1"
-              }`}
+      {/* DNI (Solo presencial) & Edad */}
+      <div
+        className={`grid ${isPresencial ? "grid-cols-2" : "grid-cols-1"} gap-3`}
+      >
+        {isPresencial && (
+          <div>
+            <label
+              htmlFor="reg-dni"
+              className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
+            >
+              DNI <span className="text-primary">*</span>
+            </label>
+            <input
+              id="reg-dni"
+              type="tel"
+              name="dni"
+              value={form.dni}
+              onChange={handleChange}
+              placeholder="12345678"
+              maxLength={8}
+              disabled={status === "loading" || status === "success"}
+              className={inputClass(errors.dni)}
             />
-          </button>
-        </div>
-        <p className="text-[10px] text-gray-400 italic px-1 leading-tight">
-          * Esta información es exclusiva para gestionar tu ingreso al campus.
-          <span className="text-primary/70 font-medium">
-            {" "}
-            El evento es abierto al público en general.
-          </span>
-        </p>
-      </div>
+            {errors.dni && (
+              <p className="text-xs text-red-600 mt-1">{errors.dni}</p>
+            )}
+          </div>
+        )}
 
-      {!form.is_udep && (
-        <div className="animate-[fadeIn_0.2s_ease]">
+        <div>
           <label
-            htmlFor="reg-university"
+            htmlFor="reg-age"
             className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
           >
-            Universidad de origen <span className="text-primary">*</span>
+            Edad <span className="text-primary">*</span>
           </label>
           <input
-            id="reg-university"
-            type="text"
-            name="university"
-            value={form.university}
+            id="reg-age"
+            type="number"
+            name="age"
+            value={form.age}
             onChange={handleChange}
-            placeholder="Ej: UNMSM, PUCP, etc."
+            placeholder="Ej. 20"
+            min={1}
             disabled={status === "loading" || status === "success"}
-            className={`w-full rounded-xl border bg-white dark:bg-dark text-gray-900 dark:text-light px-4 py-2.5 text-sm outline-none transition-colors ${
-              errors.university
-                ? "border-red-400"
-                : "border-gray-200 dark:border-gray-700 focus:border-primary"
-            }`}
+            className={inputClass(errors.age)}
           />
+          {errors.age && (
+            <p className="text-xs text-red-600 mt-1">{errors.age}</p>
+          )}
         </div>
-      )}
+      </div>
 
+      {/* Celular / WhatsApp */}
       <div>
         <label
           htmlFor="reg-phone"
           className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
         >
-          Celular <span className="text-primary">*</span>
+          Número de WhatsApp <span className="text-primary">*</span>
         </label>
         <input
           id="reg-phone"
@@ -273,19 +256,142 @@ export default function EventRegistrationForm({ event, onSuccess }) {
           placeholder="999 999 999"
           maxLength={9}
           disabled={status === "loading" || status === "success"}
-          className={`w-full rounded-xl border bg-white dark:bg-dark text-gray-900 dark:text-light px-4 py-2.5 text-sm outline-none transition-colors ${
-            errors.phone
-              ? "border-red-400"
-              : "border-gray-200 dark:border-gray-700 focus:border-primary"
-          }`}
+          className={inputClass(errors.phone)}
         />
+        {errors.phone && (
+          <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
+        )}
       </div>
+
+      {/* Actualmente eres */}
+      <div>
+        <label
+          htmlFor="reg-occupation"
+          className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
+        >
+          Actualmente eres <span className="text-primary">*</span>
+        </label>
+        <select
+          id="reg-occupation"
+          name="occupation"
+          value={form.occupation}
+          onChange={handleChange}
+          disabled={status === "loading" || status === "success"}
+          className={inputClass(errors.occupation)}
+        >
+          <option value="">Selecciona una opción</option>
+          {OCCUPATION_OPTIONS.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+        {errors.occupation && (
+          <p className="text-xs text-red-600 mt-1">{errors.occupation}</p>
+        )}
+      </div>
+
+      {/* Carrera o Área de Estudios */}
+      <div>
+        <label
+          htmlFor="reg-career"
+          className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
+        >
+          Carrera o Área de Estudios <span className="text-primary">*</span>
+        </label>
+        <input
+          id="reg-career"
+          type="text"
+          name="career"
+          value={form.career}
+          onChange={handleChange}
+          placeholder="Tu carrera o área"
+          disabled={status === "loading" || status === "success"}
+          className={inputClass(errors.career)}
+        />
+        {errors.career && (
+          <p className="text-xs text-red-600 mt-1">{errors.career}</p>
+        )}
+      </div>
+
+      {/* ¿Por qué te interesa participar en este taller/charla? */}
+      <div>
+        <label
+          htmlFor="reg-interest"
+          className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
+        >
+          ¿Por qué te interesa participar en este taller/charla?{" "}
+          <span className="text-primary">*</span>
+        </label>
+        <textarea
+          id="reg-interest"
+          name="interest_reason"
+          value={form.interest_reason}
+          onChange={handleChange}
+          rows={3}
+          placeholder="Cuéntanos brevemente..."
+          disabled={status === "loading" || status === "success"}
+          className={`${inputClass(errors.interest_reason)} resize-none`}
+        />
+        {errors.interest_reason && (
+          <p className="text-xs text-red-600 mt-1">{errors.interest_reason}</p>
+        )}
+      </div>
+
+      {/* ¿Cómo te enteraste de este taller? */}
+      <div>
+        <label
+          htmlFor="reg-referral"
+          className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5"
+        >
+          ¿Cómo te enteraste de este taller?{" "}
+          <span className="text-primary">*</span>
+        </label>
+        <select
+          id="reg-referral"
+          name="referral_source"
+          value={form.referral_source}
+          onChange={handleChange}
+          disabled={status === "loading" || status === "success"}
+          className={inputClass(errors.referral_source)}
+        >
+          <option value="">Selecciona una opción</option>
+          {REFERRAL_OPTIONS.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+        {errors.referral_source && (
+          <p className="text-xs text-red-600 mt-1">{errors.referral_source}</p>
+        )}
+      </div>
+
+      {/* ¿Eres estudiante en [Lugar del evento] (Opcional - solo presencial) */}
+      {isPresencial && (
+        <div className="mt-1 animate-[fadeIn_0.2s_ease]">
+          <label className="flex items-center gap-2.5 cursor-pointer p-3 rounded-xl border border-gray-150 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30">
+            <input
+              type="checkbox"
+              name="is_student_at_location"
+              checked={form.is_student_at_location}
+              onChange={handleChange}
+              disabled={status === "loading" || status === "success"}
+              className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-300 cursor-pointer"
+            />
+            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+              ¿Eres estudiante en {getCleanLocation()}?{" "}
+              <span className="text-gray-400 font-normal">(Opcional)</span>
+            </span>
+          </label>
+        </div>
+      )}
 
       {status !== "success" && (
         <button
           type="submit"
           disabled={status === "loading"}
-          className="w-full mt-2 py-3 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 disabled:opacity-60 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 font-heading"
+          className="w-full mt-2 py-3 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/95 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 font-heading"
         >
           {status === "loading" ? (
             <>
@@ -299,4 +405,12 @@ export default function EventRegistrationForm({ event, onSuccess }) {
       )}
     </form>
   );
+}
+
+function inputClass(hasError = false) {
+  return `w-full rounded-xl border bg-white dark:bg-dark text-gray-900 dark:text-light px-4 py-2.5 text-sm outline-none transition-colors ${
+    hasError
+      ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+      : "border-gray-200 dark:border-gray-700 focus:border-primary"
+  }`;
 }

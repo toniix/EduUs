@@ -6,7 +6,6 @@ import {
   categoryConfig,
   modalityConfig,
 } from "../../utils/events";
-import { optimizeCloudinaryUrl } from "../../utils/cloudinaryOptimize";
 import {
   Calendar,
   MapPin,
@@ -16,9 +15,19 @@ import {
   Users,
   CheckCircle,
   AlertTriangle,
+  Target,
+  Award,
+  Check,
+  Info,
+  FileText,
+  Download,
+  Video,
 } from "lucide-react";
+import { FaWhatsapp, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import EventRegistrationForm from "../../components/events/EventRegistrationForm";
 import SEO from "../../components/SEO";
+import { useAuth } from "../../contexts/AuthContext";
+import { eventsService } from "../../services/eventsService";
 
 const PLACEHOLDER = "https://via.placeholder.com/1200x500?text=EDU-US+Evento";
 
@@ -28,6 +37,27 @@ export default function EventDetail() {
   const { event, loading, error } = useEventBySlug(slug);
   const [successName, setSuccessName] = useState("");
   const [shareFeedback, setShareFeedback] = useState("");
+  const { profile, isAuthenticated } = useAuth();
+
+  // Verificar si el usuario ya está registrado
+  useEffect(() => {
+    let active = true;
+    const verifyRegistration = async () => {
+      if (event?.id && isAuthenticated && profile?.id) {
+        const { registered, name } = await eventsService.checkUserRegistration(
+          event.id,
+          profile.id,
+        );
+        if (registered && active) {
+          setSuccessName(name || profile.full_name || "Participante");
+        }
+      }
+    };
+    verifyRegistration();
+    return () => {
+      active = false;
+    };
+  }, [event, isAuthenticated, profile]);
 
   // Manejar scroll suave al formulario si viene con hash #inscripcion
   useEffect(() => {
@@ -92,6 +122,11 @@ export default function EventDetail() {
     price,
     description,
     banner_url,
+    directed_to,
+    benefits,
+    extra_details,
+    brochure_url,
+    zoom_link,
   } = event;
 
   const catCfg = categoryConfig[category] || {
@@ -105,6 +140,15 @@ export default function EventDetail() {
   };
 
   const isSoldOut = spots_left === 0;
+
+  const speaker = event.speaker
+    ? {
+        name: event.speaker.name,
+        role: event.speaker.role,
+        company: event.speaker.company,
+        avatar: event.speaker.avatar_url || event.speaker.avatar || null,
+      }
+    : null;
 
   const handleShare = (platform) => {
     const shareUrl = window.location.href;
@@ -151,94 +195,240 @@ export default function EventDetail() {
 
           {/* Grid Principal de 2 Columnas */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            {/* Columna Izquierda: Información de Evento */}
-            <div className="lg:col-span-2 space-y-8">
-              <div className="space-y-4">
-                <div className="flex flex-wrap gap-2 items-center">
-                  <span
-                    className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border ${catCfg.badgeClass}`}
-                  >
-                    {catCfg.label}
-                  </span>
-                  <span className="text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                    {modalCfg.label}
-                  </span>
-                </div>
-
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-light leading-tight font-heading">
-                  {title}
-                </h1>
-
-                {/* Info rápida */}
-                <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-gray-600 dark:text-gray-400 py-2">
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 text-primary" />
-                    {formatEventDate(starts_at)}
-                  </span>
-                  {location && modality !== "virtual" && (
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4 text-primary" />
-                      {location}
+            {/* Columna Izquierda: Tarjeta de Detalles del Evento */}
+            <div className="lg:col-span-2 bg-white dark:bg-gray-900/40 border border-gray-150 dark:border-gray-850 rounded-3xl overflow-hidden shadow-sm flex flex-col">
+              <div className="p-6 sm:p-8 md:p-10 space-y-8">
+                {/* Título y metadatos */}
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-2 items-center">
+                    <span
+                      className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border ${catCfg.badgeClass}`}
+                    >
+                      {catCfg.label}
                     </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Compartir Evento */}
-              <div className="border-t border-b border-gray-100 dark:border-gray-800/80 py-4 flex flex-wrap items-center justify-between gap-4">
-                <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Compartir este evento:
-                </span>
-                <div className="flex gap-2 relative items-center">
-                  <button
-                    onClick={() => handleShare("whatsapp")}
-                    className="p-2 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
-                    aria-label="Compartir por WhatsApp"
-                  >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.272-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-4.869 1.176c-1.493.799-2.863 1.93-3.716 3.217-1.735 2.786-2.262 6.144-1.463 9.234.397 1.527 1.172 2.958 2.212 4.174.524.572 1.159 1.07 1.865 1.404 1.502.74 3.127 1.123 4.821 1.123 2.488 0 4.817-.726 6.852-2.095 2.035-1.369 3.627-3.37 4.614-5.811 1.463-3.66 1.227-7.684-.649-11.134-.85-1.599-2.136-2.952-3.685-3.957-1.549-1.005-3.315-1.619-5.223-1.788zm10.389-10.154c-.788-.028-1.546.234-2.135.789-.589.555-.974 1.301-1.101 2.115-.127.814.073 1.652.567 2.322.494.67 1.244 1.113 2.098 1.188.854.075 1.717-.171 2.368-.702.651-.531 1.084-1.318 1.187-2.181.103-.863-.188-1.749-.825-2.426-.637-.677-1.567-1.104-2.559-1.205zm5.156-.404c-1.065-.021-2.104.326-2.895.969-.791.643-1.319 1.568-1.485 2.599-.166 1.031.088 2.09.716 2.942.628.852 1.578 1.43 2.649 1.57 1.071.14 2.177-.274 2.967-.997.79-.723 1.307-1.762 1.441-2.879.134-1.117-.262-2.288-1.087-3.146-.825-.858-1.988-1.366-3.206-1.458z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleShare("twitter")}
-                    className="p-2 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
-                    aria-label="Compartir por X / Twitter"
-                  >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleShare("linkedin")}
-                    className="p-2 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
-                    aria-label="Compartir por LinkedIn"
-                  >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleShare("copy")}
-                    className="p-2 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
-                    aria-label="Copiar enlace"
-                  >
-                    <Share2 className="w-4 h-4" />
-                  </button>
-                  {shareFeedback && (
-                    <span className="absolute -top-8 right-0 text-[10px] bg-dark text-white dark:bg-light dark:text-dark px-2 py-1 rounded shadow-md animate-fade-in whitespace-nowrap">
-                      {shareFeedback}
+                    <span className="text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
+                      {modalCfg.label}
                     </span>
-                  )}
-                </div>
-              </div>
+                    {price === 0 && (
+                      <span className="text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                        Acceso Libre
+                      </span>
+                    )}
+                  </div>
 
-              {/* Acerca de este evento */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-light font-heading">
-                  Acerca de este evento
-                </h2>
-                <div className="text-gray-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed space-y-4 whitespace-pre-line">
-                  {description}
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-light leading-tight font-heading">
+                    {title}
+                  </h1>
+
+                  {/* Info rápida */}
+                  <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-gray-600 dark:text-gray-400 py-2 border-b border-gray-100 dark:border-gray-800 pb-4">
+                    <span className="flex items-center gap-1.5 font-semibold">
+                      <Calendar className="w-4.5 h-4.5 text-primary" />
+                      {formatEventDate(starts_at)}
+                    </span>
+                    {location && modality !== "virtual" && (
+                      <span className="flex items-center gap-1.5 font-semibold">
+                        <MapPin className="w-4.5 h-4.5 text-primary" />
+                        {location}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Acerca de este evento */}
+                <div className="space-y-4">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-light font-heading">
+                    Acerca de este evento
+                  </h2>
+                  <div className="text-gray-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed space-y-4 whitespace-pre-line">
+                    {description}
+                  </div>
+                </div>
+
+                {/* Grid de detalles adicionales (Bento Grid) */}
+                {(directed_to ||
+                  brochure_url ||
+                  (benefits && benefits.some((b) => b && b.trim() !== "")) ||
+                  extra_details) && (
+                  <div className="border-t border-gray-100 dark:border-gray-850 pt-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Dirigido a */}
+                      {directed_to && (
+                        <div className="p-6 rounded-3xl bg-gray-50/40 dark:bg-gray-900/25 border border-gray-150 dark:border-gray-850 flex flex-col justify-between gap-4 group transition-all duration-300 hover:border-primary/20">
+                          <div className="space-y-3">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                              <Target className="w-5 h-5" />
+                            </div>
+                            <div className="space-y-1">
+                              <h3 className="font-bold text-sm text-gray-900 dark:text-light tracking-tight font-heading">
+                                Dirigido a
+                              </h3>
+                              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                {directed_to}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Brochure */}
+                      {brochure_url && (
+                        <div className="p-6 rounded-3xl bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/5 border border-primary/10 dark:border-primary/25 flex flex-col justify-between gap-4 group transition-all duration-300 hover:border-primary/30">
+                          <div className="space-y-3">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                              <FileText className="w-5 h-5" />
+                            </div>
+                            <div className="space-y-1">
+                              <h3 className="font-bold text-sm text-gray-900 dark:text-light tracking-tight font-heading">
+                                Cronograma del Evento
+                              </h3>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                Descarga el brochure con los horarios, temas y
+                                ponentes al detalle.
+                              </p>
+                            </div>
+                          </div>
+                          <a
+                            href={brochure_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-primary hover:bg-primary/95 text-white dark:bg-primary dark:hover:bg-primary/90 font-bold rounded-xl text-xs shadow-md shadow-primary/15 transition-all active:scale-[0.98]"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            Descargar Brochure
+                          </a>
+                        </div>
+                      )}
+
+                      {/* Beneficios */}
+                      {benefits &&
+                        benefits.some((b) => b && b.trim() !== "") && (
+                          <div className="p-6 rounded-3xl bg-gray-50/40 dark:bg-gray-900/25 border border-gray-150 dark:border-gray-850 md:col-span-2 space-y-4 group transition-all duration-300 hover:border-primary/20">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                                <Award className="w-5 h-5" />
+                              </div>
+                              <h3 className="font-bold text-sm text-gray-900 dark:text-light tracking-tight font-heading">
+                                Beneficios del evento
+                              </h3>
+                            </div>
+                            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {benefits.map(
+                                (benefit, idx) =>
+                                  benefit &&
+                                  benefit.trim() !== "" && (
+                                    <li
+                                      key={benefit.trim()}
+                                      className="flex items-start gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400"
+                                    >
+                                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 shrink-0 mt-0.5 animate-[fadeIn_0.3s_ease]">
+                                        <Check className="w-3 h-3" />
+                                      </span>
+                                      <span className="leading-relaxed">
+                                        {benefit}
+                                      </span>
+                                    </li>
+                                  ),
+                              )}
+                            </ul>
+                          </div>
+                        )}
+
+                      {/* Detalles adicionales */}
+                      {extra_details && (
+                        <div className="p-5 rounded-2xl border-l-4 border-primary bg-primary/5 dark:bg-primary/5 md:col-span-2 flex gap-3.5 items-start">
+                          <div className="w-8 h-8 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                            <Info className="w-4 h-4" />
+                          </div>
+                          <div className="space-y-1">
+                            <h4 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-light tracking-tight font-heading">
+                              Detalles adicionales
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line leading-relaxed">
+                              {extra_details}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Ponente del Evento */}
+                {speaker && (
+                  <div className="border-t border-gray-100 dark:border-gray-850 pt-8 space-y-4">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-light font-heading">
+                      Ponente del evento
+                    </h2>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:p-5 rounded-2xl bg-gray-50/50 dark:bg-gray-900/35 border border-gray-100 dark:border-gray-800">
+                      {speaker.avatar ? (
+                        <img
+                          src={speaker.avatar}
+                          alt={speaker.name}
+                          className="w-16 h-16 rounded-full object-cover border-2 border-primary/20 shadow-sm transition-transform duration-350 hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg border-2 border-primary/20 shadow-sm">
+                          {speaker.name.charAt(0)}
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-light">
+                          {speaker.name}
+                        </h3>
+                        <p className="text-xs sm:text-sm font-semibold text-primary">
+                          {speaker.role}
+                        </p>
+                        {speaker.company && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">
+                            {speaker.company}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Compartir Evento */}
+                <div className="border-t border-gray-100 dark:border-gray-850 pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Compartir este evento:
+                  </span>
+                  <div className="flex gap-2 relative items-center">
+                    <button type="button"
+                      onClick={() => handleShare("whatsapp")}
+                      className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-[#25D366] hover:border-[#25D366]/30 hover:bg-green-50/30 dark:hover:bg-green-950/10 transition-all active:scale-95 flex items-center justify-center"
+                      aria-label="Compartir por WhatsApp"
+                    >
+                      <FaWhatsapp className="w-4 h-4" />
+                    </button>
+                    <button type="button"
+                      onClick={() => handleShare("twitter")}
+                      className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white hover:border-black/30 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 flex items-center justify-center"
+                      aria-label="Compartir por X / Twitter"
+                    >
+                      <FaXTwitter className="w-4 h-4" />
+                    </button>
+                    <button type="button"
+                      onClick={() => handleShare("linkedin")}
+                      className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-[#0A66C2] hover:border-[#0A66C2]/30 hover:bg-blue-50/30 dark:hover:bg-blue-950/10 transition-all active:scale-95 flex items-center justify-center"
+                      aria-label="Compartir por LinkedIn"
+                    >
+                      <FaLinkedinIn className="w-4 h-4" />
+                    </button>
+                    <button type="button"
+                      onClick={() => handleShare("copy")}
+                      className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all active:scale-95 flex items-center justify-center"
+                      aria-label="Copiar enlace"
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </button>
+                    {shareFeedback && (
+                      <span className="absolute -top-8 right-0 text-[10px] bg-dark text-white dark:bg-light dark:text-dark px-2 py-1 rounded shadow-md animate-fade-in whitespace-nowrap">
+                        {shareFeedback}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -252,34 +442,101 @@ export default function EventDetail() {
                 {/* Cabecera del formulario */}
                 <div className="mb-6">
                   <h3 className="text-lg font-bold text-gray-900 dark:text-light mb-1.5 font-heading">
-                    Reserva tu lugar
+                    {successName
+                      ? "Inscripción registrada"
+                      : "Reserva tu lugar"}
                   </h3>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-extrabold text-primary font-heading">
-                      {price === 0 ? "Gratis" : `S/ ${price}`}
-                    </span>
-                    {price > 0 && (
-                      <span className="text-xs text-gray-400">Pago único</span>
-                    )}
-                  </div>
+                  {successName ? (
+                    <></>
+                  ) : (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-extrabold text-primary font-heading">
+                        {price === 0 ? "Gratis" : `S/ ${price}`}
+                      </span>
+                      {price > 0 && (
+                        <span className="text-xs text-gray-400">
+                          Pago único
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Formulario / Éxito */}
                 {successName ? (
-                  <div className="flex flex-col items-center text-center gap-4 py-8 animate-[fadeIn_0.3s_ease]">
-                    <CheckCircle className="w-12 h-12 text-green-500" />
-                    <div>
-                      <p className="font-bold text-gray-900 dark:text-light">
-                        ¡Registro Confirmado!
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">
+                  <div className="p-5 rounded-2xl border border-green-150/40 dark:border-green-950/60 bg-green-50/15 dark:bg-green-950/5 flex flex-col items-center text-center gap-5 py-8 animate-[fadeIn_0.3s_ease] relative overflow-hidden">
+                    {/* Glowing background highlights */}
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-green-400/10 rounded-full blur-2xl pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#25D366]/5 rounded-full blur-2xl pointer-events-none" />
+
+                    {/* Pulsing checkmark badge */}
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-green-500/20 rounded-full blur-md animate-ping" />
+                      <div className="relative w-16 h-16 rounded-full bg-green-500/10 dark:bg-green-500/15 border border-green-500/30 flex items-center justify-center text-green-500">
+                        <CheckCircle className="w-8 h-8" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2.5 z-10">
+                      <h4 className="text-base font-bold text-gray-900 dark:text-light tracking-tight font-heading">
+                        ¡Cupo Asegurado!
+                      </h4>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed max-w-[280px] mx-auto">
                         Hola{" "}
-                        <span className="font-semibold text-gray-700 dark:text-gray-300">
+                        <strong className="text-gray-900 dark:text-light font-bold">
                           {successName}
-                        </span>
-                        , tu cupo ha sido reservado. Te enviamos la confirmación
-                        e instrucciones de acceso a tu correo.
+                        </strong>
+                        , tu cupo ha sido reservado con éxito. Te hemos enviado
+                        un correo de confirmación con los detalles del evento.
                       </p>
+                    </div>
+
+                    {(modality === "presencial" || modality === "hibrido") &&
+                      location && (
+                        <div className="w-full border-t border-gray-150/40 dark:border-gray-850 pt-4 mt-1 z-10 flex flex-col gap-2 text-left">
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+                            Dirección del evento presencial:
+                          </p>
+                          <div className="inline-flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 font-semibold px-4 py-3 rounded-xl bg-gray-50/50 dark:bg-gray-900/35 border border-gray-150/40 dark:border-gray-850 w-full">
+                            <MapPin className="w-4.5 h-4.5 text-primary shrink-0" />
+                            <span>{location}</span>
+                          </div>
+                        </div>
+                      )}
+
+                    {(modality === "virtual" || modality === "hibrido") &&
+                      zoom_link && (
+                        <div className="w-full border-t border-gray-150/40 dark:border-gray-850 pt-4 mt-1 z-10 flex flex-col gap-2">
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+                            Enlace de la sesión virtual (Zoom):
+                          </p>
+                          <a
+                            href={zoom_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 w-full rounded-xl bg-[#2D8CFF] hover:bg-[#1a7ee5] text-white font-bold text-xs transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-500/20"
+                          >
+                            <Video className="w-4 h-4 text-white" />
+                            Entrar a la sesión de Zoom
+                          </a>
+                        </div>
+                      )}
+
+                    <div className="w-full border-t border-gray-150/40 dark:border-gray-850 pt-4 mt-1 z-10">
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium mb-3">
+                        Únete a nuestro canal de WhatsApp para mantenerte
+                        informado sobre este y otros eventos:
+                      </p>
+
+                      <a
+                        href="https://chat.whatsapp.com/KLGckmNVzvO7nuqWURd1Pf?s=cl&p=i&mlu=3"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2.5 px-5 py-3 w-full rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-green-500/20"
+                      >
+                        <FaWhatsapp className="w-4 h-4 text-white" />
+                        Unirse al grupo de WhatsApp
+                      </a>
                     </div>
                   </div>
                 ) : (

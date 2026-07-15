@@ -140,7 +140,7 @@ const RegistrationsTable = ({
                     ) : (
                       <div className="flex gap-1">
                         {reg.status !== "attended" && (
-                          <button
+                          <button type="button"
                             title="Marcar como asistió"
                             onClick={() => onStatusChange(reg.id, "attended")}
                             className="p-1.5 rounded-lg hover:bg-green-100 text-green-600 transition-colors"
@@ -149,7 +149,7 @@ const RegistrationsTable = ({
                           </button>
                         )}
                         {reg.status !== "registered" && (
-                          <button
+                          <button type="button"
                             title="Marcar como inscrito"
                             onClick={() => onStatusChange(reg.id, "registered")}
                             className="p-1.5 rounded-lg hover:bg-blue-100 text-blue-500 transition-colors"
@@ -158,7 +158,7 @@ const RegistrationsTable = ({
                           </button>
                         )}
                         {reg.status !== "cancelled" && (
-                          <button
+                          <button type="button"
                             title="Cancelar inscripción"
                             onClick={() => onStatusChange(reg.id, "cancelled")}
                             className="p-1.5 rounded-lg hover:bg-red-100 text-red-500 transition-colors"

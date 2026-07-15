@@ -58,6 +58,8 @@ const Footer = () => {
                 alt="EDU-US"
                 className="h-10 w-auto object-contain"
                 loading="lazy"
+                width="120"
+                height="40"
               />
             </div>
 
@@ -80,7 +82,7 @@ const Footer = () => {
             <div className="flex gap-4">
               {socialLinks.map((social, index) => (
                 <a
-                  key={index}
+                  key={social.href}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"

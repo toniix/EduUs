@@ -1,6 +1,5 @@
 import { supabase } from "../lib/supabase";
 import { createSlug } from "../utils/slugify";
-import { MOCK_EVENTS } from "../data/mockEvents";
 
 /**
  * SELECT base para eventos — incluye conteo de inscritos para calcular spots_left.
@@ -8,6 +7,7 @@ import { MOCK_EVENTS } from "../data/mockEvents";
  */
 const EVENT_SELECT = `
   *,
+  speaker:speakers(*),
   registrations:event_registrations(count)
 `;
 
@@ -42,18 +42,10 @@ class EventsService {
 
       if (error) throw error;
 
-      // Si la base de datos no tiene eventos cargados, usamos los mocks para fines de UI/demo.
-      // if (!data || data.length === 0) {
-      //   return MOCK_EVENTS;
-      // }
-
       return (data || []).map(transformEvent);
     } catch (err) {
-      console.warn(
-        "Error con Supabase en getEvents, usando mocks locales:",
-        err,
-      );
-      // return MOCK_EVENTS;
+      console.error("Error en getEvents:", err);
+      throw err;
     }
   }
 
@@ -127,20 +119,10 @@ class EventsService {
 
       if (error) throw error;
 
-      if (data) {
-        return transformEvent(data);
-      }
-
-      // Fallback a los mocks si no se encuentra en Supabase
-      const mockEvent = MOCK_EVENTS.find((e) => e.slug === slug);
-      return mockEvent || null;
+      return data ? transformEvent(data) : null;
     } catch (err) {
-      console.warn(
-        `Error al obtener evento por slug (${slug}), buscando en mocks locales:`,
-        err,
-      );
-      const mockEvent = MOCK_EVENTS.find((e) => e.slug === slug);
-      return mockEvent || null;
+      console.error(`Error al obtener evento por slug (${slug}):`, err);
+      throw err;
     }
   }
 
@@ -155,6 +137,20 @@ class EventsService {
   async createEvent(formData) {
     try {
       const payload = this._buildPayload(formData);
+
+      // Validar inconsistencias lógicas
+      const validationError = this._validateEvent(payload);
+      if (validationError) {
+        return { success: false, data: null, error: validationError };
+      }
+
+      // Si el nuevo evento se crea y se marca como promo_modal = true, desmarcar otros
+      if (payload.promo_modal === true) {
+        await supabase
+          .from("events")
+          .update({ promo_modal: false })
+          .eq("promo_modal", true);
+      }
 
       const { data, error } = await supabase
         .from("events")
@@ -176,28 +172,43 @@ class EventsService {
    * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
    */
   async updateEvent(id, formData) {
-    // console.log(formData);
     try {
-      // Validar que el evento esté publicado antes de marcarlo como promo
-      if (formData.promo_modal === true) {
-        const { data: current, error: fetchError } = await supabase
-          .from("events")
-          .select("status")
-          .eq("id", id)
-          .single();
+      // 1. Obtener los valores actuales del evento para validación cruzada y combinación de parches
+      const { data: current, error: fetchError } = await supabase
+        .from("events")
+        .select("status, starts_at, ends_at, capacity, price, promo_modal")
+        .eq("id", id)
+        .single();
 
-        if (fetchError) throw new Error(fetchError.message);
+      if (fetchError) throw new Error(fetchError.message);
 
-        if (current.status !== "published") {
-          return {
-            success: false,
-            data: null,
-            error:
-              "El evento debe estar publicado para marcarlo como destacado.",
-          };
-        }
+      // 2. Construir el payload del cambio
+      const patch =
+        "title" in formData ? this._buildPayload(formData) : formData;
 
-        // Desmarcar cualquier otro evento promo
+      // 3. Crear el payload combinado para validar el estado resultante completo
+      const mergedPayload = {
+        ...current,
+        ...patch,
+      };
+
+      // Si el estado resultante es borrador (draft) y está marcado como promo_modal, lo desmarcamos automáticamente
+      if (
+        mergedPayload.status === "draft" &&
+        mergedPayload.promo_modal === true
+      ) {
+        patch.promo_modal = false;
+        mergedPayload.promo_modal = false;
+      }
+
+      // 4. Validar inconsistencias lógicas
+      const validationError = this._validateEvent(mergedPayload);
+      if (validationError) {
+        return { success: false, data: null, error: validationError };
+      }
+
+      // 5. Si se marca como promo_modal, desmarcar cualquier otro evento promocional activo
+      if (patch.promo_modal === true) {
         await supabase
           .from("events")
           .update({ promo_modal: false })
@@ -205,14 +216,10 @@ class EventsService {
           .eq("promo_modal", true);
       }
 
-      // Update completo (viene del EventForm) → sanitizar con _buildPayload
-      // Patch parcial (ej: toggle publish, marcar promo) → enviar tal cual
-      const payload =
-        "title" in formData ? this._buildPayload(formData) : formData;
-
+      // 6. Ejecutar la actualización en Supabase
       const { data, error } = await supabase
         .from("events")
-        .update(payload)
+        .update(patch)
         .eq("id", id)
         .select(EVENT_SELECT)
         .single();
@@ -265,7 +272,18 @@ class EventsService {
    */
   async registerForEvent(
     eventId,
-    { name, email, career, university, dni, phone, is_udep },
+    {
+      name,
+      email,
+      career,
+      dni,
+      phone,
+      age,
+      occupation,
+      interest_reason,
+      referral_source,
+      is_student_at_location,
+    },
   ) {
     // console.log(eventId, name, email, career, university, dni, phone, is_udep);
     try {
@@ -291,10 +309,13 @@ class EventsService {
             status: "registered",
             name,
             career,
-            university,
             dni,
             phone,
-            is_udep,
+            age,
+            occupation,
+            interest_reason,
+            referral_source,
+            is_student_at_location,
           })
           .eq("id", existing.id);
 
@@ -322,10 +343,13 @@ class EventsService {
           name,
           email,
           career,
-          university,
           dni,
           phone,
-          is_udep,
+          age,
+          occupation,
+          interest_reason,
+          referral_source,
+          is_student_at_location,
         },
       ]);
 
@@ -410,6 +434,12 @@ class EventsService {
       promo_modal,
       registration_url,
       status,
+      directed_to,
+      extra_details,
+      brochure_url,
+      zoom_link,
+      benefits,
+      speaker_id,
     } = formData;
 
     return {
@@ -427,12 +457,97 @@ class EventsService {
       promo_modal: promo_modal ?? false,
       registration_url: registration_url?.trim() || null,
       status: status || "draft",
+      directed_to: directed_to?.trim() || null,
+      extra_details: extra_details?.trim() || null,
+      brochure_url: brochure_url?.trim() || null,
+      zoom_link: zoom_link?.trim() || null,
+      benefits: Array.isArray(benefits) ? benefits : [],
+      speaker_id: speaker_id || null,
     };
   }
 
   /** Genera slug básico desde un título */
   _generateSlug(title = "") {
     return createSlug(title);
+  }
+
+  /**
+   * Realiza validaciones lógicas cruzadas de consistencia sobre el payload del evento.
+   * @param {Object} payload - Objeto que representa el estado del evento
+   * @returns {string|null} - Retorna un string con el error de validación o null si todo es consistente
+   */
+  _validateEvent(payload) {
+    // 1. Validar fechas de inicio y fin
+    if (payload.starts_at && payload.ends_at) {
+      const starts = new Date(payload.starts_at);
+      const ends = new Date(payload.ends_at);
+      if (ends <= starts) {
+        return "La fecha de finalización debe ser posterior a la fecha de inicio.";
+      }
+    }
+
+    // 2. Validar publicación de eventos pasados
+    if (payload.status === "published" && payload.starts_at) {
+      const starts = new Date(payload.starts_at);
+      const now = new Date();
+      if (starts < now) {
+        return "No puedes publicar un evento cuya fecha de inicio ya ha pasado.";
+      }
+    }
+
+    // 3. Validar capacidad
+    if (payload.capacity !== null && payload.capacity < 0) {
+      return "La capacidad del evento no puede ser un número negativo.";
+    }
+
+    // 4. Validar precio
+    if (payload.price !== null && payload.price < 0) {
+      return "El precio del evento no puede ser un número negativo.";
+    }
+
+    // 5. Validar evento promocional (promo_modal)
+    if (payload.promo_modal === true) {
+      if (payload.status !== "published") {
+        return "El evento debe estar publicado para marcarlo como destacado.";
+      }
+      if (payload.starts_at) {
+        const starts = new Date(payload.starts_at);
+        const now = new Date();
+        if (starts < now) {
+          return "No puedes marcar un evento pasado como destacado o promocional.";
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Verifica si un usuario está registrado en un evento
+   * @param {string} eventId
+   * @param {string} userId
+   * @returns {Promise<{registered: boolean, name: string|null}>}
+   */
+  async checkUserRegistration(eventId, userId) {
+    if (!eventId || !userId) return { registered: false, name: null };
+    try {
+      const { data, error } = await supabase
+        .from("event_registrations")
+        .select("name, status")
+        .eq("event_id", eventId)
+        .eq("user_id", userId)
+        .eq("status", "registered")
+        .limit(1);
+
+      if (error) throw error;
+      if (data && data.length > 0) {
+        return { registered: true, name: data[0].name };
+      }
+      return { registered: false, name: null };
+    } catch (err) {
+      console.error("Error checking user registration:", err);
+      return { registered: false, name: null };
+    }
   }
 }
 

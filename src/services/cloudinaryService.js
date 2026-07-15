@@ -1,23 +1,42 @@
-import { CLOUDINARY_CONFIG } from "../lib/cloudinary";
+import { supabase } from "../lib/supabase";
 
+/**
+ * Sube una imagen a Cloudinary a través de la Edge Function de Supabase.
+ * Las credenciales de Cloudinary residen únicamente en el servidor.
+ *
+ * @param {File|Blob} file - Archivo de imagen a subir
+ * @returns {Promise<string>} URL pública de la imagen subida
+ */
 export async function uploadImageToCloudinary(file) {
-  // console.log(CLOUDINARY_CONFIG.cloudName, CLOUDINARY_CONFIG.uploadPreset);
-  const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`;
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", CLOUDINARY_CONFIG.uploadPreset);
-  // console.log("empezando a subir imagen");
-  const response = await fetch(url, {
-    method: "POST",
-    body: formData,
-  });
+  // Obtener el token de sesión actual para autenticar la llamada a la Edge Function
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.error?.message || "Error subiendo imagen a Cloudinary");
+  if (!session) {
+    throw new Error("Se requiere autenticación para subir imágenes");
   }
 
-  const data = await response.json();
-  // console.log("terminando de subir imagen");
-  return data.secure_url; // URL pública de la imagen
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const response = await fetch(
+    `${supabaseUrl}/functions/v1/upload-image`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: formData,
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || "Error subiendo imagen");
+  }
+
+  return result.url;
 }

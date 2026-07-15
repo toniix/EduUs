@@ -52,7 +52,7 @@ const AdminPanelHeader = ({
               onChange={(e) => handleSearch(e.target.value)}
             />
             {searchTerm && (
-              <button
+              <button type="button"
                 onClick={() => setSearchTerm("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs px-2 py-1 rounded-md hover:bg-gray-100 transition-colors"
               >
@@ -69,12 +69,12 @@ const AdminPanelHeader = ({
         )}
         {/* Acciones del usuario */}
         <div className="flex items-center space-x-4">
-          <button className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors">
+          <button type="button" className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors">
             <Bell className="h-5 w-5" />
             <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
           </button>
 
-          <button
+          <button type="button"
             onClick={toggleDarkMode}
             className={`p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors ${
               isDark
@@ -91,7 +91,7 @@ const AdminPanelHeader = ({
 
           {/* Perfil del usuario */}
           <div className="relative">
-            <button
+            <button type="button"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className="flex items-center space-x-2 group"
             >
@@ -124,7 +124,7 @@ const AdminPanelHeader = ({
                   Mi Perfil
                 </Link>
                 <div className="border-t border-gray-100 my-1"></div>
-                <button
+                <button type="button"
                   onClick={handleLogout}
                   className="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                 >

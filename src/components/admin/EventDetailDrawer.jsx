@@ -214,12 +214,14 @@ export default function EventDetailDrawer({
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
+              type="button"
               onClick={() => onEdit(event)}
               className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors"
             >
               Editar
             </button>
             <button
+              type="button"
               onClick={onClose}
               className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}
             >
@@ -237,6 +239,9 @@ export default function EventDetailDrawer({
                 src={event.banner_url}
                 alt={event.title}
                 className="w-full h-full object-cover"
+                loading="lazy"
+                width="600"
+                height="192"
               />
             </div>
           )}
@@ -278,7 +283,7 @@ export default function EventDetailDrawer({
                 },
               ].map((s, i) => (
                 <div
-                  key={i}
+                  key={s.label}
                   className={`${cardBg} rounded-xl p-3 flex flex-col gap-1`}
                 >
                   <div className="flex items-center gap-1.5">
@@ -390,7 +395,7 @@ export default function EventDetailDrawer({
 
                   {/* Exportar CSV */}
                   {/* {registrations.length > 0 && (
-                    <button
+                    <button type="button"
                       onClick={exportCSV}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary/5 transition-colors"
                     >
@@ -464,6 +469,7 @@ export default function EventDetailDrawer({
                             <div className="flex gap-1">
                               {reg.status !== "attended" && (
                                 <button
+              type="button"
                                   title="Marcar como asistió"
                                   onClick={() =>
                                     handleStatusChange(reg.id, "attended")
@@ -475,6 +481,7 @@ export default function EventDetailDrawer({
                               )}
                               {reg.status !== "registered" && (
                                 <button
+              type="button"
                                   title="Marcar como inscrito"
                                   onClick={() =>
                                     handleStatusChange(reg.id, "registered")
@@ -486,6 +493,7 @@ export default function EventDetailDrawer({
                               )}
                               {reg.status !== "cancelled" && (
                                 <button
+              type="button"
                                   title="Cancelar inscripción"
                                   onClick={() =>
                                     handleStatusChange(reg.id, "cancelled")
@@ -513,6 +521,7 @@ export default function EventDetailDrawer({
                 Zona peligrosa
               </h3>
               <button
+              type="button"
                 onClick={() => onDelete(event)}
                 className="text-sm font-semibold text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-4 py-2 rounded-lg transition-colors"
               >

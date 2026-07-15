@@ -23,6 +23,28 @@ const Home = () => {
       <SEO
         title="EDU-US | Becas y oportunidades internacionales 2026"
         description="Encuentra becas, voluntariados y oportunidades académicas internacionales actualizadas cada semana."
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "EDU-US",
+          url: "https://eduus.club",
+          description:
+            "Plataforma que conecta a jóvenes peruanos con becas, voluntariados y oportunidades académicas internacionales.",
+          publisher: {
+            "@type": "Organization",
+            name: "EDU-US",
+            logo: "https://eduus.club/logo_1.png",
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate:
+                "https://eduus.club/edutracker?search={search_term_string}",
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }}
       />
       {/* PromoModal se auto-controla con usePromoModal */}
       <PromoModal />
@@ -50,13 +72,13 @@ const Home = () => {
               className="text-light max-w-3xl lg:w-1/2 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 sm:p-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)]"
             >
               <m.h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                {"Educación de Calidad para Todos".split("").map((char, i) => (
+                {[...("Educación de Calidad para Todos")].map((char, charIdx) => (
                   <m.span
-                    key={i}
+                    key={`c${charIdx}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      delay: 0.8 + i * 0.06,
+                      delay: 0.8 + charIdx * 0.06,
                       duration: 0.3,
                       ease: "easeOut",
                     }}
@@ -82,9 +104,9 @@ const Home = () => {
         <Suspense fallback={<div className="h-96 bg-gray-100 animate-pulse" />}>
           <TestimonialsSection />
         </Suspense>
-        {/* <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse" />}>
+        <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse" />}>
           <CallToAction />
-        </Suspense> */}
+        </Suspense>
       </div>
     </>
   );

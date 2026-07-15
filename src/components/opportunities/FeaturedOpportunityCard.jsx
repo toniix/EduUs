@@ -57,7 +57,10 @@ const FeaturedOpportunityCard = ({ opportunity, index }) => {
           optimizeCloudinaryUrl(image_url, { width: 400 }) || "/placeholder.svg"
         }
         alt={title}
-        className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="lazy"
+        width="400"
+        height="384"
       />
 
       {/* Overlay gradiente multicapa */}

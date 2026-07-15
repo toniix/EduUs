@@ -142,6 +142,11 @@ const AdminPanel = () => {
   const filteredOpportunities = useMemo(() => {
     let result = opportunities;
 
+    // Filtrar por creador si el rol es editor
+    if (profile?.role === "editor") {
+      result = result.filter((opp) => opp.created_by === profile.id);
+    }
+
     // Búsqueda por texto (título)
     if (searchTerm && searchTerm.trim() !== "") {
       const searchLower = searchTerm.toLowerCase();

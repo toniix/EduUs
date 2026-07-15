@@ -54,6 +54,9 @@ export default function OpportunityCard({ opportunity }) {
           src={optimizeCloudinaryUrl(image_url, { width: 400 }) || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-cover"
+          loading="lazy"
+          width="400"
+          height="225"
         />
         <div className="absolute top-3 left-3">
           <span
@@ -133,7 +136,7 @@ export default function OpportunityCard({ opportunity }) {
             Ver detalles
           </Link>
 
-          <button
+          <button type="button"
             onClick={openShareModal}
             className="flex items-center justify-center px-4 py-3 bg-white border-2 border-primary text-primary rounded-xl font-semibold shadow-md hover:shadow-lg hover:bg-primary/5"
           >

@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useState,
@@ -58,9 +57,8 @@ export const OpportunitiesProvider = ({ children }) => {
   // Filtros y paginación controlados por el contexto con valores por defecto
   const [filters, setFilters] = useState({
     modality: "",
-    country: "",
-    location: "",
     category_id: "",
+    location: "",
     show_expired: false,
     search: "",
   });
@@ -119,9 +117,8 @@ export const OpportunitiesProvider = ({ children }) => {
   const clearFilters = useCallback(() => {
     setFilters({
       modality: "",
-      country: "",
-      location: "",
       category_id: "",
+      location: "",
       show_expired: false,
       search: "",
     });

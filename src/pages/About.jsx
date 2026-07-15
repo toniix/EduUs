@@ -163,7 +163,7 @@ const About = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 auto-rows-fr">
             {values.map((value, index) => (
               <m.div
-                key={index}
+                key={value.title || value.label || `val-${index}`}
                 className="group relative flex"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -295,7 +295,7 @@ const About = () => {
           <div className="flex flex-wrap justify-center gap-12">
             {teamMembers.map((member, index) => (
               <m.div
-                key={index}
+                key={member.name}
                 className="text-center w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-xs"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
