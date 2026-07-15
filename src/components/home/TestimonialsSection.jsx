@@ -42,7 +42,7 @@ const TestimonialsSection = () => {
           <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-18 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
           <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-18 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
 
-          <button
+          <button type="button"
             ref={prevRef}
             className="absolute left-2 top-1/2 -translate-y-1/2 z-20 
             w-10 h-10 sm:w-12 sm:h-12 
@@ -63,7 +63,7 @@ const TestimonialsSection = () => {
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
-          <button
+          <button type="button"
             ref={nextRef}
             className="absolute right-2 top-1/2 -translate-y-1/2 z-20 
             w-10 h-10 sm:w-12 sm:h-12 

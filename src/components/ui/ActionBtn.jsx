@@ -1,6 +1,6 @@
 function ActionBtn({ children, title, onClick, isDark, danger = false }) {
     return (
-        <button
+        <button type="button"
             title={title}
             onClick={onClick}
             className={`p-1.5 rounded-lg transition-colors ${danger

@@ -72,13 +72,13 @@ const Home = () => {
               className="text-light max-w-3xl lg:w-1/2 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 sm:p-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)]"
             >
               <m.h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                {"Educación de Calidad para Todos".split("").map((char, i) => (
+                {[...("Educación de Calidad para Todos")].map((char, charIdx) => (
                   <m.span
-                    key={i}
+                    key={`c${charIdx}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      delay: 0.8 + i * 0.06,
+                      delay: 0.8 + charIdx * 0.06,
                       duration: 0.3,
                       ease: "easeOut",
                     }}

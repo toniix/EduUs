@@ -208,7 +208,7 @@ const OpportunityActionsMenu = ({
 
   return (
     <div className="flex space-x-2">
-      <button
+      <button type="button"
         className={editButtonClasses}
         title="Editar"
         onClick={() => handleEdit(opportunity)}
@@ -216,7 +216,7 @@ const OpportunityActionsMenu = ({
       >
         <Edit className="h-4 w-4" />
       </button>
-      <button
+      <button type="button"
         className={getButtonClasses(featuredButtonDisabled)}
         title={featuredButtonTitle}
         onClick={handleFeaturedClick}
@@ -226,7 +226,7 @@ const OpportunityActionsMenu = ({
           className={`h-4 w-4 ${opportunity.is_featured ? "fill-current" : ""}`}
         />
       </button>
-      <button
+      <button type="button"
         className={deleteButtonClasses}
         title="Eliminar"
         onClick={() => handleDeleteClick(opportunity)}

@@ -38,7 +38,7 @@ const UserMenu = () => {
 
   return (
     <div className="relative" ref={menuRef}>
-      <button
+      <button type="button"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="flex items-center space-x-2 hover:opacity-80"
       >
@@ -71,7 +71,7 @@ const UserMenu = () => {
               Panel Admin
             </Link>
           )}
-          <button
+          <button type="button"
             onClick={handleLogout}
             className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
           >

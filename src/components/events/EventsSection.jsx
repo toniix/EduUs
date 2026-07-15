@@ -113,7 +113,7 @@ export default function EventsSection() {
 
                 {/* Botones */}
                 <div className="flex flex-wrap gap-3 pt-2">
-                  <button
+                  <button type="button"
                     onClick={() => navigate(`/eventos/${event.slug}`)}
                     className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3.5 rounded-xl text-sm transition-all bg-primary hover:bg-primary/95 text-white hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25 hover:shadow-primary/35"
                   >

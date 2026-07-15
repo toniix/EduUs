@@ -84,7 +84,7 @@ export default function ImprovedCTA() {
                   "Oportunidades premium",
                 ].map((badge, i) => (
                   <div
-                    key={i}
+                    key={badge}
                     className="flex items-center text-slate-800 text-base font-semibold tracking-wide"
                   >
                     <svg

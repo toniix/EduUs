@@ -57,7 +57,7 @@ export default function EventPreviewModal({ event, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4 sm:px-6">
       <div className="bg-slate-900 rounded-[2rem] shadow-2xl w-full max-w-4xl overflow-hidden relative flex flex-col md:flex-row border border-white/10 max-h-[90vh]">
         {/* Botón X superior derecho (capa superior) */}
-        <button
+        <button type="button"
           onClick={onClose}
           className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-black/40 hover:bg-black/80 backdrop-blur-sm transition-colors cursor-pointer"
           aria-label="Cerrar"
@@ -145,7 +145,7 @@ export default function EventPreviewModal({ event, onClose }) {
 
           {/* Botones */}
           <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-            <button
+            <button type="button"
               onClick={(e) => e.preventDefault()}
               className="flex-1 py-4 rounded-xl font-extrabold text-base transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25 cursor-default"
               style={{
@@ -155,7 +155,7 @@ export default function EventPreviewModal({ event, onClose }) {
             >
               Reserva tu cupo ahora
             </button>
-            <button
+            <button type="button"
               onClick={onClose}
               className="py-4 px-6 rounded-xl border border-slate-700 text-slate-300 font-medium hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
             >

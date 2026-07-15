@@ -116,7 +116,7 @@ const DetailBody = ({
             <ul className="space-y-3.5">
               {parsedRequirements.map((req, i) => (
                 <motion.li
-                  key={i}
+                  key={req}
                   className="flex items-start gap-3"
                   initial={{ opacity: 0, x: -8 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -154,7 +154,7 @@ const DetailBody = ({
             <ul className="space-y-3.5">
               {parsedBenefits.map((benefit, i) => (
                 <motion.li
-                  key={i}
+                  key={benefit}
                   className="flex items-start gap-3"
                   initial={{ opacity: 0, x: -8 }}
                   whileInView={{ opacity: 1, x: 0 }}

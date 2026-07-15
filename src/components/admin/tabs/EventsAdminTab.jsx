@@ -234,7 +234,7 @@ export default function EventsAdminTab() {
             />
           </div>
 
-          <button
+          <button type="button"
             onClick={handleOpenCreate}
             className="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 flex items-center gap-2 text-sm font-semibold whitespace-nowrap"
           >

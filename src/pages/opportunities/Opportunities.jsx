@@ -251,7 +251,7 @@ const Opportunities = () => {
               <div className="ml-3">
                 <p className="text-sm text-red-700">
                   Error al cargar las oportunidades.{" "}
-                  <button
+                  <button type="button"
                     onClick={handleRetry}
                     className="font-medium text-red-700 hover:text-red-600 underline"
                   >

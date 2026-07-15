@@ -94,7 +94,7 @@ export default function PromoModal() {
               className="bg-gray-900 rounded-[2rem] shadow-2xl w-full max-w-4xl overflow-hidden relative flex flex-col md:flex-row border border-white/10 max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-hidden"
             >
               {/* Botón X superior derecho (capa superior) */}
-              <button
+              <button type="button"
                 onClick={close}
                 className="absolute top-5 right-5 z-20 p-2.5 rounded-full bg-black/40 hover:bg-black/80 border border-white/10 backdrop-blur-sm transition-all hover:scale-105 active:scale-95 cursor-pointer text-white"
                 aria-label="Cerrar"
@@ -220,7 +220,7 @@ export default function PromoModal() {
 
                 {/* Botones */}
                 <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-                  <button
+                  <button type="button"
                     onClick={() => {
                       close();
                       navigate(`/eventos/${event.slug}`);

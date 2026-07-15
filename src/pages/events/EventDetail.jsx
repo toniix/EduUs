@@ -318,7 +318,7 @@ export default function EventDetail() {
                                   benefit &&
                                   benefit.trim() !== "" && (
                                     <li
-                                      key={idx}
+                                      key={benefit.trim()}
                                       className="flex items-start gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400"
                                     >
                                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 shrink-0 mt-0.5 animate-[fadeIn_0.3s_ease]">
@@ -395,28 +395,28 @@ export default function EventDetail() {
                     Compartir este evento:
                   </span>
                   <div className="flex gap-2 relative items-center">
-                    <button
+                    <button type="button"
                       onClick={() => handleShare("whatsapp")}
                       className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-[#25D366] hover:border-[#25D366]/30 hover:bg-green-50/30 dark:hover:bg-green-950/10 transition-all active:scale-95 flex items-center justify-center"
                       aria-label="Compartir por WhatsApp"
                     >
                       <FaWhatsapp className="w-4 h-4" />
                     </button>
-                    <button
+                    <button type="button"
                       onClick={() => handleShare("twitter")}
                       className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white hover:border-black/30 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 flex items-center justify-center"
                       aria-label="Compartir por X / Twitter"
                     >
                       <FaXTwitter className="w-4 h-4" />
                     </button>
-                    <button
+                    <button type="button"
                       onClick={() => handleShare("linkedin")}
                       className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-[#0A66C2] hover:border-[#0A66C2]/30 hover:bg-blue-50/30 dark:hover:bg-blue-950/10 transition-all active:scale-95 flex items-center justify-center"
                       aria-label="Compartir por LinkedIn"
                     >
                       <FaLinkedinIn className="w-4 h-4" />
                     </button>
-                    <button
+                    <button type="button"
                       onClick={() => handleShare("copy")}
                       className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all active:scale-95 flex items-center justify-center"
                       aria-label="Copiar enlace"

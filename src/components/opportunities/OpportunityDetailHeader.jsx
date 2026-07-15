@@ -107,7 +107,7 @@ const DetailHeader = ({
 
           {/* Botón compartir flotante */}
           {/* <div className="absolute top-4 right-4">
-            <button
+            <button type="button"
               onClick={openShareModal}
               className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white hover:bg-white/35 transition-all duration-200 active:scale-95"
               aria-label="Compartir oportunidad"
@@ -145,7 +145,7 @@ const DetailHeader = ({
               )}
             </div>
 
-            <button
+            <button type="button"
               onClick={openShareModal}
               className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 active:scale-95"
               aria-label="Compartir oportunidad"
@@ -173,7 +173,7 @@ const DetailHeader = ({
               </Badge>
             )}
             <div className="ml-auto">
-              <button
+              <button type="button"
                 onClick={openShareModal}
                 className="w-9 h-9 sm:w-auto sm:px-4 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center gap-2 text-gray-500 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 active:scale-95 font-medium text-sm"
                 aria-label="Compartir oportunidad"

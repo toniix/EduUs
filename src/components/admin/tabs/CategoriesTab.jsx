@@ -212,7 +212,7 @@ const CategoriesTab = () => {
           </span>
         </h2>
 
-        <button
+        <button type="button"
           onClick={() => dispatchModal({ type: "OPEN_CREATE" })}
           className="flex items-center px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white transition-colors"
         >
@@ -288,7 +288,7 @@ const CategoriesTab = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
-                      <button
+                      <button type="button"
                         onClick={() => handleEdit(category)}
                         className={`p-1.5 rounded-md ${
                           isDark
@@ -298,7 +298,7 @@ const CategoriesTab = () => {
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
-                      <button
+                      <button type="button"
                         onClick={() => handleDelete(category.id)}
                         className={`p-1.5 rounded-md ${
                           isDark

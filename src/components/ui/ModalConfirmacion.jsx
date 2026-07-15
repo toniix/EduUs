@@ -43,7 +43,7 @@ export default function ModalConfirmacion({
             className="relative bg-white dark:bg-gray-950 border border-gray-150 dark:border-gray-850 rounded-3xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto z-10 flex flex-col items-center text-center gap-4 animate-[fadeIn_0.2s_ease]"
           >
             {/* Close Button */}
-            <button
+            <button type="button"
               onClick={onCancel}
               className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
               aria-label="Cerrar modal"
@@ -80,13 +80,13 @@ export default function ModalConfirmacion({
 
             {/* Actions */}
             <div className="flex gap-3 w-full mt-2 justify-center">
-              <button
+              <button type="button"
                 onClick={onCancel}
                 className="flex-1 py-2.5 px-4 rounded-xl bg-gray-150 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-850 text-gray-700 dark:text-gray-300 font-bold text-sm transition-all active:scale-[0.98]"
               >
                 {cancelText}
               </button>
-              <button
+              <button type="button"
                 onClick={onConfirm}
                 className={`flex-1 py-2.5 px-4 rounded-xl font-bold text-sm text-white transition-all active:scale-[0.98] shadow-md ${
                   activeVariant === "danger"

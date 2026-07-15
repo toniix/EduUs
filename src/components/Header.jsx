@@ -114,7 +114,7 @@ export default function Header() {
 
           {/* ── Desktop CTA ── */}
           <div className="hidden md:flex items-center gap-3">
-            {/* <button
+            {/* <button type="button"
               onClick={toggleDarkMode}
               className={`p-2 rounded-xl border transition-colors duration-200 ${
                 isDark
@@ -130,7 +130,7 @@ export default function Header() {
               <UserMenu />
             ) : (
               <Link to="/login">
-                <button className="bg-primary text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-primary/90 active:scale-95 transition-all duration-150 shadow-sm shadow-primary/25">
+                <button type="button" className="bg-primary text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-primary/90 active:scale-95 transition-all duration-150 shadow-sm shadow-primary/25">
                   Iniciar sesión
                 </button>
               </Link>
@@ -139,6 +139,7 @@ export default function Header() {
 
           {/* ── Mobile hamburger ── */}
           <button
+            type="button"
             onClick={() => setIsOpen(true)}
             className="md:hidden p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-black/5 active:bg-black/10 transition-colors"
             aria-label="Abrir menú"
@@ -175,6 +176,7 @@ export default function Header() {
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <img src={logo} alt="EDU-US" className="h-9 w-auto object-contain" width="108" height="36" />
           <button
+            type="button"
             onClick={() => setIsOpen(false)}
             className="p-1.5 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
             aria-label="Cerrar menú"
@@ -220,7 +222,7 @@ export default function Header() {
         <div className="px-4 pb-6 pt-4 border-t border-gray-100 space-y-4">
           {/* <div className="flex items-center justify-between px-2">
             <span className="text-sm font-medium text-gray-600">Modo Oscuro</span>
-            <button
+            <button type="button"
               onClick={toggleDarkMode}
               className={`p-2 rounded-xl border transition-colors duration-200 ${
                 isDark
@@ -241,7 +243,7 @@ export default function Header() {
               onClick={() => setIsOpen(false)}
               className="block"
             >
-              <button className="w-full bg-primary text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all duration-150">
+              <button type="button" className="w-full bg-primary text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all duration-150">
                 Iniciar sesión
               </button>
             </Link>

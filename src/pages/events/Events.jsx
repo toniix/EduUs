@@ -41,7 +41,7 @@ const Events = ({ onExplore }) => {
             ) : (
               <div className="relative group events-banner-swiper">
                 {/* Botones de navegación glassmorphic flotantes (solo desktop) */}
-                <button
+                <button type="button"
                   ref={prevRef}
                   className="absolute left-4 top-1/2 -translate-y-1/2 z-20 
                   w-12 h-12 rounded-full hidden md:flex items-center justify-center
@@ -51,7 +51,7 @@ const Events = ({ onExplore }) => {
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
-                <button
+                <button type="button"
                   ref={nextRef}
                   className="absolute right-4 top-1/2 -translate-y-1/2 z-20 
                   w-12 h-12 rounded-full hidden md:flex items-center justify-center

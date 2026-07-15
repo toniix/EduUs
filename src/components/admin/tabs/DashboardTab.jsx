@@ -155,7 +155,7 @@ const DashboardTab = () => {
           Dashboard
         </h1>
         <div className="flex items-center gap-4">
-          <button
+          <button type="button"
             onClick={handleRefresh}
             className="p-2 text-gray-500 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
             disabled={isRefreshing}
@@ -173,7 +173,7 @@ const DashboardTab = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {analytics.map((item, index) => (
           <div
-            key={index}
+            key={item.label || `analytics-${index}`}
             className={`rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200 ${
               isDark ? "bg-gray-900" : "bg-white"
             }`}
@@ -223,7 +223,7 @@ const DashboardTab = () => {
         <div className="space-y-4">
           {recentActivity.map((activity, index) => (
             <div
-              key={index}
+              key={activity.id || `activity-${index}`}
               className={`flex items-center justify-between p-3 rounded-lg ${
                 isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"
               }`}

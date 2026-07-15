@@ -66,7 +66,7 @@ function Pagination({
     <div className="flex flex-col md:flex-row md:items-center md:justify-center mt-6 space-y-4 md:space-y-0">
       <div className="flex items-center space-x-2">
         {/* Botón anterior */}
-        <button
+        <button type="button"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
@@ -78,11 +78,11 @@ function Pagination({
         {/* Números de página */}
         <div className="hidden sm:flex items-center space-x-1">
           {pageNumbers.map((pageNum, index) => (
-            <React.Fragment key={index}>
+            <React.Fragment key={pageNum === '...' ? `ellipsis-${pageNumbers.indexOf(pageNum, index)}` : String(pageNum)}>
               {pageNum === "..." ? (
                 <span className="px-3 py-1">...</span>
               ) : (
-                <button
+                <button type="button"
                   onClick={() => onPageChange(Number(pageNum))}
                   className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${
                     pageNum === currentPage
@@ -100,7 +100,7 @@ function Pagination({
         </div>
 
         {/* Botón siguiente */}
-        <button
+        <button type="button"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
           className="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"

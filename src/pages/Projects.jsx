@@ -77,7 +77,7 @@ const ProjectsSection = () => {
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {projects.slice(0, 4).map((project) => {
                   return (
-                    <button
+                    <button type="button"
                       key={project.id}
                       onClick={() => scrollToProject(project.id)}
                       className="group relative h-48 sm:h-56 w-full rounded-[2rem] overflow-hidden transition-all duration-500 hover:shadow-[0_15px_35px_rgb(0,0,0,0.6)] hover:-translate-y-2 border border-white/5 bg-[#0b1716] hover:border-secondary/50 focus:outline-none focus:ring-4 focus:ring-secondary/20"
@@ -335,7 +335,7 @@ const ProjectsSection = () => {
       {/* Back to top */}
       <section className="py-16" style={{ backgroundColor: "#f8f8f8" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <button
+          <button type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             className="inline-flex items-center px-6 py-3 text-white rounded-full transition-colors duration-200 font-medium"
             style={{ backgroundColor: "#4BBAAA" }}

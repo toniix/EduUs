@@ -245,7 +245,7 @@ export default function OpportunitySidebar({
 
                   {documentation.map((doc, idx) => (
                     <a
-                      key={idx}
+                      key={doc.url}
                       href={doc.url}
                       target="_blank"
                       rel="noopener noreferrer"

@@ -332,7 +332,7 @@ export default function EventForm({ event = null, onClose, onSave }) {
           <h2 className="text-base font-bold text-gray-900 dark:text-light">
             {isEditing ? "Editar evento" : "Crear nuevo evento"}
           </h2>
-          <button
+          <button type="button"
             onClick={onClose}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label="Cerrar"
@@ -603,7 +603,7 @@ export default function EventForm({ event = null, onClose, onSave }) {
               </label>
               {[0, 1, 2].map((idx) => (
                 <input
-                  key={idx}
+                  key={`benefit-slot-${idx}`}
                   value={form.benefits?.[idx] || ""}
                   onChange={(e) => {
                     const newBenefits = [...(form.benefits || ["", "", ""])];

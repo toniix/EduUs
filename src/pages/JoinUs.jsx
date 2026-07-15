@@ -140,7 +140,7 @@ const JoinUs = () => {
                 </div>
 
                 <div className="flex flex-col gap-3.5">
-                  <button
+                  <button type="button"
                     onClick={() => scrollTo("cta-empresas")}
                     className="group flex items-center justify-between p-4 bg-gray-50 hover:bg-secondary/[0.03] rounded-2xl border border-gray-100 hover:border-secondary/30 text-left active:scale-[0.98] transition-all duration-300"
                   >
@@ -160,7 +160,7 @@ const JoinUs = () => {
                     <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-secondary group-hover:translate-x-1 transition-all" />
                   </button>
 
-                  <button
+                  <button type="button"
                     onClick={() => scrollTo("cta-voluntarios")}
                     className="group flex items-center justify-between p-4 bg-gray-50 hover:bg-primary/[0.03] rounded-2xl border border-gray-100 hover:border-primary/30 text-left active:scale-[0.98] transition-all duration-300"
                   >
@@ -222,7 +222,7 @@ const JoinUs = () => {
               >
                 {normalizedProjects.map((project, idx) => (
                   <SwiperSlide
-                    key={`project-${project.id}-${idx}`}
+                    key={project.id}
                     className="!w-[280px] sm:!w-[340px] lg:!w-[380px] shrink-0"
                   >
                     <ProjectSlide
@@ -388,7 +388,7 @@ const JoinUs = () => {
                   <div className="flex -space-x-2.5">
                     {["A", "M", "C", "J"].map((letter, i) => (
                       <div
-                        key={i}
+                        key={letter}
                         className="w-8 h-8 rounded-full border-[1.5px] border-[#0c2f2c] bg-gradient-to-br from-secondary/40 to-primary/30 flex items-center justify-center shadow-md shadow-black/10"
                       >
                         <span className="text-[10px] text-white font-bold tracking-tight">

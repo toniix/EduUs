@@ -56,7 +56,7 @@ const FeaturedOpportunities = () => {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
               <div
-                key={i}
+                key={`skeleton-${i}`}
                 className="animate-pulse bg-gradient-to-b from-gray-200 to-gray-300 rounded-3xl h-96 shadow-md"
               />
             ))}

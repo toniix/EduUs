@@ -87,7 +87,7 @@ const OpportunityProcessTimeline = ({ deadline, created_at }) => {
         {steps.map((step, idx) => {
           const isActive = idx === activeStep;
           return (
-            <div key={idx} className="relative flex items-start">
+            <div key={step.label} className="relative flex items-start">
               {/* Nodo indicador */}
               <div className="absolute left-[-32px] top-0.5 w-6 h-6 flex items-center justify-center">
                 {isActive ? (

@@ -125,7 +125,7 @@ export default function ContentTab({
           >
             Ir a Edutracker
           </Link> */}
-          <button
+          <button type="button"
             className="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 flex items-center"
             onClick={() => setShowOpportunityForm(true)}
           >

@@ -92,7 +92,7 @@ export default function Sidebar({
             </div>
           )}
         </div>
-        <button
+        <button type="button"
           onClick={() => setIsCollapsed((prev) => !prev)}
           className={`p-2 rounded-lg hover:bg-${
             isDark ? "gray-800" : "gray-100"
@@ -112,7 +112,7 @@ export default function Sidebar({
           (item) => !item.adminOnly || profile?.role === "admin",
         ).map((item) => (
           <div key={item.value}>
-            <button
+            <button type="button"
               onClick={() => handleItemClick(item)}
               className={`w-full flex items-center ${
                 isCollapsed ? "justify-center" : "justify-between"
@@ -152,7 +152,7 @@ export default function Sidebar({
         )}
         <div className="space-y-1">
           {/* Ir a Home */}
-          <button
+          <button type="button"
             onClick={() => navigate("/")}
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
@@ -167,7 +167,7 @@ export default function Sidebar({
           </button>
 
           {/* Ir a Proyectos/Eventos */}
-          <button
+          <button type="button"
             onClick={() => navigate("/edutracker?tab=events")}
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"
@@ -182,7 +182,7 @@ export default function Sidebar({
           </button>
 
           {/* Ir a Edutracker */}
-          <button
+          <button type="button"
             onClick={() => navigate("/edutracker")}
             className={`w-full flex items-center ${
               isCollapsed ? "justify-center" : "justify-start"

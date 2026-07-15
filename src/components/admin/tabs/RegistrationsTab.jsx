@@ -167,7 +167,7 @@ export default function RegistrationsTab() {
               Todos los registrados en todos los eventos
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={fetchAll}
             className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border border-primary text-primary hover:bg-primary/5 transition-colors"
           >
@@ -262,7 +262,7 @@ export default function RegistrationsTab() {
 
           {/* Exportar */}
           {filtered.length > 0 && (
-            <button
+            <button type="button"
               onClick={exportCSV}
               className="text-xs font-semibold px-3 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 transition-colors"
             >

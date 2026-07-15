@@ -20,7 +20,7 @@ const CategoryForm = ({
           <h3 className="text-lg font-medium">
             {currentCategory ? "Editar Categoría" : "Nueva Categoría"}
           </h3>
-          <button
+          <button type="button"
             onClick={resetForm}
             className={`p-1 rounded-full ${
               isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"
