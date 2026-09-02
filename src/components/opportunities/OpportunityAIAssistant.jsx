@@ -1,187 +1,524 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, X, Send, Loader2, Sparkles, ChevronDown } from "lucide-react";
+import {
+  X,
+  Send,
+  Loader2,
+  Sparkles,
+  ChevronDown,
+  AlertCircle,
+  RotateCcw,
+} from "lucide-react";
+import aiIcon from "../../assets/icono.png";
 
-/* ─── Mensajes de bienvenida / sugerencias ───────────────────── */
+// ─── Env (for direct fetch — supabase.functions.invoke doesn't support streaming) ──
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/opportunity-ai-chat`;
+
+// ─── Constants ─────────────────────────────────────────────────────────────────
+
 const SUGGESTIONS = [
-  "¿Cuáles son los requisitos principales de esta oportunidad?",
-  "¿Cómo puedo fortalecer mi postulación?",
-  "¿Qué documentos debo preparar?",
-  "¿Cuáles son los beneficios de esta oportunidad?",
+  "¿Cuáles son los requisitos?",
+  "¿Quién puede postular?",
+  "¿Cuáles son los beneficios?",
+  "¿Cómo puedo aplicar?",
 ];
 
-/* ─── Burbuja de mensaje ─────────────────────────────────────── */
-function MessageBubble({ message }) {
+const TIMEOUT_MS = 30_000;
+
+// ─── Markdown-lite + URL renderer ─────────────────────────────────────────────
+
+/**
+ * inlineFormat
+ * Parses a single line of text and renders bold, markdown links, raw URLs,
+ * and plain text as React elements.
+ */
+function inlineFormat(text) {
+  if (!text) return null;
+
+  // Regex matches:
+  // 1) Markdown link: [Label](url)
+  // 2) Raw URL: http://... or https://...
+  // 3) Bold: **text**
+  const regex =
+    /(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|https?:\/\/[^\s<)]+|\*\*([^*]+)\*\*)/g;
+
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+
+    const fullMatch = match[0];
+
+    // Markdown link: [Label](url)
+    if (fullMatch.startsWith("[") && match[2] && match[3]) {
+      const label = match[2];
+      const url = match[3];
+      parts.push(
+        <a
+          key={`link-${match.index}`}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-secondary font-medium underline underline-offset-2 break-all hover:text-secondary/80 transition-colors duration-150"
+        >
+          {label}
+        </a>,
+      );
+    }
+    // Bold: **content**
+    else if (fullMatch.startsWith("**") && fullMatch.endsWith("**")) {
+      const innerText = fullMatch.slice(2, -2);
+      // Recursively format inner text so bold URLs like **https://...** become clickable links!
+      parts.push(
+        <strong
+          key={`strong-${match.index}`}
+          className="font-semibold text-white"
+        >
+          {inlineFormat(innerText)}
+        </strong>,
+      );
+    }
+    // Raw URL: https://... or http://...
+    else if (
+      fullMatch.startsWith("http://") ||
+      fullMatch.startsWith("https://")
+    ) {
+      const cleanUrl = fullMatch.replace(/[.,;:!?)]+$/, "");
+      const trailing = fullMatch.slice(cleanUrl.length);
+
+      parts.push(
+        <span key={`url-${match.index}`} className="inline">
+          <a
+            href={cleanUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-secondary font-medium underline underline-offset-2 break-all hover:text-secondary/80 transition-colors duration-150"
+          >
+            {cleanUrl}
+          </a>
+          {trailing}
+        </span>,
+      );
+    } else {
+      parts.push(fullMatch);
+    }
+
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts;
+}
+
+/**
+ * renderMarkdown
+ * Converts a multi-line assistant response string to a React tree.
+ */
+function renderMarkdown(text) {
+  if (!text) return null;
+
+  const lines = text.split("\n");
+  const elements = [];
+  let listBuffer = [];
+  let key = 0;
+
+  const flushList = () => {
+    if (listBuffer.length === 0) return;
+    elements.push(
+      <ul key={`ul-${key++}`} className="mt-2 mb-1.5 space-y-1 pl-1">
+        {listBuffer.map((item, i) => (
+          <li key={i} className="flex items-start gap-2 text-gray-200">
+            <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-secondary flex-shrink-0 shadow-[0_0_8px_rgba(77,185,169,0.8)]" />
+            <span className="flex-1">{inlineFormat(item)}</span>
+          </li>
+        ))}
+      </ul>,
+    );
+    listBuffer = [];
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // Bullet or numbered list item
+    if (/^[-*•]\s+/.test(trimmed)) {
+      listBuffer.push(trimmed.replace(/^[-*•]\s+/, ""));
+      continue;
+    }
+    if (/^\d+\.\s+/.test(trimmed)) {
+      listBuffer.push(trimmed.replace(/^\d+\.\s+/, ""));
+      continue;
+    }
+
+    // Non-list line → flush pending list first
+    flushList();
+
+    if (trimmed === "") {
+      elements.push(<div key={`gap-${key++}`} className="h-1.5" />);
+    } else {
+      elements.push(
+        <span key={`p-${key++}`} className="block">
+          {inlineFormat(trimmed)}
+        </span>,
+      );
+    }
+  }
+
+  flushList();
+  return elements;
+}
+
+// ─── MessageBubble ────────────────────────────────────────────────────────────
+
+function MessageBubble({ message, isStreaming = false }) {
   const isAssistant = message.role === "assistant";
+  const isError = message.isError;
+  const isEmpty = !message.content && !isError;
+
   return (
     <motion.div
-      className={`flex gap-2.5 ${isAssistant ? "items-start" : "items-start flex-row-reverse"}`}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+      className={`flex gap-3 ${isAssistant ? "items-start" : "items-start flex-row-reverse"}`}
+      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
     >
       {isAssistant && (
-        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-secondary to-secondary/70 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
-          <Bot className="w-3.5 h-3.5 text-white" />
+        <div
+          className={`w-8 h-8 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+            isError
+              ? "bg-red-950/80 border border-red-800 text-red-400 rounded-xl shadow-md"
+              : ""
+          }`}
+        >
+          {isError ? (
+            <AlertCircle className="w-4 h-4 text-red-400" />
+          ) : (
+            <img
+              src={aiIcon}
+              alt="EDUCITO IA"
+              className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(77,185,169,0.6)]"
+            />
+          )}
         </div>
       )}
+
       <div
-        className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+        className={`max-w-[85%] min-w-0 rounded-2xl px-4 py-3 text-sm leading-relaxed [overflow-wrap:anywhere] [word-break:break-word] break-words ${
           isAssistant
-            ? "bg-gray-50 border border-gray-100 text-gray-700 rounded-tl-sm"
-            : "bg-primary text-white rounded-tr-sm shadow-sm shadow-primary/20"
+            ? isError
+              ? "bg-red-950/40 border border-red-900/60 text-red-300 rounded-tl-xs"
+              : "bg-[#0e2724]/90 border border-[#4db9a9]/20 text-gray-200 rounded-tl-xs shadow-md backdrop-blur-sm"
+            : "bg-gradient-to-br from-primary via-primary to-orange-600 text-white rounded-tr-xs shadow-lg shadow-primary/20 font-medium"
         }`}
       >
-        {message.content}
+        {isAssistant ? (
+          isEmpty ? (
+            /* Loading dots inside the single assistant bubble */
+            <div className="flex gap-1.5 items-center h-4 py-0.5 px-0.5">
+              {[0, 1, 2].map((i) => (
+                <motion.span
+                  key={i}
+                  className="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_6px_rgba(77,185,169,0.8)]"
+                  animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
+                  transition={{
+                    duration: 0.7,
+                    repeat: Infinity,
+                    delay: i * 0.18,
+                    ease: "easeInOut",
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <>
+              {renderMarkdown(message.content)}
+              {/* Blinking cursor while streaming this specific message */}
+              {isStreaming && (
+                <motion.span
+                  className="inline-block w-1.5 h-3.5 bg-secondary ml-0.5 align-middle rounded-full shadow-[0_0_8px_rgba(77,185,169,0.9)]"
+                  animate={{ opacity: [1, 0] }}
+                  transition={{
+                    duration: 0.5,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                />
+              )}
+            </>
+          )
+        ) : (
+          // User messages: preserve line breaks literally
+          <span className="whitespace-pre-wrap">{message.content}</span>
+        )}
       </div>
     </motion.div>
   );
 }
 
-/* ─── Estado de carga del asistente ─────────────────────────── */
-function TypingIndicator() {
-  return (
-    <motion.div
-      className="flex items-start gap-2.5"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 8 }}
-      transition={{ duration: 0.25 }}
-    >
-      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-secondary to-secondary/70 flex items-center justify-center flex-shrink-0 shadow-sm">
-        <Bot className="w-3.5 h-3.5 text-white" />
-      </div>
-      <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
-        <div className="flex gap-1 items-center h-4">
-          {[0, 1, 2].map((i) => (
-            <motion.span
-              key={i}
-              className="w-1.5 h-1.5 rounded-full bg-gray-400"
-              animate={{ y: [0, -4, 0] }}
-              transition={{
-                duration: 0.6,
-                repeat: Infinity,
-                delay: i * 0.15,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+// ─── ChatPanel ────────────────────────────────────────────────────────────────
 
-/* ─── Panel del chat ─────────────────────────────────────────── */
+const getStorageKey = (id) => `educito_chat_${id}`;
+
+const INITIAL_WELCOME_MESSAGE = {
+  id: "welcome",
+  role: "assistant",
+  content:
+    "¡Hola! Soy **EDUCITO** 👋, el asistente de esta oportunidad. Puedo responder tus preguntas sobre requisitos, beneficios, fechas y cómo postular. ¿En qué te puedo ayudar?",
+};
+
 function ChatPanel({ opportunity, onClose }) {
-  const [messages, setMessages] = useState([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: `¡Hola! Soy tu asistente de oportunidades educativas. Estoy aquí para ayudarte con todo lo relacionado a **${opportunity?.title || "esta convocatoria"}**. ¿En qué te puedo ayudar?`,
-    },
-  ]);
+  const opportunityId = opportunity?.id;
+
+  // Initialize messages state from sessionStorage for the specific opportunity if available
+  const [messages, setMessages] = useState(() => {
+    if (!opportunityId) return [INITIAL_WELCOME_MESSAGE];
+    try {
+      const saved = sessionStorage.getItem(getStorageKey(opportunityId));
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error("Error cargando historial de chat de sessionStorage:", e);
+    }
+    return [INITIAL_WELCOME_MESSAGE];
+  });
+
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingId, setStreamingId] = useState(null);
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const abortRef = useRef(null);
 
-  // Auto-scroll al último mensaje
+  const isBusy = isLoading || streamingId !== null;
+
+  // Persist messages to sessionStorage whenever they change
+  useEffect(() => {
+    if (!opportunityId || messages.length === 0) return;
+    try {
+      sessionStorage.setItem(
+        getStorageKey(opportunityId),
+        JSON.stringify(messages),
+      );
+    } catch (e) {
+      console.error("Error guardando historial de chat en sessionStorage:", e);
+    }
+  }, [messages, opportunityId]);
+
+  // Reset chat for current opportunity
+  const handleResetChat = () => {
+    if (isBusy || !opportunityId) return;
+    try {
+      sessionStorage.removeItem(getStorageKey(opportunityId));
+    } catch (e) {
+      console.error("Error eliminando historial de chat:", e);
+    }
+    setMessages([INITIAL_WELCOME_MESSAGE]);
+  };
+
+  // Auto-scroll when messages change or streaming updates content
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  // Focus en el input al abrir
+  // Focus input on open (only on desktop to prevent soft-keyboard popup on mobile)
   useEffect(() => {
-    setTimeout(() => inputRef.current?.focus(), 200);
+    const isMobile =
+      typeof window !== "undefined" &&
+      (window.innerWidth < 768 || "ontouchstart" in window);
+
+    if (!isMobile) {
+      const t = setTimeout(() => inputRef.current?.focus(), 200);
+      return () => clearTimeout(t);
+    }
   }, []);
 
+  // Cleanup abort on unmount
+  useEffect(() => () => abortRef.current?.abort(), []);
+
   /**
-   * Genera una respuesta contextual del asistente.
-   * En producción, esto debería conectarse a una API de LLM
-   * pasando el contexto de la oportunidad.
+   * autoResize
+   * Grows/shrinks the textarea to fit its content, capped at ~120px.
    */
-  const generateResponse = async (userMessage) => {
-    const lowerMsg = userMessage.toLowerCase();
-    const opp = opportunity || {};
-
-    await new Promise((r) => setTimeout(r, 1000 + Math.random() * 800));
-
-    if (lowerMsg.includes("requisito") || lowerMsg.includes("requiere")) {
-      const reqs = Array.isArray(opp.requirements)
-        ? opp.requirements.join(", ")
-        : typeof opp.requirements === "string"
-        ? opp.requirements
-        : null;
-      return reqs
-        ? `Los requisitos de ${opp.title} incluyen: ${reqs}. Te recomiendo revisar también el sitio oficial para verificar si hay actualizaciones recientes.`
-        : `Para conocer los requisitos exactos de ${opp.title || "esta oportunidad"}, te recomiendo visitar el sitio oficial de ${opp.organization || "la institución"}.`;
-    }
-
-    if (lowerMsg.includes("beneficio") || lowerMsg.includes("ofrece")) {
-      const bens = Array.isArray(opp.benefits)
-        ? opp.benefits.join(", ")
-        : typeof opp.benefits === "string"
-        ? opp.benefits
-        : null;
-      return bens
-        ? `Esta oportunidad ofrece los siguientes beneficios: ${bens}. Es una excelente oportunidad para tu desarrollo profesional y académico.`
-        : `Para conocer los beneficios específicos, te recomiendo revisar los detalles en la página oficial de ${opp.organization || "la organización convocante"}.`;
-    }
-
-    if (lowerMsg.includes("documento") || lowerMsg.includes("preparar")) {
-      return `Para postular a ${opp.title || "esta oportunidad"}, generalmente necesitarás: CV actualizado en inglés/español (según el contexto), carta de motivación, certificados de estudios, carta de recomendación, y pasaporte vigente si es internacional. Verifica siempre los documentos exactos en las bases oficiales.`;
-    }
-
-    if (lowerMsg.includes("plazo") || lowerMsg.includes("fecha") || lowerMsg.includes("deadline")) {
-      if (opp.deadline) {
-        const formatted = new Date(opp.deadline).toLocaleDateString("es-ES", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        });
-        return `La fecha límite de postulación es el ${formatted}. Te recomiendo postular con al menos una semana de anticipación para evitar imprevistos técnicos.`;
-      }
-      return "La fecha límite no está especificada. Te recomiendo contactar directamente a la institución para confirmar los plazos.";
-    }
-
-    if (lowerMsg.includes("fortalecer") || lowerMsg.includes("mejorar") || lowerMsg.includes("carta")) {
-      return `Para fortalecer tu postulación a ${opp.title || "esta oportunidad"}: 1) Personaliza tu carta de motivación mencionando proyectos específicos de ${opp.organization || "la organización"}. 2) Cuantifica tus logros en el CV. 3) Consigue cartas de recomendación de personas relevantes. 4) Muestra tu conocimiento del impacto de la oportunidad. ¿Quieres que profundice en alguno de estos puntos?`;
-    }
-
-    if (lowerMsg.includes("idioma") || lowerMsg.includes("inglés")) {
-      return `El nivel de idioma requerido depende de la institución. Para oportunidades internacionales, generalmente se solicita inglés B2 o superior (TOEFL/IELTS/Cambridge). Si la oportunidad es en ${opp.country || "otro país"}, verifica los requisitos lingüísticos específicos en las bases.`;
-    }
-
-    return `Gracias por tu pregunta sobre ${opp.title || "esta oportunidad"}. Para darte información precisa, te recomiendo revisar las bases oficiales en el sitio de ${opp.organization || "la institución convocante"} o contactarles directamente. ¿Hay algo más específico en lo que pueda orientarte?`;
+  const autoResize = (el) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   };
 
-  const handleSend = async (text = input.trim()) => {
-    if (!text || isLoading) return;
-    setInput("");
+  /**
+   * sendQuestion
+   *
+   * Opens an SSE connection to the Edge Function, reads tokens as they
+   * arrive, and incrementally updates the assistant message in state.
+   */
+  const sendQuestion = useCallback(
+    async (text) => {
+      const trimmed = text?.trim();
+      if (!trimmed || isBusy) return;
 
-    const userMsg = { id: Date.now(), role: "user", content: text };
-    setMessages((prev) => [...prev, userMsg]);
-    setIsLoading(true);
+      setInput("");
+      if (inputRef.current) {
+        inputRef.current.style.height = "auto";
+      }
 
-    try {
-      const response = await generateResponse(text);
+      const userMsgId = `u-${Date.now()}`;
+      const assistantMsgId = `a-${Date.now() + 1}`;
+
       setMessages((prev) => [
         ...prev,
-        { id: Date.now() + 1, role: "assistant", content: response },
+        { id: userMsgId, role: "user", content: trimmed },
+        { id: assistantMsgId, role: "assistant", content: "" },
       ]);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          role: "assistant",
-          content: "Lo siento, hubo un error al procesar tu pregunta. Por favor intenta de nuevo.",
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
+      setIsLoading(true);
+
+      const history = messages
+        .filter((m) => m.id !== "welcome" && m.content)
+        .map(({ role, content }) => ({ role, content }));
+
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+      let accumulated = "";
+      let gotFirstToken = false;
+      let hadError = false;
+
+      try {
+        const response = await fetch(FUNCTION_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            apikey: SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({
+            opportunityId,
+            question: trimmed,
+            history,
+          }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          const ct = response.headers.get("content-type") ?? "";
+          if (ct.includes("application/json")) {
+            const err = await response.json();
+            throw new Error(err.error ?? `HTTP ${response.status}`);
+          }
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        setStreamingId(assistantMsgId);
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+
+          for (const line of lines) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine.startsWith("data:")) continue;
+
+            const data = trimmedLine.slice(5).trim();
+            if (data === "[DONE]") continue;
+
+            try {
+              const parsed = JSON.parse(data);
+
+              if (parsed.error) {
+                throw new Error(parsed.error);
+              }
+
+              if (parsed.t) {
+                if (!gotFirstToken) {
+                  setIsLoading(false);
+                  gotFirstToken = true;
+                }
+                accumulated += parsed.t;
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantMsgId
+                      ? { ...m, content: accumulated }
+                      : m,
+                  ),
+                );
+              }
+            } catch (parseErr) {
+              if (parseErr.message !== "stream_error") {
+                throw parseErr;
+              }
+              throw new Error(
+                "El asistente no está disponible en este momento.",
+              );
+            }
+          }
+        }
+
+        reader.releaseLock();
+
+        if (!accumulated) {
+          throw new Error(
+            "El asistente no devolvió una respuesta. Intenta de nuevo.",
+          );
+        }
+      } catch (err) {
+        hadError = true;
+        const isAbort =
+          err.name === "AbortError" || err.message?.includes("abort");
+        const msg = isAbort
+          ? "La respuesta tardó demasiado. Por favor, intenta de nuevo."
+          : err.message || "El asistente no está disponible en este momento.";
+
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMsgId ? { ...m, content: msg, isError: true } : m,
+          ),
+        );
+      } finally {
+        clearTimeout(timeoutId);
+        setIsLoading(false);
+        setStreamingId(null);
+        if (!hadError && !accumulated) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantMsgId
+                ? {
+                    ...m,
+                    content: "El asistente no está disponible en este momento.",
+                    isError: true,
+                  }
+                : m,
+            ),
+          );
+        }
+      }
+    },
+    [messages, isBusy, opportunityId],
+  );
+
+  const handleSend = () => {
+    if (input.trim()) sendQuestion(input);
   };
 
   const handleKeyDown = (e) => {
@@ -191,115 +528,204 @@ function ChatPanel({ opportunity, onClose }) {
     }
   };
 
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+    autoResize(e.target);
+  };
+
+  const handleRetry = () => {
+    const lastUser = [...messages].reverse().find((m) => m.role === "user");
+    if (!lastUser) return;
+    setMessages((prev) => prev.filter((m) => !m.isError));
+    sendQuestion(lastUser.content);
+  };
+
+  const showSuggestions = messages.length === 1 && !isBusy;
+  const lastMsgIsError = messages.at(-1)?.isError === true && !isBusy;
+
   return (
     <motion.div
       role="dialog"
       aria-modal="true"
-      aria-label="Asistente de oportunidades"
-      className="fixed bottom-24 right-4 sm:right-6 z-40 w-[calc(100vw-2rem)] sm:w-96 flex flex-col rounded-2xl bg-white border border-gray-200 shadow-2xl overflow-hidden"
-      style={{ maxHeight: "min(520px, calc(100dvh - 8rem))" }}
-      initial={{ opacity: 0, scale: 0.92, y: 24, transformOrigin: "bottom right" }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.92, y: 24 }}
-      transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+      aria-label="Asistente EDUCITO"
+      className="fixed inset-x-3 bottom-3 sm:bottom-5 sm:right-6 sm:left-auto z-50 w-auto sm:w-[410px] flex flex-col rounded-3xl bg-[#0a1c1a]/95 backdrop-blur-xl border border-[#4db9a9]/25 shadow-[0_25px_60px_rgba(0,0,0,0.75),0_0_30px_rgba(77,185,169,0.12)] overflow-hidden text-gray-100"
+      style={{
+        height: "min(620px, calc(100dvh - 2rem))",
+        transformOrigin: "bottom right",
+      }}
+      initial={{ opacity: 0, y: 60, scale: 0.85 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 40, scale: 0.88 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* Header del panel */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-secondary/5 to-transparent flex-shrink-0">
-        <div className="flex items-center gap-2.5">
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between px-4 py-3.5 border-b border-[#4db9a9]/20 bg-gradient-to-r from-[#0d2825] via-[#091b19] to-[#071614] flex-shrink-0">
+        <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-sm">
-              <Bot className="w-4 h-4 text-white" />
+            <div className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center">
+              <img
+                src={aiIcon}
+                alt="EDUCITO IA"
+                className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(77,185,169,0.7)]"
+              />
             </div>
-            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-white" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#091b19] shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-900 leading-none">Asistente EDU-US</p>
-            <p className="text-[11px] text-gray-400 mt-0.5">IA · Responde al instante</p>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-white tracking-wide font-heading">
+                EDUCITO
+              </h3>
+              <span className="text-[10px] font-semibold tracking-wider text-secondary bg-secondary/15 border border-secondary/30 rounded-full px-2 py-0.5 uppercase">
+                IA
+              </span>
+            </div>
+            <p className="text-[11px] text-[#4db9a9]/80 mt-0.5">
+              Asistente oficial
+            </p>
           </div>
         </div>
-        <button
-          onClick={onClose}
-          className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-150 active:scale-95"
-          aria-label="Cerrar asistente"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          {messages.length > 1 && (
+            <button
+              onClick={handleResetChat}
+              disabled={isBusy}
+              className="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#4db9a9]/20 transition-all duration-150 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Reiniciar chat"
+              title="Reiniciar chat"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#4db9a9]/20 transition-all duration-150 active:scale-95"
+            aria-label="Cerrar asistente"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
-      {/* Mensajes */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+      {/* ── Messages ── */}
+      <div
+        className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#0d2825]"
+        aria-live="polite"
+        aria-label="Conversación con EDUCITO"
+      >
         {messages.map((msg) => (
-          <MessageBubble key={msg.id} message={msg} />
+          <MessageBubble
+            key={msg.id}
+            message={msg}
+            isStreaming={msg.id === streamingId}
+          />
         ))}
-        <AnimatePresence>{isLoading && <TypingIndicator />}</AnimatePresence>
+
+        {/* Suggested questions — inside scroll, under welcome message */}
+        <AnimatePresence>
+          {showSuggestions && (
+            <motion.div
+              key="suggestions"
+              className="flex flex-col gap-2 pt-1"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+            >
+              <p className="text-[10px] font-semibold text-[#4db9a9]/90 uppercase tracking-wider pl-1">
+                Preguntas frecuentes
+              </p>
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => sendQuestion(s)}
+                  disabled={isBusy}
+                  className="text-left text-xs text-gray-200 bg-[#0c2421]/90 hover:bg-[#4db9a9]/15 border border-[#4db9a9]/20 hover:border-[#4db9a9]/50 rounded-xl px-3.5 py-2.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed leading-relaxed shadow-sm group flex items-center justify-between"
+                >
+                  <span>{s}</span>
+                  <Sparkles className="w-3.5 h-3.5 text-[#4db9a9]/60 group-hover:text-secondary transition-colors duration-200 flex-shrink-0 ml-2" />
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Sugerencias rápidas (solo al inicio) */}
-      {messages.length === 1 && (
-        <div className="px-4 pb-3 flex flex-col gap-1.5 flex-shrink-0">
-          <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wide mb-1">
-            Preguntas frecuentes
-          </p>
-          {SUGGESTIONS.map((s) => (
+      {/* ── Retry button on error ── */}
+      <AnimatePresence>
+        {lastMsgIsError && (
+          <motion.div
+            className="px-4 pb-2 flex-shrink-0"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
             <button
-              key={s}
-              onClick={() => handleSend(s)}
-              className="text-left text-xs text-gray-600 bg-gray-50 hover:bg-secondary/8 border border-gray-100 hover:border-secondary/30 rounded-lg px-3 py-2 transition-all duration-150 active:scale-[0.98] line-clamp-1"
+              onClick={handleRetry}
+              className="w-full flex items-center justify-center gap-2 text-xs font-medium text-red-300 hover:text-white bg-red-950/60 hover:bg-red-900/80 border border-red-800/80 rounded-xl px-3 py-2 transition-all duration-150 active:scale-[0.98]"
             >
-              {s}
+              <RotateCcw className="w-3.5 h-3.5" />
+              Reintentar respuesta
             </button>
-          ))}
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Input */}
-      <div className="px-3 pb-3 pt-2 border-t border-gray-100 flex-shrink-0">
-        <div className="flex items-end gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus-within:border-secondary/60 focus-within:ring-1 focus-within:ring-secondary/20 transition-all duration-200">
+      {/* ── Input ── */}
+      <div className="p-3 border-t border-[#4db9a9]/20 bg-[#071614]/90 flex-shrink-0">
+        <div className="flex items-end gap-2 bg-[#0c2421]/95 border border-[#4db9a9]/25 focus-within:border-[#4db9a9]/60 focus-within:ring-1 focus-within:ring-[#4db9a9]/30 rounded-2xl px-3.5 py-2.5 transition-all duration-200">
           <textarea
             ref={inputRef}
+            id="ai-assistant-input"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            placeholder="Escribe tu pregunta..."
+            placeholder="Pregúntale a EDUCITO..."
+            disabled={isBusy}
+            maxLength={1000}
+            aria-label="Escribe tu pregunta a EDUCITO"
             rows={1}
-            disabled={isLoading}
-            className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 resize-none border-0 outline-none focus:ring-0 leading-relaxed disabled:opacity-50"
-            style={{ maxHeight: "80px" }}
+            className="flex-1 bg-transparent text-sm text-gray-100 placeholder-gray-400 resize-none border-0 outline-none focus:ring-0 leading-relaxed disabled:opacity-50 overflow-hidden"
+            style={{ minHeight: "22px", maxHeight: "120px" }}
           />
           <button
-            onClick={() => handleSend()}
-            disabled={!input.trim() || isLoading}
-            className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center flex-shrink-0 text-white transition-all duration-150 hover:bg-primary/90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-primary/30"
+            id="ai-assistant-send"
+            onClick={handleSend}
+            disabled={!input.trim() || isBusy}
             aria-label="Enviar mensaje"
+            className="w-8 h-8 rounded-xl bg-gradient-to-tr from-primary to-orange-500 hover:from-primary/90 hover:to-orange-400 text-white shadow-md shadow-primary/20 flex items-center justify-center flex-shrink-0 transition-all duration-150 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed mb-0.5"
           >
-            {isLoading ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            {isBusy ? (
+              <Loader2 className="w-4 h-4 animate-spin text-white" />
             ) : (
-              <Send className="w-3.5 h-3.5" />
+              <Send className="w-4 h-4 text-white" />
             )}
           </button>
         </div>
-        <p className="text-[10px] text-gray-400 text-center mt-1.5">
-          Respuestas orientativas · Verifica siempre la fuente oficial
+        <p className="text-[10px] text-gray-400/80 text-center mt-2 font-medium">
+          Enter = enviar · Shift+Enter = nueva línea · Información oficial
         </p>
       </div>
     </motion.div>
   );
 }
 
-/* ─── FAB + Panel ────────────────────────────────────────────── */
+// ─── OpportunityAIAssistant (FAB + Speech Bubble Tooltip + Futuristic Panel) ─
+
 /**
  * OpportunityAIAssistant
  *
- * Botón flotante que abre un chat panel contextual sobre la oportunidad.
+ * Futuristic floating action button + speech bubble tooltip that opens a streaming chat panel.
  *
  * Props:
- *   opportunity: object — datos completos de la oportunidad para contexto
+ *   opportunity: object — full opportunity record from Supabase (must include `id`)
  */
 export default function OpportunityAIAssistant({ opportunity }) {
   const [isOpen, setIsOpen] = useState(false);
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -308,72 +734,85 @@ export default function OpportunityAIAssistant({ opportunity }) {
 
   const handleClose = () => setIsOpen(false);
 
+  if (!opportunity?.id) return null;
+
   return (
     <>
       <AnimatePresence mode="wait">
         {isOpen && (
           <ChatPanel
-            key="chat"
+            key="chat-panel"
             opportunity={opportunity}
             onClose={handleClose}
           />
         )}
       </AnimatePresence>
 
-      {/* FAB */}
-      <motion.div
-        className="fixed bottom-5 right-4 sm:right-6 z-40"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.4, delay: 0.8, ease: [0.23, 1, 0.32, 1] }}
-      >
-        <button
-          onClick={isOpen ? handleClose : handleOpen}
-          className={`
-            group relative flex items-center gap-2.5 rounded-full shadow-lg shadow-secondary/25
-            transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]
-            active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2
-            ${
-              isOpen
-                ? "bg-gray-700 text-white px-4 py-3 hover:bg-gray-800"
-                : "bg-gradient-to-br from-secondary to-secondary/80 text-white px-5 py-3.5 hover:shadow-xl hover:shadow-secondary/30 hover:-translate-y-0.5"
-            }
-          `}
-          aria-label={isOpen ? "Cerrar asistente IA" : "Pedir ayuda al asistente IA"}
-          aria-expanded={isOpen}
-        >
-          <AnimatePresence mode="wait">
-            {isOpen ? (
-              <motion.div
-                key="close"
-                className="flex items-center gap-2"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.15 }}
-              >
-                <ChevronDown className="w-4 h-4" />
-                <span className="text-sm font-medium">Cerrar</span>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="open"
-                className="flex items-center gap-2.5"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.15 }}
-              >
-                <Sparkles className="w-4 h-4" />
-                <span className="text-sm font-semibold">Pedir ayuda a la IA</span>
+      {/* ── Futuristic FAB Widget + Speech Bubble Tooltip (Visible ONLY when chat is closed) ── */}
+      <AnimatePresence>
+        {!isOpen && (
+          <motion.div
+            key="fab-widget"
+            className="fixed bottom-5 right-4 sm:right-6 z-40 flex flex-col items-end"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {/* Floating Speech Bubble Tooltip — shown ONLY on hover when closed */}
+            <AnimatePresence>
+              {isHovered && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.9 }}
+                  transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+                  onClick={handleOpen}
+                  className="cursor-pointer mb-3 select-none pointer-events-auto"
+                >
+                  <div className="relative bg-white text-gray-900 font-medium text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.15)] border border-gray-100 flex items-center gap-2 hover:scale-105 transition-transform duration-200">
+                    <Sparkles className="w-4 h-4 text-secondary flex-shrink-0" />
+                    <span className="font-semibold text-gray-800">
+                      ¿Necesitas ayuda?
+                    </span>
+                    {/* Tail pointing to the button */}
+                    <div className="absolute -bottom-1.5 right-6 sm:right-8 w-3 h-3 bg-white border-r border-b border-gray-100 rotate-45" />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Circular Avatar FAB Button */}
+            <button
+              id="ai-assistant-fab"
+              onClick={handleOpen}
+              aria-label="Abrir EDUCITO"
+              aria-expanded={false}
+              className="relative group p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1c1a] transition-transform active:scale-95"
+            >
+              {/* Ambient Glow Aura */}
+              <div className="absolute inset-2 rounded-full bg-gradient-to-r from-secondary via-primary to-accent opacity-50 blur-lg group-hover:opacity-85 transition-opacity duration-300 animate-pulse" />
+
+              {/* Icon Container with Drop-Shadow */}
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <img
+                  src={aiIcon}
+                  alt="EDUCITO IA"
+                  className="w-full h-full object-contain filter drop-shadow-[0_4px_14px_rgba(77,185,169,0.65)] group-hover:drop-shadow-[0_8px_24px_rgba(77,185,169,0.95)] transition-all duration-300"
+                />
                 {!hasBeenOpened && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-accent border-2 border-white animate-pulse" />
+                  <span className="absolute top-0 right-0 sm:top-1 sm:right-1 flex h-3.5 w-3.5 z-10">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-secondary" />
+                  </span>
                 )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </button>
-      </motion.div>
+              </div>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
