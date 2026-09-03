@@ -22,7 +22,7 @@ const ITEMS_PER_PAGE = 10;
 const AdminPanel = () => {
   const { profile } = useAuth();
   const isAdmin = profile?.role === "admin";
-  
+
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = localStorage.getItem("adminActiveTab");
     return savedTab || "dashboard";
@@ -69,7 +69,7 @@ const AdminPanel = () => {
   // Memoizar las funciones de manejo para evitar recreaciones innecesarias
   const handleUserRoleUpdate = useCallback((userId, newRole) => {
     setUsers((prevUsers) =>
-      prevUsers.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+      prevUsers.map((u) => (u.id === userId ? { ...u, role: newRole } : u)),
     );
   }, []);
 
@@ -105,7 +105,7 @@ const AdminPanel = () => {
       roleFilter === "all"
         ? users
         : users.filter((u) => u.role && u.role.toLowerCase() === roleFilter),
-    [users, roleFilter]
+    [users, roleFilter],
   );
 
   // Memoizar la paginación de usuarios
@@ -114,7 +114,7 @@ const AdminPanel = () => {
       items: paginate(filteredUsers, currentPageUsers, ITEMS_PER_PAGE),
       totalPages: Math.ceil(filteredUsers.length / ITEMS_PER_PAGE),
     }),
-    [filteredUsers, currentPageUsers]
+    [filteredUsers, currentPageUsers],
   );
 
   const fetchOpportunities = useCallback(async () => {
@@ -125,7 +125,7 @@ const AdminPanel = () => {
     } catch (err) {
       console.error("Error fetching opportunities:", err);
       setOpportunitiesError(
-        "Error al cargar las oportunidades. Por favor, intente de nuevo."
+        "Error al cargar las oportunidades. Por favor, intente de nuevo.",
       );
       toast.error("Error al cargar las oportunidades");
     } finally {
@@ -150,12 +150,16 @@ const AdminPanel = () => {
     // Búsqueda por texto (título)
     if (searchTerm && searchTerm.trim() !== "") {
       const searchLower = searchTerm.toLowerCase();
-      result = result.filter((opp) => opp.title.toLowerCase().includes(searchLower));
+      result = result.filter((opp) =>
+        opp.title.toLowerCase().includes(searchLower),
+      );
     }
 
     // Filtro por Categoría
     if (adminCategoryFilter !== "all") {
-      result = result.filter((opp) => opp.category_id === Number(adminCategoryFilter));
+      result = result.filter(
+        (opp) => opp.category_id === Number(adminCategoryFilter),
+      );
     }
 
     // Filtro por Modalidad
@@ -232,7 +236,7 @@ const AdminPanel = () => {
       items: paginate(filteredOpportunities, currentPage, ITEMS_PER_PAGE),
       totalPages: Math.ceil(filteredOpportunities.length / ITEMS_PER_PAGE),
     }),
-    [filteredOpportunities, currentPage]
+    [filteredOpportunities, currentPage],
   );
 
   const handleSearch = useCallback((term) => {
@@ -248,7 +252,10 @@ const AdminPanel = () => {
       case "dashboard":
         return <DashboardTab />;
       case "users":
-        if (!isAdmin) return <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>;
+        if (!isAdmin)
+          return (
+            <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>
+          );
         if (usersError) return <div className="text-red-600">{usersError}</div>;
         return (
           <UsersTab
@@ -293,13 +300,18 @@ const AdminPanel = () => {
       case "categories":
         return <CategoriesTab />;
       case "events":
-        if (!isAdmin) return <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>;
         return <EventsAdminTab />;
       case "registrations":
-        if (!isAdmin) return <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>;
+        if (!isAdmin)
+          return (
+            <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>
+          );
         return <RegistrationsTab />;
       case "projects":
-        if (!isAdmin) return <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>;
+        if (!isAdmin)
+          return (
+            <div className="p-6 text-red-500 font-bold">Acceso Denegado</div>
+          );
         return <ProjectsTab />;
       default:
         return <div>Pestaña no encontrada</div>;

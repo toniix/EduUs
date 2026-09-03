@@ -96,23 +96,26 @@ export default function EventRegistrationForm({ event, onSuccess }) {
     setStatus("loading");
     setApiError("");
 
-    const { success, error } = await eventsService.registerForEvent(event.id, {
-      name: form.name.trim(),
-      email: form.email.trim(),
-      career: form.career.trim(),
-      dni: event.modality === "presencial" ? form.dni.trim() : null,
-      phone: form.phone.trim(),
-      age: Number(form.age),
-      occupation: form.occupation,
-      interest_reason: form.interest_reason.trim(),
-      referral_source: form.referral_source,
-      is_student_at_location: form.is_student_at_location,
-    });
+    const { success, data, error } = await eventsService.registerForEvent(
+      event.id,
+      {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        career: form.career.trim(),
+        dni: event.modality === "presencial" ? form.dni.trim() : null,
+        phone: form.phone.trim(),
+        age: Number(form.age),
+        occupation: form.occupation,
+        interest_reason: form.interest_reason.trim(),
+        referral_source: form.referral_source,
+        is_student_at_location: form.is_student_at_location,
+      },
+    );
 
     if (success) {
       setStatus("success");
       toast.success("¡Registro exitoso! Nos vemos en el evento.");
-      if (onSuccess) onSuccess(form.name);
+      if (onSuccess) onSuccess(form.name, data?.zoom_link);
     } else {
       setStatus("error");
       const errorMsg =

@@ -12,7 +12,7 @@ const EVENT_SELECT = `
 `;
 
 /** Transforma el row de Supabase al shape que usan los componentes */
-function transformEvent(row) {
+function transformEvent(row, { isPublic = false } = {}) {
   if (!row) return null;
 
   const registrationCount = row.registrations?.[0]?.count ?? 0;
@@ -24,6 +24,7 @@ function transformEvent(row) {
   return {
     ...row,
     spots_left: spotsLeft,
+    zoom_link: isPublic ? null : row.zoom_link, // Proteger enlace de Zoom en consultas públicas
     registrations: undefined, // limpiar el campo intermedio
   };
 }
@@ -42,7 +43,7 @@ class EventsService {
 
       if (error) throw error;
 
-      return (data || []).map(transformEvent);
+      return (data || []).map((row) => transformEvent(row, { isPublic: true }));
     } catch (err) {
       console.error("Error en getEvents:", err);
       throw err;
@@ -59,7 +60,7 @@ class EventsService {
       .order("starts_at", { ascending: true });
 
     if (error) throw new Error(`Error al obtener eventos: ${error.message}`);
-    return (data || []).map(transformEvent);
+    return (data || []).map((row) => transformEvent(row, { isPublic: false }));
   }
 
   /**
@@ -78,7 +79,7 @@ class EventsService {
         .maybeSingle();
 
       if (error) return null;
-      return data ? transformEvent(data) : null;
+      return data ? transformEvent(data, { isPublic: true }) : null;
     } catch {
       return null;
     }
@@ -103,11 +104,11 @@ class EventsService {
       .maybeSingle();
 
     if (error) throw new Error(`Error al obtener evento: ${error.message}`);
-    return data ? transformEvent(data) : null;
+    return data ? transformEvent(data, { isPublic: false }) : null;
   }
 
   /**
-   * Obtiene un evento por SLUG.
+   * Obtiene un evento por SLUG para vista pública (sin exponer zoom_link).
    */
   async getEventBySlug(slug) {
     try {
@@ -119,7 +120,7 @@ class EventsService {
 
       if (error) throw error;
 
-      return data ? transformEvent(data) : null;
+      return data ? transformEvent(data, { isPublic: true }) : null;
     } catch (err) {
       console.error(`Error al obtener evento por slug (${slug}):`, err);
       throw err;
@@ -127,16 +128,26 @@ class EventsService {
   }
 
   // ─────────────────────────────────────────────
-  // CRUD ADMIN
+  // CRUD ADMIN / EDITOR
   // ─────────────────────────────────────────────
 
   /**
-   * Crea un nuevo evento.
+   * Crea un nuevo evento asignando created_by al usuario autenticado.
    * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
    */
-  async createEvent(formData) {
+  async createEvent(formData, userRole = null, userId = null) {
     try {
-      const payload = this._buildPayload(formData);
+      // Obtener usuario autenticado si no se provee
+      let authUserId = userId;
+      if (!authUserId) {
+        const { data: userData } = await supabase.auth.getUser();
+        authUserId = userData?.user?.id ?? null;
+      }
+
+      const payload = {
+        ...this._buildPayload(formData),
+        created_by: authUserId,
+      };
 
       // Validar inconsistencias lógicas
       const validationError = this._validateEvent(payload);
@@ -159,7 +170,11 @@ class EventsService {
         .single();
 
       if (error) throw new Error(error.message);
-      return { success: true, data: transformEvent(data), error: null };
+      return {
+        success: true,
+        data: transformEvent(data, { isPublic: false }),
+        error: null,
+      };
     } catch (err) {
       return { success: false, data: null, error: err.message };
     }
@@ -167,26 +182,59 @@ class EventsService {
 
   /**
    * Actualiza un evento existente.
+   * - Solo el creador o un admin puede editarlo.
    * - Si recibe un formData completo (tiene 'title') → lo pasa por _buildPayload para limpiar tipos.
    * - Si recibe un patch parcial (ej: { promo_modal: true }) → lo envía directo sin tocar otros campos.
    * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
    */
-  async updateEvent(id, formData) {
+  async updateEvent(id, formData, userRole = null, userId = null) {
     try {
-      // 1. Obtener los valores actuales del evento para validación cruzada y combinación de parches
+      // 1. Obtener usuario autenticado si no se provee
+      let authUserId = userId;
+      let authRole = userRole;
+      if (!authUserId || !authRole) {
+        const { data: userData } = await supabase.auth.getUser();
+        authUserId = authUserId || userData?.user?.id;
+        if (!authRole && authUserId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", authUserId)
+            .single();
+          authRole = profile?.role;
+        }
+      }
+
+      // 2. Obtener los valores actuales del evento para validación cruzada y combinación de parches
       const { data: current, error: fetchError } = await supabase
         .from("events")
-        .select("status, starts_at, ends_at, capacity, price, promo_modal")
+        .select(
+          "status, starts_at, ends_at, capacity, price, promo_modal, created_by",
+        )
         .eq("id", id)
         .single();
 
       if (fetchError) throw new Error(fetchError.message);
 
-      // 2. Construir el payload del cambio
+      // 3. Verificar permisos: Solo admin o el creador puede editar
+      const isCreator =
+        current.created_by && authUserId && current.created_by === authUserId;
+      const isAdmin = authRole === "admin";
+
+      if (!isAdmin && !isCreator) {
+        return {
+          success: false,
+          data: null,
+          error:
+            "No tienes permiso para modificar este evento. Solo el creador o un administrador puede editarlo.",
+        };
+      }
+
+      // 4. Construir el payload del cambio
       const patch =
         "title" in formData ? this._buildPayload(formData) : formData;
 
-      // 3. Crear el payload combinado para validar el estado resultante completo
+      // 5. Crear el payload combinado para validar el estado resultante completo
       const mergedPayload = {
         ...current,
         ...patch,
@@ -201,13 +249,13 @@ class EventsService {
         mergedPayload.promo_modal = false;
       }
 
-      // 4. Validar inconsistencias lógicas
+      // 6. Validar inconsistencias lógicas
       const validationError = this._validateEvent(mergedPayload);
       if (validationError) {
         return { success: false, data: null, error: validationError };
       }
 
-      // 5. Si se marca como promo_modal, desmarcar cualquier otro evento promocional activo
+      // 7. Si se marca como promo_modal, desmarcar cualquier otro evento promocional activo
       if (patch.promo_modal === true) {
         await supabase
           .from("events")
@@ -216,7 +264,7 @@ class EventsService {
           .eq("promo_modal", true);
       }
 
-      // 6. Ejecutar la actualización en Supabase
+      // 8. Ejecutar la actualización en Supabase
       const { data, error } = await supabase
         .from("events")
         .update(patch)
@@ -225,7 +273,11 @@ class EventsService {
         .single();
 
       if (error) throw new Error(error.message);
-      return { success: true, data: transformEvent(data), error: null };
+      return {
+        success: true,
+        data: transformEvent(data, { isPublic: false }),
+        error: null,
+      };
     } catch (err) {
       return { success: false, data: null, error: err.message };
     }
@@ -233,12 +285,56 @@ class EventsService {
 
   /**
    * Elimina un evento.
+   * Solo el creador o un admin puede eliminarlo.
    * Verifica que no tenga inscripciones activas primero.
    * @returns {Promise<{success: boolean, error: string|null}>}
    */
-  async deleteEvent(id) {
+  async deleteEvent(id, userRole = null, userId = null) {
     try {
-      // Verificar si tiene inscritos activos
+      // 1. Obtener usuario autenticado si no se provee
+      let authUserId = userId;
+      let authRole = userRole;
+      if (!authUserId || !authRole) {
+        const { data: userData } = await supabase.auth.getUser();
+        authUserId = authUserId || userData?.user?.id;
+        if (!authRole && authUserId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", authUserId)
+            .single();
+          authRole = profile?.role;
+        }
+      }
+
+      // 2. Verificar que exista el evento y obtener created_by
+      const { data: current, error: fetchError } = await supabase
+        .from("events")
+        .select("id, created_by")
+        .eq("id", id)
+        .single();
+
+      if (fetchError || !current) {
+        return {
+          success: false,
+          error: "No se encontró el evento o ya fue eliminado.",
+        };
+      }
+
+      // 3. Verificar permisos: Solo admin o el creador puede eliminar
+      const isCreator =
+        current.created_by && authUserId && current.created_by === authUserId;
+      const isAdmin = authRole === "admin";
+
+      if (!isAdmin && !isCreator) {
+        return {
+          success: false,
+          error:
+            "No tienes permiso para eliminar este evento. Solo el creador o un administrador puede eliminarlo.",
+        };
+      }
+
+      // 4. Verificar si tiene inscritos activos
       const { count } = await supabase
         .from("event_registrations")
         .select("id", { count: "exact", head: true })
@@ -268,7 +364,8 @@ class EventsService {
   /**
    * Registra a un usuario en un evento.
    * Verifica cupos disponibles antes de insertar.
-   * @returns {Promise<{success: boolean, error: string|null}>}
+   * Retorna zoom_link protegido en el data de respuesta al confirmar inscripción.
+   * @returns {Promise<{success: boolean, data: {zoom_link: string|null}|null, error: string|null}>}
    */
   async registerForEvent(
     eventId,
@@ -285,9 +382,34 @@ class EventsService {
       is_student_at_location,
     },
   ) {
-    // console.log(eventId, name, email, career, university, dni, phone, is_udep);
     try {
-      // Verificar si ya existe una inscripción con este correo
+      // 1. Obtener datos del evento para cupos y zoom_link
+      const { data: eventRow, error: eventErr } = await supabase
+        .from("events")
+        .select(
+          "id, capacity, zoom_link, registrations:event_registrations(count)",
+        )
+        .eq("id", eventId)
+        .single();
+
+      if (eventErr || !eventRow) {
+        return {
+          success: false,
+          data: null,
+          error: "El evento no existe o fue deshabilitado.",
+        };
+      }
+
+      const currentCount = eventRow.registrations?.[0]?.count ?? 0;
+      if (eventRow.capacity !== null && currentCount >= eventRow.capacity) {
+        return {
+          success: false,
+          data: null,
+          error: "El evento ya no tiene cupos disponibles.",
+        };
+      }
+
+      // 2. Verificar si ya existe una inscripción con este correo
       const { data: existing } = await supabase
         .from("event_registrations")
         .select("id, status")
@@ -299,6 +421,7 @@ class EventsService {
         if (existing.status === "registered") {
           return {
             success: false,
+            data: null,
             error: "Este correo ya está inscrito en el evento.",
           };
         }
@@ -320,15 +443,10 @@ class EventsService {
           .eq("id", existing.id);
 
         if (error) throw new Error(error.message);
-        return { success: true, error: null };
-      }
-
-      // Verificar cupos (si el evento tiene límite)
-      const event = await this.getEventById(eventId);
-      if (event && event.spots_left !== null && event.spots_left <= 0) {
         return {
-          success: false,
-          error: "El evento ya no tiene cupos disponibles.",
+          success: true,
+          data: { zoom_link: eventRow.zoom_link || null },
+          error: null,
         };
       }
 
@@ -354,9 +472,13 @@ class EventsService {
       ]);
 
       if (error) throw new Error(error.message);
-      return { success: true, error: null };
+      return {
+        success: true,
+        data: { zoom_link: eventRow.zoom_link || null },
+        error: null,
+      };
     } catch (err) {
-      return { success: false, error: err.message };
+      return { success: false, data: null, error: err.message };
     }
   }
 
@@ -523,17 +645,19 @@ class EventsService {
   }
 
   /**
-   * Verifica si un usuario está registrado en un evento
+   * Verifica si un usuario está registrado en un evento.
+   * Si está registrado, retorna también el zoom_link del evento.
    * @param {string} eventId
    * @param {string} userId
-   * @returns {Promise<{registered: boolean, name: string|null}>}
+   * @returns {Promise<{registered: boolean, name: string|null, zoom_link: string|null}>}
    */
   async checkUserRegistration(eventId, userId) {
-    if (!eventId || !userId) return { registered: false, name: null };
+    if (!eventId || !userId)
+      return { registered: false, name: null, zoom_link: null };
     try {
       const { data, error } = await supabase
         .from("event_registrations")
-        .select("name, status")
+        .select("name, status, event:events(zoom_link)")
         .eq("event_id", eventId)
         .eq("user_id", userId)
         .eq("status", "registered")
@@ -541,12 +665,16 @@ class EventsService {
 
       if (error) throw error;
       if (data && data.length > 0) {
-        return { registered: true, name: data[0].name };
+        return {
+          registered: true,
+          name: data[0].name,
+          zoom_link: data[0].event?.zoom_link || null,
+        };
       }
-      return { registered: false, name: null };
+      return { registered: false, name: null, zoom_link: null };
     } catch (err) {
       console.error("Error checking user registration:", err);
-      return { registered: false, name: null };
+      return { registered: false, name: null, zoom_link: null };
     }
   }
 }

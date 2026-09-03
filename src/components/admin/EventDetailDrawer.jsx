@@ -27,6 +27,7 @@ import {
 } from "../../utils/events";
 import { toast } from "react-hot-toast";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 /* ─── Helpers ─── */
 function formatDateTime(iso) {
@@ -63,6 +64,11 @@ export default function EventDetailDrawer({
   onDelete,
 }) {
   const { isDark } = useTheme();
+  const { profile } = useAuth();
+  const isAdmin = profile?.role === "admin";
+  const canModify =
+    isAdmin || (event?.created_by && event.created_by === profile?.id);
+
   const [registrations, setRegistrations] = useState([]);
   const [loadingRegs, setLoadingRegs] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
@@ -116,32 +122,6 @@ export default function EventDetailDrawer({
     }
     setUpdatingId(null);
   };
-
-  /* Exportar CSV
-  const exportCSV = () => {
-    const headers = [
-      "Nombre",
-      "Email",
-      "Teléfono",
-      "Estado",
-      "Fecha inscripción",
-    ];
-    const rows = registrations.map((r) => [
-      r.name,
-      r.email,
-      r.phone || "",
-      REG_STATUS[r.status]?.label || r.status,
-      formatShortDate(r.registered_at),
-    ]);
-    const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `inscritos-${event.slug || event.id}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }; */
 
   if (!event) return null;
 
@@ -213,13 +193,15 @@ export default function EventDetailDrawer({
             )}
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              type="button"
-              onClick={() => onEdit(event)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors"
-            >
-              Editar
-            </button>
+            {canModify && (
+              <button
+                type="button"
+                onClick={() => onEdit(event)}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors"
+              >
+                Editar
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}
@@ -469,7 +451,7 @@ export default function EventDetailDrawer({
                             <div className="flex gap-1">
                               {reg.status !== "attended" && (
                                 <button
-              type="button"
+                                  type="button"
                                   title="Marcar como asistió"
                                   onClick={() =>
                                     handleStatusChange(reg.id, "attended")
@@ -481,7 +463,7 @@ export default function EventDetailDrawer({
                               )}
                               {reg.status !== "registered" && (
                                 <button
-              type="button"
+                                  type="button"
                                   title="Marcar como inscrito"
                                   onClick={() =>
                                     handleStatusChange(reg.id, "registered")
@@ -493,7 +475,7 @@ export default function EventDetailDrawer({
                               )}
                               {reg.status !== "cancelled" && (
                                 <button
-              type="button"
+                                  type="button"
                                   title="Cancelar inscripción"
                                   onClick={() =>
                                     handleStatusChange(reg.id, "cancelled")
@@ -514,20 +496,22 @@ export default function EventDetailDrawer({
             </div>
 
             {/* ─── Zona peligrosa ─── */}
-            <div
-              className={`border ${isDark ? "border-red-900/40" : "border-red-100"} rounded-xl p-4`}
-            >
-              <h3 className="text-xs font-bold uppercase tracking-wider text-red-500 mb-3">
-                Zona peligrosa
-              </h3>
-              <button
-              type="button"
-                onClick={() => onDelete(event)}
-                className="text-sm font-semibold text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-4 py-2 rounded-lg transition-colors"
+            {canModify && (
+              <div
+                className={`border ${isDark ? "border-red-900/40" : "border-red-100"} rounded-xl p-4`}
               >
-                Eliminar evento
-              </button>
-            </div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-red-500 mb-3">
+                  Zona peligrosa
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => onDelete(event)}
+                  className="text-sm font-semibold text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-4 py-2 rounded-lg transition-colors"
+                >
+                  Eliminar evento
+                </button>
+              </div>
+            )}
 
             {/* Espaciado inferior */}
             <div className="h-4" />
