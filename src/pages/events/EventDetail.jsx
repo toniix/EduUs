@@ -36,6 +36,7 @@ export default function EventDetail() {
   const locationState = useLocation();
   const { event, loading, error } = useEventBySlug(slug);
   const [successName, setSuccessName] = useState("");
+  const [registeredZoomLink, setRegisteredZoomLink] = useState(null);
   const [shareFeedback, setShareFeedback] = useState("");
   const { profile, isAuthenticated } = useAuth();
 
@@ -44,12 +45,16 @@ export default function EventDetail() {
     let active = true;
     const verifyRegistration = async () => {
       if (event?.id && isAuthenticated && profile?.id) {
-        const { registered, name } = await eventsService.checkUserRegistration(
-          event.id,
-          profile.id,
-        );
+        const {
+          registered,
+          name,
+          zoom_link: userZoomLink,
+        } = await eventsService.checkUserRegistration(event.id, profile.id);
         if (registered && active) {
           setSuccessName(name || profile.full_name || "Participante");
+          if (userZoomLink) {
+            setRegisteredZoomLink(userZoomLink);
+          }
         }
       }
     };
@@ -395,28 +400,32 @@ export default function EventDetail() {
                     Compartir este evento:
                   </span>
                   <div className="flex gap-2 relative items-center">
-                    <button type="button"
+                    <button
+                      type="button"
                       onClick={() => handleShare("whatsapp")}
                       className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-[#25D366] hover:border-[#25D366]/30 hover:bg-green-50/30 dark:hover:bg-green-950/10 transition-all active:scale-95 flex items-center justify-center"
                       aria-label="Compartir por WhatsApp"
                     >
                       <FaWhatsapp className="w-4 h-4" />
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       onClick={() => handleShare("twitter")}
                       className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white hover:border-black/30 dark:hover:border-white/30 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 flex items-center justify-center"
                       aria-label="Compartir por X / Twitter"
                     >
                       <FaXTwitter className="w-4 h-4" />
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       onClick={() => handleShare("linkedin")}
                       className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-[#0A66C2] hover:border-[#0A66C2]/30 hover:bg-blue-50/30 dark:hover:bg-blue-950/10 transition-all active:scale-95 flex items-center justify-center"
                       aria-label="Compartir por LinkedIn"
                     >
                       <FaLinkedinIn className="w-4 h-4" />
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       onClick={() => handleShare("copy")}
                       className="p-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all active:scale-95 flex items-center justify-center"
                       aria-label="Copiar enlace"
@@ -505,13 +514,13 @@ export default function EventDetail() {
                       )}
 
                     {(modality === "virtual" || modality === "hibrido") &&
-                      zoom_link && (
+                      (registeredZoomLink || zoom_link) && (
                         <div className="w-full border-t border-gray-150/40 dark:border-gray-850 pt-4 mt-1 z-10 flex flex-col gap-2">
                           <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
                             Enlace de la sesión virtual (Zoom):
                           </p>
                           <a
-                            href={zoom_link}
+                            href={registeredZoomLink || zoom_link}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center gap-2.5 px-5 py-3 w-full rounded-xl bg-[#2D8CFF] hover:bg-[#1a7ee5] text-white font-bold text-xs transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-500/20"
@@ -577,7 +586,10 @@ export default function EventDetail() {
 
                     <EventRegistrationForm
                       event={event}
-                      onSuccess={(name) => setSuccessName(name)}
+                      onSuccess={(name, zoomLink) => {
+                        setSuccessName(name);
+                        if (zoomLink) setRegisteredZoomLink(zoomLink);
+                      }}
                     />
                   </>
                 )}
