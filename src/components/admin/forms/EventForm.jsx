@@ -1,5 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { X, AlertTriangle, Loader2, ImagePlus, Trash2, FileText } from "lucide-react";
+import {
+  X,
+  AlertTriangle,
+  Loader2,
+  ImagePlus,
+  Trash2,
+  FileText,
+  User,
+  Plus,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import {
   categoryConfig,
   modalityConfig,
@@ -38,6 +49,7 @@ const EMPTY_FORM = {
   registration_url: "",
   status: "draft",
   speaker_id: "",
+  speaker_ids: [],
   directed_to: "",
   extra_details: "",
   brochure_url: "",
@@ -51,33 +63,54 @@ const EMPTY_FORM = {
 export default function EventForm({ event = null, onClose, onSave }) {
   const isEditing = !!event;
 
-  const [form, setForm] = useState(() =>
-    isEditing
-      ? {
-          ...EMPTY_FORM,
-          ...event,
-          capacity: event.capacity ?? "",
-          price: event.price ?? "0",
-          registration_url: event.registration_url ?? "",
-          status: event.status ?? "draft",
-          starts_at: event.starts_at ? event.starts_at.slice(0, 16) : "",
-          ends_at: event.ends_at ? event.ends_at.slice(0, 16) : "",
-          directed_to: event.directed_to ?? "",
-          extra_details: event.extra_details ?? "",
-          brochure_url: event.brochure_url ?? "",
-          zoom_link: event.zoom_link ?? "",
-          speaker_id: event.speaker_id ?? "",
-          benefits: event.benefits && Array.isArray(event.benefits)
-            ? [...event.benefits, "", "", ""].slice(0, 3)
-            : ["", "", ""],
-        }
-      : { ...EMPTY_FORM },
-  );
+  const [form, setForm] = useState(() => {
+    if (!isEditing) return { ...EMPTY_FORM };
+
+    // Extraer array de speaker_ids con retrocompatibilidad
+    let initialSpeakerIds = [];
+    if (Array.isArray(event.speaker_ids) && event.speaker_ids.length > 0) {
+      initialSpeakerIds = event.speaker_ids;
+    } else if (Array.isArray(event.speakers) && event.speakers.length > 0) {
+      initialSpeakerIds = event.speakers.map((s) => s.id);
+    } else if (
+      Array.isArray(event.event_speakers) &&
+      event.event_speakers.length > 0
+    ) {
+      initialSpeakerIds = event.event_speakers
+        .slice()
+        .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+        .map((es) => es.speaker_id || es.speaker?.id)
+        .filter(Boolean);
+    } else if (event.speaker_id) {
+      initialSpeakerIds = [event.speaker_id];
+    }
+
+    return {
+      ...EMPTY_FORM,
+      ...event,
+      capacity: event.capacity ?? "",
+      price: event.price ?? "0",
+      registration_url: event.registration_url ?? "",
+      status: event.status ?? "draft",
+      starts_at: event.starts_at ? event.starts_at.slice(0, 16) : "",
+      ends_at: event.ends_at ? event.ends_at.slice(0, 16) : "",
+      directed_to: event.directed_to ?? "",
+      extra_details: event.extra_details ?? "",
+      brochure_url: event.brochure_url ?? "",
+      zoom_link: event.zoom_link ?? "",
+      speaker_id: initialSpeakerIds[0] || "",
+      speaker_ids: initialSpeakerIds,
+      benefits:
+        event.benefits && Array.isArray(event.benefits)
+          ? [...event.benefits, "", "", ""].slice(0, 3)
+          : ["", "", ""],
+    };
+  });
 
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [showPromoWarning, setShowPromoWarning] = useState(false);
-  
+
   // Archivo banner
   const [bannerFile, setBannerFile] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(
@@ -92,7 +125,7 @@ export default function EventForm({ event = null, onClose, onSave }) {
   // Ponentes de la BD
   const [speakersList, setSpeakersList] = useState([]);
   const [showNewSpeakerForm, setShowNewSpeakerForm] = useState(false);
-  
+
   // Registro de nuevo ponente inline
   const [newSpeaker, setNewSpeaker] = useState({
     name: "",
@@ -167,16 +200,30 @@ export default function EventForm({ event = null, onClose, onSave }) {
     try {
       const payload = { ...newSpeaker };
       if (newSpeakerAvatarFile) {
-        payload.avatar_url = await uploadImageToCloudinary(newSpeakerAvatarFile);
+        payload.avatar_url =
+          await uploadImageToCloudinary(newSpeakerAvatarFile);
       }
       const res = await speakersService.createSpeaker(payload);
       if (res.success && res.data) {
-        toast.success("Ponente registrado y seleccionado", { id: toastId });
+        toast.success("Ponente registrado y agregado al evento", {
+          id: toastId,
+        });
         setSpeakersList((prev) =>
-          [...prev, res.data].sort((a, b) => a.name.localeCompare(b.name))
+          [...prev, res.data].sort((a, b) => a.name.localeCompare(b.name)),
         );
-        setForm((prev) => ({ ...prev, speaker_id: res.data.id }));
-        
+        // Agregar a la lista de ponentes seleccionados sin sobreescribir los existentes
+        setForm((prev) => {
+          const currentIds = prev.speaker_ids || [];
+          const updatedIds = currentIds.includes(res.data.id)
+            ? currentIds
+            : [...currentIds, res.data.id];
+          return {
+            ...prev,
+            speaker_ids: updatedIds,
+            speaker_id: updatedIds[0] || "",
+          };
+        });
+
         // Reset del formulario de ponente inline
         setNewSpeaker({ name: "", role: "", company: "", avatar_url: "" });
         setNewSpeakerAvatarFile(null);
@@ -186,10 +233,57 @@ export default function EventForm({ event = null, onClose, onSave }) {
         toast.error(res.error || "Error al crear ponente", { id: toastId });
       }
     } catch (err) {
-      toast.error("Error al registrar ponente: " + err.message, { id: toastId });
+      toast.error("Error al registrar ponente: " + err.message, {
+        id: toastId,
+      });
     } finally {
       setCreatingSpeaker(false);
     }
+  };
+
+  // Manejadores para gestión múltiple de ponentes
+  const handleAddSpeaker = (speakerId) => {
+    if (!speakerId) return;
+    setForm((prev) => {
+      const currentIds = prev.speaker_ids || [];
+      if (currentIds.includes(speakerId)) return prev;
+      const updatedIds = [...currentIds, speakerId];
+      return {
+        ...prev,
+        speaker_ids: updatedIds,
+        speaker_id: updatedIds[0] || "",
+      };
+    });
+    clearError("speaker_ids");
+  };
+
+  const handleRemoveSpeaker = (speakerId) => {
+    setForm((prev) => {
+      const updatedIds = (prev.speaker_ids || []).filter(
+        (id) => id !== speakerId,
+      );
+      return {
+        ...prev,
+        speaker_ids: updatedIds,
+        speaker_id: updatedIds[0] || "",
+      };
+    });
+  };
+
+  const handleMoveSpeaker = (index, direction) => {
+    setForm((prev) => {
+      const ids = [...(prev.speaker_ids || [])];
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= ids.length) return prev;
+      const temp = ids[index];
+      ids[index] = ids[targetIndex];
+      ids[targetIndex] = temp;
+      return {
+        ...prev,
+        speaker_ids: ids,
+        speaker_id: ids[0] || "",
+      };
+    });
   };
 
   // Auto-generar slug cuando cambia el título
@@ -232,7 +326,10 @@ export default function EventForm({ event = null, onClose, onSave }) {
       ...form,
       capacity: form.capacity === "" ? null : Number(form.capacity),
       price: form.price === "" ? null : Number(form.price),
-      brochure_url: brochureFile ? "https://placeholder-brochure.pdf" : form.brochure_url,
+      brochure_url: brochureFile
+        ? "https://placeholder-brochure.pdf"
+        : form.brochure_url,
+      speaker_ids: form.speaker_ids || [],
     };
 
     const result = eventSchema.safeParse(checkForm);
@@ -257,10 +354,15 @@ export default function EventForm({ event = null, onClose, onSave }) {
       price: form.price === "" ? null : Number(form.price),
       status: forcePublish ? "published" : form.status,
       registration_url: form.registration_url?.trim() || null,
-      zoom_link: (form.modality === "virtual" || form.modality === "hibrido") ? form.zoom_link?.trim() || null : null,
-      location: form.modality !== "virtual" ? form.location?.trim() || null : null,
+      zoom_link:
+        form.modality === "virtual" || form.modality === "hibrido"
+          ? form.zoom_link?.trim() || null
+          : null,
+      location:
+        form.modality !== "virtual" ? form.location?.trim() || null : null,
       benefits: filteredBenefits,
-      speaker_id: form.speaker_id || null,
+      speaker_id: form.speaker_ids?.[0] || form.speaker_id || null,
+      speaker_ids: form.speaker_ids || [],
     };
   };
 
@@ -332,7 +434,8 @@ export default function EventForm({ event = null, onClose, onSave }) {
           <h2 className="text-base font-bold text-gray-900 dark:text-light">
             {isEditing ? "Editar evento" : "Crear nuevo evento"}
           </h2>
-          <button type="button"
+          <button
+            type="button"
             onClick={onClose}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label="Cerrar"
@@ -343,13 +446,12 @@ export default function EventForm({ event = null, onClose, onSave }) {
 
         {/* Body */}
         <div className="p-6 flex flex-col gap-6">
-          
           {/* SECCIÓN 1: Información Básica */}
           <div className="space-y-4">
             <h3 className="text-xs font-bold text-primary uppercase tracking-wider font-heading">
               1. Información Básica
             </h3>
-            
+
             <Field label="Título del Evento" required error={errors.title}>
               <input
                 name="title"
@@ -404,7 +506,11 @@ export default function EventForm({ event = null, onClose, onSave }) {
               </Field>
             </div>
 
-            <Field label="Descripción Breve" required error={errors.description}>
+            <Field
+              label="Descripción Breve"
+              required
+              error={errors.description}
+            >
               <div className="relative">
                 <textarea
                   name="description"
@@ -501,7 +607,11 @@ export default function EventForm({ event = null, onClose, onSave }) {
 
             {/* Link de Zoom (Solo virtual / híbrido) - No visible al público general */}
             {(form.modality === "virtual" || form.modality === "hibrido") && (
-              <Field label="Link de Zoom del evento (No visible al público, se usará para envío de correos)" required error={errors.zoom_link}>
+              <Field
+                label="Link de Zoom del evento (No visible al público, se usará para envío de correos)"
+                required
+                error={errors.zoom_link}
+              >
                 <input
                   name="zoom_link"
                   value={form.zoom_link || ""}
@@ -555,7 +665,11 @@ export default function EventForm({ event = null, onClose, onSave }) {
 
             {/* Brochure Upload */}
             <Field
-              label={form.modality === "presencial" ? "Brochure del evento (Obligatorio, debe indicar cronograma)" : "Brochure del evento (Opcional)"}
+              label={
+                form.modality === "presencial"
+                  ? "Brochure del evento (Obligatorio, debe indicar cronograma)"
+                  : "Brochure del evento (Opcional)"
+              }
               required={form.modality === "presencial"}
               error={errors.brochure_url}
             >
@@ -581,7 +695,9 @@ export default function EventForm({ event = null, onClose, onSave }) {
                     className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
                     <FileText className="w-4 h-4 text-gray-400" />
-                    {brochureFile ? `Archivo: ${brochureFile.name.substring(0, 20)}...` : "Subir archivo del brochure"}
+                    {brochureFile
+                      ? `Archivo: ${brochureFile.name.substring(0, 20)}...`
+                      : "Subir archivo del brochure"}
                   </button>
                   {brochureFile && (
                     <button
@@ -628,50 +744,186 @@ export default function EventForm({ event = null, onClose, onSave }) {
             </Field>
           </div>
 
-          {/* SECCIÓN 5: Datos del Ponente */}
+          {/* SECCIÓN 5: Datos de Ponentes (Many-to-Many) */}
           <div className="border-t border-gray-100 dark:border-gray-800 pt-5 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-primary uppercase tracking-wider font-heading">
-                5. Ponente del Evento (Opcional)
-              </h3>
+              <div>
+                <h3 className="text-xs font-bold text-primary uppercase tracking-wider font-heading">
+                  5. Ponentes del Evento (Opcional)
+                </h3>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                  Puedes asignar uno o varios ponentes y ordenarlos.
+                </p>
+              </div>
               {!showNewSpeakerForm && (
                 <button
                   type="button"
                   onClick={() => setShowNewSpeakerForm(true)}
-                  className="text-xs text-primary hover:underline font-semibold"
+                  className="text-xs text-primary hover:underline font-semibold flex items-center gap-1"
                 >
-                  + Registrar nuevo ponente
+                  <Plus className="w-3.5 h-3.5" />
+                  Registrar nuevo ponente
                 </button>
               )}
             </div>
 
             {!showNewSpeakerForm ? (
-              <Field label="Seleccionar Ponente" error={errors.speaker_id}>
-                <select
-                  name="speaker_id"
-                  value={form.speaker_id || ""}
-                  onChange={handleChange}
-                  className={inputClass(errors.speaker_id)}
+              <div className="space-y-3">
+                {/* Selector para agregar ponentes */}
+                <Field
+                  label="Agregar ponente al evento"
+                  error={errors.speaker_ids}
                 >
-                  <option value="">Ninguno / Sin ponente</option>
-                  {speakersList.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} — {s.role} {s.company ? `(${s.company})` : ""}
+                  <select
+                    id="speaker-selector-add"
+                    value=""
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        handleAddSpeaker(e.target.value);
+                      }
+                    }}
+                    className={inputClass(errors.speaker_ids)}
+                  >
+                    <option value="">
+                      {speakersList.filter(
+                        (s) => !form.speaker_ids?.includes(s.id),
+                      ).length > 0
+                        ? "+ Selecciona un ponente para agregar..."
+                        : "Todos los ponentes disponibles ya están asignados"}
                     </option>
-                  ))}
-                </select>
-              </Field>
+                    {speakersList
+                      .filter((s) => !form.speaker_ids?.includes(s.id))
+                      .map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name} — {s.role}{" "}
+                          {s.company ? `(${s.company})` : ""}
+                        </option>
+                      ))}
+                  </select>
+                </Field>
+
+                {/* Lista de ponentes seleccionados */}
+                {form.speaker_ids && form.speaker_ids.length > 0 ? (
+                  <div className="space-y-2 pt-1">
+                    <p className="text-[11px] font-semibold text-gray-700 dark:text-gray-300">
+                      Ponentes asignados ({form.speaker_ids.length}):
+                    </p>
+                    <div className="grid grid-cols-1 gap-2">
+                      {form.speaker_ids.map((id, index) => {
+                        const speakerData = speakersList.find(
+                          (s) => s.id === id,
+                        );
+                        if (!speakerData) return null;
+                        const isFirst = index === 0;
+                        const isLast = index === form.speaker_ids.length - 1;
+
+                        return (
+                          <div
+                            key={id}
+                            className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-950/40 hover:border-primary/30 transition-all gap-3"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              {speakerData.avatar_url ? (
+                                <img
+                                  src={speakerData.avatar_url}
+                                  alt={speakerData.name}
+                                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0"
+                                />
+                              ) : (
+                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary font-bold text-xs sm:text-sm flex items-center justify-center border border-primary/20 flex-shrink-0">
+                                  {speakerData.name.charAt(0)}
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
+                                    {speakerData.name}
+                                  </span>
+                                  {index === 0 && (
+                                    <span className="text-[9px] sm:text-[10px] bg-primary/15 text-primary px-1.5 py-0.2 rounded font-semibold uppercase tracking-wider">
+                                      Principal
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                                  {speakerData.role}{" "}
+                                  {speakerData.company
+                                    ? `• ${speakerData.company}`
+                                    : ""}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              {form.speaker_ids.length > 1 && (
+                                <>
+                                  <button
+                                    type="button"
+                                    disabled={isFirst}
+                                    onClick={() =>
+                                      handleMoveSpeaker(index, "up")
+                                    }
+                                    className="p-1 rounded text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 disabled:opacity-20 transition-colors"
+                                    title="Mover arriba"
+                                    aria-label="Mover arriba"
+                                  >
+                                    <ChevronUp className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    disabled={isLast}
+                                    onClick={() =>
+                                      handleMoveSpeaker(index, "down")
+                                    }
+                                    className="p-1 rounded text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 disabled:opacity-20 transition-colors"
+                                    title="Mover abajo"
+                                    aria-label="Mover abajo"
+                                  >
+                                    <ChevronDown className="w-3.5 h-3.5" />
+                                  </button>
+                                </>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveSpeaker(id)}
+                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors ml-1"
+                                title="Quitar ponente del evento"
+                                aria-label="Quitar ponente"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl border border-dashed border-gray-200 dark:border-gray-800 text-center">
+                    <User className="w-5 h-5 mx-auto text-gray-400 dark:text-gray-500 mb-1" />
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Sin ponentes asignados aún. Selecciona uno en el
+                      desplegable o registra uno nuevo.
+                    </p>
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-950/20 border border-gray-100 dark:border-gray-800 space-y-4">
                 <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">
                   Registrar Nuevo Ponente
                 </h4>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field label="Nombre del ponente" required>
                     <input
                       value={newSpeaker.name}
-                      onChange={(e) => setNewSpeaker((prev) => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) =>
+                        setNewSpeaker((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                       placeholder="Ej. Dra. Sofía Martínez"
                       className={inputClass()}
                     />
@@ -679,7 +931,12 @@ export default function EventForm({ event = null, onClose, onSave }) {
                   <Field label="Cargo / Rol" required>
                     <input
                       value={newSpeaker.role}
-                      onChange={(e) => setNewSpeaker((prev) => ({ ...prev, role: e.target.value }))}
+                      onChange={(e) =>
+                        setNewSpeaker((prev) => ({
+                          ...prev,
+                          role: e.target.value,
+                        }))
+                      }
                       placeholder="Ej. Coordinadora de Becas"
                       className={inputClass()}
                     />
@@ -689,7 +946,12 @@ export default function EventForm({ event = null, onClose, onSave }) {
                 <Field label="Organización / Empresa">
                   <input
                     value={newSpeaker.company}
-                    onChange={(e) => setNewSpeaker((prev) => ({ ...prev, company: e.target.value }))}
+                    onChange={(e) =>
+                      setNewSpeaker((prev) => ({
+                        ...prev,
+                        company: e.target.value,
+                      }))
+                    }
                     placeholder="Ej. Delegación de la Unión Europea"
                     className={inputClass()}
                   />
@@ -708,7 +970,9 @@ export default function EventForm({ event = null, onClose, onSave }) {
                         <div className="absolute inset-0 bg-black/45 flex items-center justify-center gap-1 opacity-0 hover:opacity-100 transition-opacity">
                           <button
                             type="button"
-                            onClick={() => newSpeakerAvatarInputRef.current?.click()}
+                            onClick={() =>
+                              newSpeakerAvatarInputRef.current?.click()
+                            }
                             className="p-1 bg-white text-gray-700 rounded-full hover:bg-gray-100 shadow-sm"
                           >
                             <ImagePlus className="w-3 h-3 text-gray-700" />
@@ -728,16 +992,22 @@ export default function EventForm({ event = null, onClose, onSave }) {
                     ) : (
                       <button
                         type="button"
-                        onClick={() => newSpeakerAvatarInputRef.current?.click()}
+                        onClick={() =>
+                          newSpeakerAvatarInputRef.current?.click()
+                        }
                         className="w-16 h-16 rounded-full border-2 border-dashed border-gray-200 dark:border-gray-800 hover:border-primary/45 hover:bg-primary/5 dark:hover:bg-primary/5 transition-all flex flex-col items-center justify-center gap-1 text-gray-400"
                       >
                         <ImagePlus className="w-4 h-4 text-gray-300 dark:text-gray-500" />
-                        <span className="text-[9px] font-medium leading-none">Subir</span>
+                        <span className="text-[9px] font-medium leading-none">
+                          Subir
+                        </span>
                       </button>
                     )}
 
                     <div className="text-[11px] text-gray-500">
-                      <p className="font-semibold text-gray-700 dark:text-gray-300">Avatar del Ponente</p>
+                      <p className="font-semibold text-gray-700 dark:text-gray-300">
+                        Avatar del Ponente
+                      </p>
                       <p className="text-gray-400">PNG o JPG de máx. 2 MB</p>
                     </div>
 
@@ -771,7 +1041,9 @@ export default function EventForm({ event = null, onClose, onSave }) {
                     onClick={handleCreateSpeakerInline}
                     className="px-4 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary/95 disabled:opacity-50 transition-colors flex items-center gap-1.5"
                   >
-                    {creatingSpeaker ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                    {creatingSpeaker ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : null}
                     Guardar Ponente
                   </button>
                 </div>

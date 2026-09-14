@@ -202,6 +202,10 @@ export const eventSchema = z
       .optional()
       .nullable()
       .or(z.literal("")),
+    speaker_ids: z
+      .array(z.string().uuid("Identificador de ponente no válido."))
+      .optional()
+      .default([]),
     directed_to: z.string().min(1, "El campo 'Dirigido a' es obligatorio."),
     extra_details: z.string().optional().nullable().or(z.literal("")),
     brochure_url: z.string().optional().nullable().or(z.literal("")),
