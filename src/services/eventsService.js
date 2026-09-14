@@ -8,6 +8,11 @@ import { createSlug } from "../utils/slugify";
 const EVENT_SELECT = `
   *,
   speaker:speakers(*),
+  event_speakers(
+    id,
+    display_order,
+    speaker:speakers(*)
+  ),
   registrations:event_registrations(count)
 `;
 
@@ -21,11 +26,30 @@ function transformEvent(row, { isPublic = false } = {}) {
       ? Math.max(0, row.capacity - registrationCount)
       : null;
 
+  // Extraer speakers desde la tabla intermedia event_speakers
+  const relationSpeakers = (row.event_speakers || [])
+    .slice()
+    .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+    .map((es) => es.speaker)
+    .filter(Boolean);
+
+  // Si no hay ponentes en event_speakers pero sí en row.speaker (heredado), incluirlo
+  const allSpeakers =
+    relationSpeakers.length > 0
+      ? relationSpeakers
+      : row.speaker
+        ? [row.speaker]
+        : [];
+
   return {
     ...row,
+    speakers: allSpeakers,
+    speaker: allSpeakers[0] || null, // Retrocompatibilidad para vistas heredadas
+    speaker_ids: allSpeakers.map((s) => s.id),
     spots_left: spotsLeft,
     zoom_link: isPublic ? null : row.zoom_link, // Proteger enlace de Zoom en consultas públicas
     registrations: undefined, // limpiar el campo intermedio
+    event_speakers: undefined,
   };
 }
 
@@ -135,7 +159,7 @@ class EventsService {
    * Crea un nuevo evento asignando created_by al usuario autenticado.
    * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
    */
-  async createEvent(formData, userRole = null, userId = null) {
+  async createEvent(formData, _userRole = null, userId = null) {
     try {
       // Obtener usuario autenticado si no se provee
       let authUserId = userId;
@@ -144,8 +168,12 @@ class EventsService {
         authUserId = userData?.user?.id ?? null;
       }
 
+      const fullPayload = this._buildPayload(formData);
+      const speakerIds = fullPayload._speaker_ids || [];
+      const { _speaker_ids, ...eventPayload } = fullPayload;
+
       const payload = {
-        ...this._buildPayload(formData),
+        ...eventPayload,
         created_by: authUserId,
       };
 
@@ -170,9 +198,17 @@ class EventsService {
         .single();
 
       if (error) throw new Error(error.message);
+
+      // Sincronizar en la tabla intermedia event_speakers
+      if (speakerIds.length > 0 && data?.id) {
+        await this._syncEventSpeakers(data.id, speakerIds);
+      }
+
+      const freshEvent = data?.id ? await this.getEventById(data.id) : null;
+
       return {
         success: true,
-        data: transformEvent(data, { isPublic: false }),
+        data: freshEvent || transformEvent(data, { isPublic: false }),
         error: null,
       };
     } catch (err) {
@@ -231,8 +267,16 @@ class EventsService {
       }
 
       // 4. Construir el payload del cambio
-      const patch =
-        "title" in formData ? this._buildPayload(formData) : formData;
+      const isFull = "title" in formData;
+      const fullPayload = isFull ? this._buildPayload(formData) : formData;
+      const speakerIds = isFull
+        ? fullPayload._speaker_ids
+        : Array.isArray(formData.speaker_ids)
+          ? formData.speaker_ids
+          : null;
+
+      const { _speaker_ids, ...cleanPatch } = fullPayload;
+      const patch = cleanPatch;
 
       // 5. Crear el payload combinado para validar el estado resultante completo
       const mergedPayload = {
@@ -273,9 +317,17 @@ class EventsService {
         .single();
 
       if (error) throw new Error(error.message);
+
+      // 9. Sincronizar en event_speakers si se enviaron speaker_ids
+      if (speakerIds !== null) {
+        await this._syncEventSpeakers(id, speakerIds);
+      }
+
+      const freshEvent = await this.getEventById(id);
+
       return {
         success: true,
-        data: transformEvent(data, { isPublic: false }),
+        data: freshEvent || transformEvent(data, { isPublic: false }),
         error: null,
       };
     } catch (err) {
@@ -562,7 +614,15 @@ class EventsService {
       zoom_link,
       benefits,
       speaker_id,
+      speaker_ids,
     } = formData;
+
+    let normalizedSpeakerIds = [];
+    if (Array.isArray(speaker_ids)) {
+      normalizedSpeakerIds = speaker_ids.filter(Boolean);
+    } else if (speaker_id) {
+      normalizedSpeakerIds = [speaker_id];
+    }
 
     return {
       title: title?.trim(),
@@ -584,8 +644,48 @@ class EventsService {
       brochure_url: brochure_url?.trim() || null,
       zoom_link: zoom_link?.trim() || null,
       benefits: Array.isArray(benefits) ? benefits : [],
-      speaker_id: speaker_id || null,
+      speaker_id: normalizedSpeakerIds[0] || null,
+      _speaker_ids: normalizedSpeakerIds,
     };
+  }
+
+  /**
+   * Sincroniza los ponentes asociados a un evento en la tabla event_speakers.
+   */
+  async _syncEventSpeakers(eventId, speakerIds = []) {
+    if (!eventId) return;
+    try {
+      const { error: deleteError } = await supabase
+        .from("event_speakers")
+        .delete()
+        .eq("event_id", eventId);
+
+      if (deleteError) {
+        console.warn("Aviso al limpiar event_speakers:", deleteError.message);
+        return;
+      }
+
+      if (speakerIds && speakerIds.length > 0) {
+        const rowsToInsert = speakerIds.map((speakerId, index) => ({
+          event_id: eventId,
+          speaker_id: speakerId,
+          display_order: index,
+        }));
+
+        const { error: insertError } = await supabase
+          .from("event_speakers")
+          .insert(rowsToInsert);
+
+        if (insertError) {
+          console.warn(
+            "Aviso al insertar en event_speakers:",
+            insertError.message,
+          );
+        }
+      }
+    } catch (err) {
+      console.warn("Excepción al sincronizar event_speakers:", err.message);
+    }
   }
 
   /** Genera slug básico desde un título */

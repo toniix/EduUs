@@ -263,7 +263,7 @@ export default function EventDetailDrawer({
                   label: "Cupos libres",
                   value: spotsLeft === null ? "Sin límite" : spotsLeft,
                 },
-              ].map((s, i) => (
+              ].map((s) => (
                 <div
                   key={s.label}
                   className={`${cardBg} rounded-xl p-3 flex flex-col gap-1`}
@@ -336,6 +336,48 @@ export default function EventDetailDrawer({
                 </InfoRow>
               )}
             </div>
+
+            {/* ─── Ponentes asignados ─── */}
+            {((Array.isArray(event.speakers) && event.speakers.length > 0) ||
+              event.speaker) && (
+              <div className={`rounded-xl ${cardBg} p-4 space-y-3`}>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-2">
+                  {(event.speakers?.length || (event.speaker ? 1 : 0)) === 1
+                    ? "Ponente"
+                    : `Ponentes (${event.speakers?.length || 1})`}
+                </h3>
+                <div className="space-y-2">
+                  {(event.speakers || [event.speaker])
+                    .filter(Boolean)
+                    .map((spk, idx) => (
+                      <div
+                        key={spk.id || `drawer-spk-${idx}`}
+                        className="flex items-center gap-3 p-2 rounded-lg bg-white/60 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700/50"
+                      >
+                        {spk.avatar_url || spk.avatar ? (
+                          <img
+                            src={spk.avatar_url || spk.avatar}
+                            alt={spk.name}
+                            className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center border border-primary/20 flex-shrink-0">
+                            {spk.name?.charAt(0) || "P"}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold truncate text-gray-900 dark:text-gray-100">
+                            {spk.name}
+                          </p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                            {spk.role} {spk.company ? `• ${spk.company}` : ""}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
 
             {/* Descripción */}
             {event.description && (

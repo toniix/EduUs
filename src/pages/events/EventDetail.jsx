@@ -146,14 +146,21 @@ export default function EventDetail() {
 
   const isSoldOut = spots_left === 0;
 
-  const speaker = event.speaker
-    ? {
-        name: event.speaker.name,
-        role: event.speaker.role,
-        company: event.speaker.company,
-        avatar: event.speaker.avatar_url || event.speaker.avatar || null,
-      }
-    : null;
+  // Extraer lista de ponentes con soporte para múltiples ponentes y retrocompatibilidad
+  const speakersListRaw =
+    Array.isArray(event.speakers) && event.speakers.length > 0
+      ? event.speakers
+      : event.speaker
+        ? [event.speaker]
+        : [];
+
+  const speakers = speakersListRaw.map((s) => ({
+    id: s.id,
+    name: s.name,
+    role: s.role,
+    company: s.company,
+    avatar: s.avatar_url || s.avatar || null,
+  }));
 
   const handleShare = (platform) => {
     const shareUrl = window.location.href;
@@ -319,7 +326,7 @@ export default function EventDetail() {
                             </div>
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               {benefits.map(
-                                (benefit, idx) =>
+                                (benefit) =>
                                   benefit &&
                                   benefit.trim() !== "" && (
                                     <li
@@ -359,37 +366,52 @@ export default function EventDetail() {
                   </div>
                 )}
 
-                {/* Ponente del Evento */}
-                {speaker && (
+                {/* Ponentes del Evento */}
+                {speakers.length > 0 && (
                   <div className="border-t border-gray-100 dark:border-gray-850 pt-8 space-y-4">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-light font-heading">
-                      Ponente del evento
+                      {speakers.length === 1
+                        ? "Ponente del evento"
+                        : "Ponentes del evento"}
                     </h2>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:p-5 rounded-2xl bg-gray-50/50 dark:bg-gray-900/35 border border-gray-100 dark:border-gray-800">
-                      {speaker.avatar ? (
-                        <img
-                          src={speaker.avatar}
-                          alt={speaker.name}
-                          className="w-16 h-16 rounded-full object-cover border-2 border-primary/20 shadow-sm transition-transform duration-350 hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg border-2 border-primary/20 shadow-sm">
-                          {speaker.name.charAt(0)}
+                    <div
+                      className={
+                        speakers.length === 1
+                          ? "grid grid-cols-1"
+                          : "grid grid-cols-1 md:grid-cols-2 gap-4"
+                      }
+                    >
+                      {speakers.map((spk, idx) => (
+                        <div
+                          key={spk.id || `spk-${idx}`}
+                          className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:p-5 rounded-2xl bg-gray-50/50 dark:bg-gray-900/35 border border-gray-100 dark:border-gray-800 transition-all hover:border-primary/30"
+                        >
+                          {spk.avatar ? (
+                            <img
+                              src={spk.avatar}
+                              alt={spk.name}
+                              className="w-16 h-16 rounded-full object-cover border-2 border-primary/20 shadow-sm transition-transform duration-350 hover:scale-105 flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg border-2 border-primary/20 shadow-sm flex-shrink-0">
+                              {spk.name?.charAt(0) || "P"}
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-light truncate">
+                              {spk.name}
+                            </h3>
+                            <p className="text-xs sm:text-sm font-semibold text-primary">
+                              {spk.role}
+                            </p>
+                            {spk.company && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">
+                                {spk.company}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      )}
-                      <div>
-                        <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-light">
-                          {speaker.name}
-                        </h3>
-                        <p className="text-xs sm:text-sm font-semibold text-primary">
-                          {speaker.role}
-                        </p>
-                        {speaker.company && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">
-                            {speaker.company}
-                          </p>
-                        )}
-                      </div>
+                      ))}
                     </div>
                   </div>
                 )}
