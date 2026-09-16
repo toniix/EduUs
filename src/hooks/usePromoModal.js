@@ -54,6 +54,12 @@ export function usePromoModal() {
           return;
         }
 
+        // La promoción deja de ser válida automáticamente al iniciar el evento.
+        if (new Date(data.starts_at).getTime() <= Date.now()) {
+          setIsLoading(false);
+          return;
+        }
+
         // 2. Verificar localStorage
         const dismissed = localStorage.getItem(dismissKey(data.id));
         if (dismissed) {
@@ -85,7 +91,15 @@ export function usePromoModal() {
   useEffect(() => {
     if (!isOpen || !event?.starts_at) return;
 
-    const tick = () => setCountdown(calcCountdown(event.starts_at));
+    const tick = () => {
+      const nextCountdown = calcCountdown(event.starts_at);
+      setCountdown(nextCountdown);
+
+      if (nextCountdown.isExpired) {
+        setIsOpen(false);
+        clearInterval(intervalRef.current);
+      }
+    };
     tick(); // ejecutar inmediatamente
     intervalRef.current = setInterval(tick, 1000);
 

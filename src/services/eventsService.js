@@ -69,11 +69,13 @@ class EventsService {
    */
   async getPromoEvent() {
     try {
+      const nowIso = new Date().toISOString();
       const { data, error } = await supabase
         .from("events")
         .select(EVENT_SELECT)
         .eq("promo_modal", true)
         .eq("status", "published")
+        .gt("starts_at", nowIso)
         .order("starts_at", { ascending: true })
         .limit(1)
         .maybeSingle();
@@ -135,7 +137,7 @@ class EventsService {
    * Crea un nuevo evento asignando created_by al usuario autenticado.
    * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
    */
-  async createEvent(formData, userRole = null, userId = null) {
+  async createEvent(formData, _userRole = null, userId = null) {
     try {
       // Obtener usuario autenticado si no se provee
       let authUserId = userId;
