@@ -7,12 +7,15 @@ import OfferSection from "../components/home/OfferSection";
 import SEO from "../components/SEO";
 import FeaturedOpportunities from "../components/opportunities/FeaturedOpportunities";
 import EventsSection from "../components/events/EventsSection";
+import EduMentorSurveyModal from "../components/home/EduMentorSurveyModal";
 import PromoModal from "../components/events/PromoModal";
 
 const TestimonialsSection = lazy(
   () => import("../components/home/TestimonialsSection"),
 );
 const CallToAction = lazy(() => import("../components/home/CallToAction"));
+const HOME_PROMO_CAMPAIGN =
+  import.meta.env.VITE_HOME_PROMO_CAMPAIGN || "edu-mentor";
 
 const Home = () => {
   const heroImageBase =
@@ -46,8 +49,8 @@ const Home = () => {
           },
         }}
       />
-      {/* PromoModal se auto-controla con usePromoModal */}
-      <PromoModal />
+      {HOME_PROMO_CAMPAIGN === "edu-mentor" && <EduMentorSurveyModal />}
+      {HOME_PROMO_CAMPAIGN === "event" && <PromoModal />}
       <div className="flex flex-col min-h-screen">
         <section className="w-full min-h-[calc(100vh-4rem)] bg-center bg-cover flex items-center justify-center relative overflow-hidden">
           <img

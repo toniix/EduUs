@@ -57,6 +57,9 @@
 
    # Cloudinary Configuration
    VITE_CLOUDINARY_CLOUD_NAME=tu_cloudinary_cloud_name
+
+   # Campaña automática del home: edu-mentor | event | off
+   VITE_HOME_PROMO_CAMPAIGN=edu-mentor
    ```
 
    > **Nota:** Las subidas de imágenes se gestionan a través de una Edge Function de Supabase (`upload-image`) que interactúa con la API de Cloudinary de forma segura desde el servidor.
