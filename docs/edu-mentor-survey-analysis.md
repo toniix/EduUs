@@ -55,6 +55,9 @@ Eliminar o trasladar:
 - El retraso open_delay_ms, los días de ocultamiento dismiss_for_days, la URL
   cta_url, los textos, la prioridad y la captura de correo son configurables en
   base de datos.
+- La mitad visual acepta image_url, image_alt, image_fit e image_position. Si no
+  se configura una imagen o falla su carga, el componente usa el panel gráfico
+  y los textos de respaldo.
 - No requiere autenticación.
 - El correo es opcional; si se ingresa, el consentimiento es obligatorio.
 - Cerrar el pop-up lo oculta durante siete días. Abrir la encuesta lo desactiva

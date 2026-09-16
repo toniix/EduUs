@@ -16,6 +16,12 @@ CREATE TABLE IF NOT EXISTS public.site_campaigns (
   panel_description TEXT NOT NULL,
   title TEXT NOT NULL,
   description TEXT NOT NULL,
+  image_url TEXT,
+  image_alt TEXT,
+  image_fit TEXT NOT NULL DEFAULT 'cover'
+    CHECK (image_fit IN ('cover', 'contain')),
+  image_position TEXT NOT NULL DEFAULT 'center'
+    CHECK (image_position IN ('center', 'top', 'bottom', 'left', 'right')),
   duration_label TEXT,
   access_label TEXT,
   email_capture_enabled BOOLEAN NOT NULL DEFAULT FALSE,
@@ -29,6 +35,9 @@ CREATE TABLE IF NOT EXISTS public.site_campaigns (
   CONSTRAINT site_campaigns_valid_window CHECK (ends_at > starts_at),
   CONSTRAINT site_campaigns_nonempty_paths CHECK (cardinality(target_paths) > 0),
   CONSTRAINT site_campaigns_https_cta CHECK (cta_url ~* '^https://'),
+  CONSTRAINT site_campaigns_https_image CHECK (
+    image_url IS NULL OR image_url ~* '^https://'
+  ),
   CONSTRAINT site_campaigns_delay_range
     CHECK (open_delay_ms BETWEEN 0 AND 60000),
   CONSTRAINT site_campaigns_dismiss_range
@@ -142,6 +151,10 @@ INSERT INTO public.site_campaigns (
   panel_description,
   title,
   description,
+  image_url,
+  image_alt,
+  image_fit,
+  image_position,
   duration_label,
   access_label,
   email_capture_enabled,
@@ -167,6 +180,10 @@ VALUES (
   'Estamos diseñando un programa gratuito de mentoría para jóvenes de Negocios y Gestión. Queremos construirlo contigo, no solo para ti.',
   'Ayúdanos a crear una mentoría que sí responda a tus retos',
   'Cuéntanos qué te cuesta al buscar prácticas o empleo y qué apoyo te sería realmente útil. Tus respuestas serán confidenciales.',
+  'https://eduus.club/CTA-img.png',
+  'Joven estudiante preparado para desarrollar su futuro profesional',
+  'contain',
+  'center',
   'Toma entre 3 y 5 minutos',
   'No requiere iniciar sesión',
   TRUE,
