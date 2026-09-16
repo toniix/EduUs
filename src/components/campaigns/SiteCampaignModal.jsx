@@ -24,6 +24,37 @@ const IMAGE_POSITION_CLASSES = {
   right: "object-right",
 };
 
+// Disponible únicamente en desarrollo para revisar la composición antes de
+// publicar una campaña en Supabase. No forma parte del bundle de producción.
+const DEVELOPMENT_PREVIEW_CAMPAIGN = {
+  id: "preview-edu-mentor",
+  campaign_key: "edu-mentor-survey",
+  version: 1,
+  target_paths: ["/"],
+  cta_url:
+    "https://docs.google.com/forms/d/e/1FAIpQLScCDDudEAIki6IhB216f0o_lldyxbAf9WoKTRW8Zs3lZ8Mhgw/viewform?usp=header",
+  cta_label: "Compartir mi opinión",
+  eyebrow: "EDU-MENTOR",
+  panel_title: "Tu experiencia puede abrir más oportunidades.",
+  panel_description:
+    "Ayúdanos a diseñar experiencias de empleabilidad más útiles para jóvenes.",
+  title: "Queremos escuchar tu experiencia profesional",
+  description:
+    "Completa este breve formulario para ayudarnos a construir EDU-MENTOR. Te tomará solo unos minutos.",
+  image_url: "/CTA-img.png",
+  image_alt: "Joven estudiante preparado para desarrollar su futuro profesional",
+  image_fit: "contain",
+  image_position: "center",
+  duration_label: "Te tomará 3 minutos",
+  access_label: "Participación voluntaria",
+  email_capture_enabled: true,
+  email_label: "Déjanos tu correo si deseas recibir novedades",
+  email_placeholder: "tu@email.com",
+  consent_copy: "Acepto recibir novedades sobre EDU-MENTOR.",
+  open_delay_ms: 0,
+  dismiss_for_days: 0,
+};
+
 function storageKey(type, campaign) {
   return [
     "site-campaign",
@@ -56,7 +87,7 @@ function alreadyParticipated(campaign) {
 }
 
 export default function SiteCampaignModal() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const [campaign, setCampaign] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -76,8 +107,12 @@ export default function SiteCampaignModal() {
       setCampaign(null);
       setImageFailed(false);
 
-      const activeCampaign =
-        await siteCampaignsService.getActiveCampaign(pathname);
+      const isDevelopmentPreview =
+        import.meta.env.DEV &&
+        new URLSearchParams(search).get("previewCampaign") === "edu-mentor";
+      const activeCampaign = isDevelopmentPreview
+        ? DEVELOPMENT_PREVIEW_CAMPAIGN
+        : await siteCampaignsService.getActiveCampaign(pathname);
 
       if (
         cancelled ||
@@ -101,7 +136,7 @@ export default function SiteCampaignModal() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [pathname]);
+  }, [pathname, search]);
 
   const close = useCallback(() => {
     if (campaign) {
