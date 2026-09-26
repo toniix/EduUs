@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, m } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { siteCampaignsService } from "../../services/siteCampaignsService";
 
@@ -31,9 +31,8 @@ const DEVELOPMENT_PREVIEW_CAMPAIGN = {
   campaign_key: "edu-mentor-survey",
   version: 1,
   target_paths: ["/"],
-  cta_url:
-    "https://docs.google.com/forms/d/e/1FAIpQLScCDDudEAIki6IhB216f0o_lldyxbAf9WoKTRW8Zs3lZ8Mhgw/viewform?usp=header",
-  cta_label: "Compartir mi opinión",
+  cta_url: "/encuesta/edu-mentor",
+  cta_label: "Comenzar encuesta",
   eyebrow: "EDU-MENTOR",
   panel_title: "Tu experiencia puede abrir más oportunidades.",
   panel_description:
@@ -47,7 +46,7 @@ const DEVELOPMENT_PREVIEW_CAMPAIGN = {
   image_position: "center",
   duration_label: "Te tomará 3 minutos",
   access_label: "Participación voluntaria",
-  email_capture_enabled: true,
+  email_capture_enabled: false,
   email_label: "Déjanos tu correo si deseas recibir novedades",
   email_placeholder: "tu@email.com",
   consent_copy: "Acepto recibir novedades sobre EDU-MENTOR.",
@@ -88,6 +87,7 @@ function alreadyParticipated(campaign) {
 
 export default function SiteCampaignModal() {
   const { pathname, search } = useLocation();
+  const navigate = useNavigate();
   const [campaign, setCampaign] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -109,6 +109,7 @@ export default function SiteCampaignModal() {
 
       const isDevelopmentPreview =
         import.meta.env.DEV &&
+        pathname === "/" &&
         new URLSearchParams(search).get("previewCampaign") === "edu-mentor";
       const activeCampaign = isDevelopmentPreview
         ? DEVELOPMENT_PREVIEW_CAMPAIGN
@@ -174,6 +175,12 @@ export default function SiteCampaignModal() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!campaign) return;
+
+    if (campaign.cta_url.startsWith("/") && !campaign.cta_url.startsWith("//")) {
+      setIsOpen(false);
+      navigate(campaign.cta_url);
+      return;
+    }
 
     const normalizedEmail = email.trim().toLowerCase();
 

@@ -82,3 +82,24 @@ Eliminar o trasladar:
    responsive móvil.
 5. Aplicar los cambios de contenido al Google Form después de aprobar la versión
    reducida.
+
+## Actualización: encuesta nativa en EDU-US
+
+La propuesta evolucionó para reemplazar Google Forms por una ruta propia. La
+migración `20260925_create_reusable_surveys.sql` define encuestas versionadas,
+preguntas configurables, respuestas por sesión y respuestas parciales. La
+campaña EDU-MENTOR ahora apunta a `/encuesta/edu-mentor` y deja de recopilar el
+correo en el popup para evitar duplicarlo.
+
+La nueva ruta pide correo al inicio, autorización para guardar y analizar las
+respuestas, y un permiso opcional separado para futuras comunicaciones. Usa Auth
+anónimo de Supabase, sin contraseña ni cuenta de Google, y la política RLS limita
+el borrador a la sesión que lo inició. El avance se recupera en ese navegador;
+la recuperación entre dispositivos queda fuera de este primer corte.
+
+El código está en la rama `feat/edu-mentor-survey-popup`. Para que el recorrido
+guarde información en un entorno, falta aplicar la migración y habilitar Auth
+anónimo en ese proyecto. La migración limpia borradores con 90 días de
+inactividad y respuestas enviadas después de cinco años, según la política
+publicada. Antes de producción también queda verificar el flujo en Supabase y
+configurar una medida antiabuso.

@@ -1,5 +1,19 @@
 # Plan de implementación: encuesta web EDU-MENTOR
 
+## Estado de la rama
+
+- [x] Se creó la ruta pública reutilizable `/encuesta/:surveyKey`.
+- [x] Se implementó el renderizado por tipo de pregunta, correo inicial,
+      consentimiento separado y guardado de respuestas por pregunta.
+- [x] Se preparó la migración con versiones, políticas RLS y funciones de
+      guardado/envío; también enlaza la campaña EDU-MENTOR con la nueva ruta.
+- [x] Se configuró limpieza diaria: borradores tras 90 días y respuestas
+      enviadas tras 5 años, alineado con la política publicada.
+- [ ] Aplicar la migración y habilitar Auth anónimo en Supabase de preview.
+- [ ] Revisar permisos y probar el recorrido de borrador a respuesta enviada en
+      el entorno conectado.
+- [ ] Configurar el control antiabuso antes de producción.
+
 ## Objetivo
 
 Reemplazar el salto a Google Forms por una encuesta nativa y reutilizable en
@@ -113,7 +127,8 @@ antigüedad de `updated_at`; no hace falta marcarlo al cerrar la pestaña.
 - [ ] Aprobar las ocho preguntas principales y las dos opcionales.
 - [ ] Confirmar rangos de edad y elegibilidad de menores.
 - [ ] Aprobar el texto para pedir correo y los dos permisos separados.
-- [ ] Definir plazos de conservación para borradores y respuestas enviadas.
+- [x] Definir plazos iniciales: borradores 90 días y respuestas enviadas
+      5 años.
 - [ ] Aprobar título, introducción y confirmación final de la encuesta.
 
 ### Fase 2 — Base de datos y autorización
@@ -123,7 +138,8 @@ antigüedad de `updated_at`; no hace falta marcarlo al cerrar la pestaña.
 - [ ] Habilitar RLS, revocar permisos públicos innecesarios y limitar acceso a
       la sesión propietaria.
 - [ ] Añadir validación transaccional para completar la encuesta.
-- [ ] Añadir mecanismo de limpieza por antigüedad según la política aprobada.
+- [x] Añadir limpieza diaria por antigüedad usando los plazos configurados en
+      cada encuesta.
 - [ ] Configurar Auth anónimo y controles contra abuso en el proyecto de
       Supabase de preview.
 

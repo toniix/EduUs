@@ -14,7 +14,8 @@ const PublicLayout = () => {
     location.pathname === "/edutracker" ||
     location.pathname.startsWith("/edutracker/oportunidad/") ||
     location.pathname === "/login" ||
-    location.pathname === "/register";
+    location.pathname === "/register" ||
+    location.pathname.startsWith("/encuesta/");
 
   return (
     <>
