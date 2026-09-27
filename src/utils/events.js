@@ -33,26 +33,75 @@ export const modalityConfig = {
   hibrido: { label: "Híbrido", icon: "🌐" },
 };
 
+export const PERU_TIMEZONE = "America/Lima";
+
 /**
- * Formatea una fecha ISO a la versión en español peruano:
+ * Convierte un ISO string UTC de la BD a formato "YYYY-MM-DDTHH:mm" en hora de Perú
+ * para ser consumido por inputs type="datetime-local".
+ * @param {string} isoString
+ * @returns {string}
+ */
+export function toPeruDateTimeLocal(isoString) {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return "";
+
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: PERU_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  });
+
+  const parts = formatter.formatToParts(date);
+  const m = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+  return `${m.year}-${m.month}-${m.day}T${m.hour}:${m.minute}`;
+}
+
+/**
+ * Convierte el valor "YYYY-MM-DDTHH:mm" de un input datetime-local (hora Perú)
+ * a un string ISO UTC estandarizado ("YYYY-MM-DDTHH:mm:ss.sssZ").
+ * @param {string} localStr
+ * @returns {string|null}
+ */
+export function peruDateTimeLocalToIso(localStr) {
+  if (!localStr) return null;
+  // Si ya contiene indicador de timezone (Z o offset +/-), parsear directo
+  if (
+    localStr.includes("Z") ||
+    (localStr.length > 19 &&
+      (localStr.includes("+") || localStr.includes("-", 10)))
+  ) {
+    const d = new Date(localStr);
+    return isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  const withSeconds = localStr.length === 16 ? `${localStr}:00` : localStr;
+  const d = new Date(`${withSeconds}-05:00`);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+/**
+ * Formatea una fecha ISO a la versión en español asegurando la hora oficial de Perú:
  * "15 de marzo · 10:00 AM"
  * @param {string} isoString
  * @returns {string}
  */
 export function formatEventDate(isoString) {
   if (!isoString) return "";
-
-  // Cortamos el string para quedarnos solo con "YYYY-MM-DDTHH:mm:ss"
-  // Esto elimina el "+00:00" o la "Z", forzando al navegador a 
-  // tratar los números tal cual como hora local peruana.
-  const date = new Date(isoString.slice(0, 19));
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return "";
 
   const datePart = new Intl.DateTimeFormat("es-PE", {
+    timeZone: PERU_TIMEZONE,
     day: "numeric",
     month: "long",
   }).format(date);
 
   const timePart = new Intl.DateTimeFormat("es-PE", {
+    timeZone: PERU_TIMEZONE,
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
@@ -61,6 +110,26 @@ export function formatEventDate(isoString) {
     .toUpperCase();
 
   return `${datePart} · ${timePart}`;
+}
+
+/**
+ * Formatea solo la hora en hora de Perú: "10:00 AM"
+ * @param {string} isoString
+ * @returns {string}
+ */
+export function formatEventTime(isoString) {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return "";
+
+  return new Intl.DateTimeFormat("es-PE", {
+    timeZone: PERU_TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  })
+    .format(date)
+    .toUpperCase();
 }
 
 /**

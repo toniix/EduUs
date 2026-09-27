@@ -172,11 +172,9 @@ export const eventSchema = z
     description: z.string().min(1, "La descripción es obligatoria."),
     location: z.string().optional().nullable().or(z.literal("")),
     banner_url: z
-      .string()
-      .url("La URL del banner no es válida.")
-      .optional()
-      .or(z.literal(""))
-      .or(z.null()),
+      .string({ required_error: "El banner del evento es obligatorio." })
+      .min(1, "El banner del evento es obligatorio.")
+      .url("La URL del banner no es válida."),
     ends_at: z.string().optional(),
     capacity: z
       .number()

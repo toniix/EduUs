@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import {
   Plus,
   Search,
-  Eye,
   Pencil,
   Trash2,
   Star,
@@ -21,7 +20,6 @@ import {
   eventStatusConfig,
 } from "../../../utils/events";
 import EventForm from "../forms/EventForm";
-import EventPreviewModal from "../EventPreviewModal";
 import EventDetailDrawer from "../EventDetailDrawer";
 import InlineLoader from "../../ui/LoadingSpinner";
 import { toast } from "react-hot-toast";
@@ -40,7 +38,6 @@ export default function EventsAdminTab() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null); // para editar
-  const [previewEvent, setPreviewEvent] = useState(null); // para preview público
   const [drawerEvent, setDrawerEvent] = useState(null); // para el drawer de detalles
   const [confirmModal, setConfirmModal] = useState({
     open: false,
@@ -484,15 +481,6 @@ export default function EventsAdminTab() {
                               <Pencil className="w-3.5 h-3.5" />
                             </ActionBtn>
 
-                            {/* Preview */}
-                            <ActionBtn
-                              title="Ver previa"
-                              onClick={() => setPreviewEvent(event)}
-                              isDark={isDark}
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                            </ActionBtn>
-
                             {/* Toggle publicar */}
                             <ActionBtn
                               title={
@@ -578,14 +566,6 @@ export default function EventsAdminTab() {
             await handleDelete(ev);
           }}
           onRefetch={refetch}
-        />
-      )}
-
-      {/* Public preview modal */}
-      {previewEvent && (
-        <EventPreviewModal
-          event={previewEvent}
-          onClose={() => setPreviewEvent(null)}
         />
       )}
 
