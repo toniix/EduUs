@@ -22,7 +22,6 @@ import {
   Info,
   FileText,
   Download,
-  Video,
 } from "lucide-react";
 import { FaWhatsapp, FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import EventRegistrationForm from "../../components/events/EventRegistrationForm";
@@ -37,7 +36,6 @@ export default function EventDetail() {
   const locationState = useLocation();
   const { event, loading, error } = useEventBySlug(slug);
   const [successName, setSuccessName] = useState("");
-  const [registeredZoomLink, setRegisteredZoomLink] = useState(null);
   const [shareFeedback, setShareFeedback] = useState("");
   const { profile, isAuthenticated } = useAuth();
 
@@ -46,16 +44,12 @@ export default function EventDetail() {
     let active = true;
     const verifyRegistration = async () => {
       if (event?.id && isAuthenticated && profile?.id) {
-        const {
-          registered,
-          name,
-          zoom_link: userZoomLink,
-        } = await eventsService.checkUserRegistration(event.id, profile.id);
+        const { registered, name } = await eventsService.checkUserRegistration(
+          event.id,
+          profile.id,
+        );
         if (registered && active) {
           setSuccessName(name || profile.full_name || "Participante");
-          if (userZoomLink) {
-            setRegisteredZoomLink(userZoomLink);
-          }
         }
       }
     };
@@ -132,7 +126,6 @@ export default function EventDetail() {
     benefits,
     extra_details,
     brochure_url,
-    zoom_link,
   } = event;
 
   const catCfg = categoryConfig[category] || {
@@ -536,24 +529,6 @@ export default function EventDetail() {
                         </div>
                       )}
 
-                    {(modality === "virtual" || modality === "hibrido") &&
-                      (registeredZoomLink || zoom_link) && (
-                        <div className="w-full border-t border-gray-150/40 dark:border-gray-850 pt-4 mt-1 z-10 flex flex-col gap-2">
-                          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-                            Enlace de la sesión virtual (Zoom):
-                          </p>
-                          <a
-                            href={registeredZoomLink || zoom_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 w-full rounded-xl bg-[#2D8CFF] hover:bg-[#1a7ee5] text-white font-bold text-xs transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-500/20"
-                          >
-                            <Video className="w-4 h-4 text-white" />
-                            Entrar a la sesión de Zoom
-                          </a>
-                        </div>
-                      )}
-
                     <div className="w-full border-t border-gray-150/40 dark:border-gray-850 pt-4 mt-1 z-10">
                       <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium mb-3">
                         Únete a nuestro canal de WhatsApp para mantenerte
@@ -602,9 +577,8 @@ export default function EventDetail() {
 
                     <EventRegistrationForm
                       event={event}
-                      onSuccess={(name, zoomLink) => {
+                      onSuccess={(name) => {
                         setSuccessName(name);
-                        if (zoomLink) setRegisteredZoomLink(zoomLink);
                       }}
                     />
                   </>

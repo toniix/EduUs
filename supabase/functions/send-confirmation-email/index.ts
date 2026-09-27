@@ -27,13 +27,15 @@ serve(async (req) => {
     // 🔍 Obtener datos del evento
     const { data: event, error: eventError } = await supabase
       .from('events')
-      .select('title, starts_at, location, modality, zoom_link, slug')
+      .select('title, starts_at, location, modality, slug, event_access(zoom_link)')
       .eq('id', record.event_id)
       .single()
 
     if (eventError) {
       throw new Error(`Error al buscar evento: ${eventError.message}`)
     }
+
+    const zoomLink = (event as any)?.event_access?.zoom_link || null
 
     // 📅 Formatear fecha
     const eventDate = new Date(event.starts_at).toLocaleString('es-PE', {
@@ -69,7 +71,7 @@ serve(async (req) => {
           </td>
           <td valign="middle" style="word-break: break-word;">
             <strong style="color: #374151; font-size: 13px; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Enlace de Zoom</strong>
-            <span class="detail-value" style="color: #1f2937; font-size: 16px;"><a href="${event.zoom_link || '#'}" style="color: #e6461e; text-decoration: underline; font-weight: 500;">${event.zoom_link || 'Se enviará antes del evento'}</a></span>
+            <span class="detail-value" style="color: #1f2937; font-size: 16px;"><a href="${zoomLink || '#'}" style="color: #e6461e; text-decoration: underline; font-weight: 500;">${zoomLink || 'Se enviará antes del evento'}</a></span>
           </td>
         </tr>
       </table>
