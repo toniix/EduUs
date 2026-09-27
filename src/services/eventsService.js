@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabase";
 import { createSlug } from "../utils/slugify";
+import { peruDateTimeLocalToIso } from "../utils/events";
 
 /**
  * SELECT base para eventos — incluye conteo de inscritos para calcular spots_left.
@@ -632,8 +633,8 @@ class EventsService {
       description: description?.trim() || null,
       location: location?.trim() || null,
       banner_url: banner_url?.trim() || null,
-      starts_at: starts_at || null,
-      ends_at: ends_at || null,
+      starts_at: peruDateTimeLocalToIso(starts_at),
+      ends_at: peruDateTimeLocalToIso(ends_at),
       capacity: capacity !== "" && capacity !== null ? Number(capacity) : null,
       price: price !== "" && price !== null ? Number(price) : 0,
       promo_modal: promo_modal ?? false,
@@ -699,6 +700,14 @@ class EventsService {
    * @returns {string|null} - Retorna un string con el error de validación o null si todo es consistente
    */
   _validateEvent(payload) {
+    // 0. Validar banner obligatorio
+    if (
+      "banner_url" in payload &&
+      (!payload.banner_url || !payload.banner_url.trim())
+    ) {
+      return "El banner del evento es obligatorio.";
+    }
+
     // 1. Validar fechas de inicio y fin
     if (payload.starts_at && payload.ends_at) {
       const starts = new Date(payload.starts_at);

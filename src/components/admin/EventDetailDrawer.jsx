@@ -33,6 +33,7 @@ import { useAuth } from "../../contexts/AuthContext";
 function formatDateTime(iso) {
   if (!iso) return "—";
   return new Intl.DateTimeFormat("es-PE", {
+    timeZone: "America/Lima",
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -45,6 +46,7 @@ function formatDateTime(iso) {
 function formatShortDate(iso) {
   if (!iso) return "—";
   return new Intl.DateTimeFormat("es-PE", {
+    timeZone: "America/Lima",
     day: "2-digit",
     month: "short",
     year: "numeric",

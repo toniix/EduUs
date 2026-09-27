@@ -3,6 +3,7 @@ import { useParams, Link, useLocation } from "react-router-dom";
 import { useEventBySlug } from "../../hooks/useEvents";
 import {
   formatEventDate,
+  formatEventTime,
   categoryConfig,
   modalityConfig,
 } from "../../utils/events";
@@ -594,14 +595,7 @@ export default function EventDetail() {
                       {ends_at && (
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4 text-primary" />
-                          <span>
-                            Finaliza:{" "}
-                            {new Date(ends_at).toLocaleTimeString("es-PE", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            })}
-                          </span>
+                          <span>Finaliza: {formatEventTime(ends_at)}</span>
                         </div>
                       )}
                     </div>
