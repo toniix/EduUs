@@ -319,7 +319,7 @@ export default function EventDetail() {
                             </div>
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               {benefits.map(
-                                (benefit, idx) =>
+                                (benefit) =>
                                   benefit &&
                                   benefit.trim() !== "" && (
                                     <li

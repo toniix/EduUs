@@ -186,10 +186,10 @@ VALUES (
   'center',
   'Toma entre 3 y 5 minutos',
   'No requiere iniciar sesión',
-  TRUE,
+  FALSE,
   'Recibe la invitación prioritaria',
   'tu@correo.com',
-  'Acepto que EDU-US use mi correo para contactarme sobre esta iniciativa.',
+  'Acepto que EDU-US use mi correo para contactarme sobre EDU-MENTOR.',
   1800,
   7
 )

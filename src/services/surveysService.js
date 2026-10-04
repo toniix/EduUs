@@ -7,7 +7,7 @@ class SurveysService {
     const { data, error } = await supabase
       .from("surveys")
       .select(
-        "id,survey_key,version,title,intro_text,estimated_minutes,ends_at,survey_questions(id,question_key,prompt,helper_text,question_type,required,options,max_selections,scale_min,scale_max,scale_min_label,scale_max_label,text_max_length,position)",
+        "id,survey_key,version,title,intro_text,estimated_minutes,ends_at,survey_questions(id,question_key,prompt,helper_text,question_type,required,options,max_selections,other_option,other_text_max_length,exclusive_options,scale_min,scale_max,scale_min_label,scale_max_label,text_max_length,position)",
       )
       .eq("survey_key", surveyKey)
       .eq("status", "published")

@@ -497,7 +497,7 @@ ALTER TABLE public.site_campaigns
 
 UPDATE public.site_campaigns
 SET cta_url = '/encuesta/edu-mentor',
-    cta_label = 'Comenzar encuesta',
+    cta_label = 'Responder encuesta',
     email_capture_enabled = FALSE
 WHERE campaign_key = 'edu-mentor-survey-2026';
 

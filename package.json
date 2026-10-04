@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "test:survey": "node --test src/lib/surveyAnswers.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

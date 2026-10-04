@@ -1,5 +1,10 @@
 # Plan de implementación: encuesta web EDU-MENTOR
 
+> **Sprint activo propuesto (octubre 2026):** ver
+> [checklist de invitación y encuesta](./sprint-edu-mentor-oct-2026.md).
+> La sección «Checklist de desarrollo» de este documento conserva el plan
+> original; no representa por sí sola el estado actual ni autoriza despliegue.
+
 ## Estado de la rama
 
 - [x] Se creó la ruta pública reutilizable `/encuesta/:surveyKey`.

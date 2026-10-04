@@ -263,7 +263,7 @@ export default function EventDetailDrawer({
                   label: "Cupos libres",
                   value: spotsLeft === null ? "Sin límite" : spotsLeft,
                 },
-              ].map((s, i) => (
+              ].map((s) => (
                 <div
                   key={s.label}
                   className={`${cardBg} rounded-xl p-3 flex flex-col gap-1`}

@@ -1,5 +1,5 @@
 import EventBannerCard from "../../components/events/EventBannerCard";
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useEvents } from "../../hooks/useEvents";
 import { FaInstagram } from "react-icons/fa6";
 import { Swiper, SwiperSlide } from "swiper/react";

@@ -13,16 +13,17 @@ import {
 import SEO from "../../components/SEO";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import {
+  answerError,
+  choiceOtherText,
+  choiceSelection,
+  hasAnswer,
+  setChoiceOtherText,
+  setChoiceSelection,
+} from "../../lib/surveyAnswers";
+import {
   SURVEY_CONSENT_VERSION,
   surveysService,
 } from "../../services/surveysService";
-
-function hasAnswer(value) {
-  if (value === undefined || value === null) return false;
-  if (typeof value === "string") return value.trim().length > 0;
-  if (Array.isArray(value)) return value.length > 0;
-  return true;
-}
 
 function getResumeIndex(survey, response, answers) {
   const lastSavedIndex = survey.survey_questions.findIndex(
@@ -34,25 +35,60 @@ function getResumeIndex(survey, response, answers) {
   }
 
   const unansweredQuestion = survey.survey_questions.findIndex(
-    (question) => !hasAnswer(answers[question.question_key]),
+    (question) => !hasAnswer(question, answers[question.question_key]),
   );
   if (unansweredQuestion >= 0) return unansweredQuestion;
   return Math.max(0, survey.survey_questions.length - 1);
 }
 
+function DemoModeNotice() {
+  return (
+    <></>
+    // <aside className="mx-auto mb-5 flex max-w-3xl flex-col gap-2 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 sm:flex-row sm:items-center sm:justify-between">
+    //   {/* <p>
+    //     <strong>Modo demo local.</strong> Usa datos ficticios; nada se envía a Supabase. El avance solo vive en esta pestaña.
+    //   </p>
+    //   <button
+    //     type="button"
+    //     onClick={onReset}
+    //     className="shrink-0 self-start font-bold underline underline-offset-2 sm:self-auto"
+    //   >
+    //     Reiniciar demo
+    //   </button> */}
+    // </aside>
+  );
+}
+
 function QuestionInput({ question, value, onChange }) {
-  const selected = Array.isArray(value) ? value : [];
+  const choice = choiceSelection(value);
+  const selected = Array.isArray(choice) ? choice : [];
+  const otherSelected = Array.isArray(choice)
+    ? choice.includes(question.other_option)
+    : choice === question.other_option;
+  const otherField = otherSelected && question.other_option ? (
+    <label className="mt-2 block text-sm font-semibold text-slate-700">
+      Cuéntanos cuál es tu otra opción
+      <input
+        type="text"
+        value={choiceOtherText(value)}
+        onChange={(event) => onChange(setChoiceOtherText(value, event.target.value))}
+        maxLength={question.other_text_max_length || 160}
+        placeholder="Escribe aquí tu respuesta"
+        className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-normal text-slate-900 outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+      />
+    </label>
+  ) : null;
 
   if (question.question_type === "single_choice") {
     return (
       <div className="mt-6 grid gap-3">
         {(question.options || []).map((option) => {
-          const isSelected = value === option;
+          const isSelected = choice === option;
           return (
             <button
               key={option}
               type="button"
-              onClick={() => onChange(option)}
+              onClick={() => onChange(setChoiceSelection(question, value, option))}
               aria-pressed={isSelected}
               className={[
                 "flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left text-sm font-semibold transition",
@@ -73,6 +109,7 @@ function QuestionInput({ question, value, onChange }) {
             </button>
           );
         })}
+        {otherField}
       </div>
     );
   }
@@ -84,8 +121,10 @@ function QuestionInput({ question, value, onChange }) {
           const isSelected = selected.includes(option);
           const limitReached =
             !isSelected &&
+            !(question.exclusive_options || []).includes(option) &&
             Number.isInteger(question.max_selections) &&
-            selected.length >= question.max_selections;
+            selected.length >= question.max_selections &&
+            !(question.exclusive_options || []).some((exclusive) => selected.includes(exclusive));
           return (
             <button
               key={option}
@@ -93,9 +132,17 @@ function QuestionInput({ question, value, onChange }) {
               disabled={limitReached}
               onClick={() => {
                 if (isSelected) {
-                  onChange(selected.filter((item) => item !== option));
+                  onChange(setChoiceSelection(question, value, selected.filter((item) => item !== option)));
                 } else if (!limitReached) {
-                  onChange([...selected, option]);
+                  const isExclusive = (question.exclusive_options || []).includes(option);
+                  const withoutExclusive = selected.filter(
+                    (item) => !(question.exclusive_options || []).includes(item),
+                  );
+                  onChange(setChoiceSelection(
+                    question,
+                    value,
+                    isExclusive ? [option] : [...withoutExclusive, option],
+                  ));
                 }
               }}
               aria-pressed={isSelected}
@@ -118,6 +165,7 @@ function QuestionInput({ question, value, onChange }) {
             </button>
           );
         })}
+        {otherField}
         {Number.isInteger(question.max_selections) && (
           <p className="text-xs text-slate-500">
             Puedes elegir hasta {question.max_selections}. Seleccionadas: {selected.length}.
@@ -192,6 +240,8 @@ export default function SurveyPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const saveTimerRef = useRef(null);
   const emailInputRef = useRef(null);
+  const surveyServiceRef = useRef(surveysService);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -200,16 +250,36 @@ export default function SurveyPage() {
       setLoadState("loading");
       setError("");
       try {
-        const activeSurvey = await surveysService.getPublishedSurvey(surveyKey);
+        const searchParams = new URLSearchParams(window.location.search);
+        const requestedDemo =
+          import.meta.env.DEV &&
+          searchParams.get("mockSurvey") === "edu-mentor";
+        const activeService = requestedDemo
+          ? (await import("../../services/devSurveyMockService")).devSurveyMockService
+          : surveysService;
+        if (requestedDemo && searchParams.get("resetMock") === "1") {
+          activeService.resetDemo();
+          searchParams.delete("resetMock");
+          const remainingSearch = searchParams.toString();
+          window.history.replaceState(
+            window.history.state,
+            "",
+            `${window.location.pathname}${remainingSearch ? `?${remainingSearch}` : ""}${window.location.hash}`,
+          );
+        }
+        surveyServiceRef.current = activeService;
+        if (!cancelled) setIsDemoMode(requestedDemo);
+
+        const activeSurvey = await activeService.getPublishedSurvey(surveyKey);
         if (!activeSurvey) {
           if (!cancelled) setLoadState("unavailable");
           return;
         }
 
-        await surveysService.ensureSession();
-        const myResponse = await surveysService.getMyResponse(activeSurvey.id);
+        await activeService.ensureSession();
+        const myResponse = await activeService.getMyResponse(activeSurvey.id);
         const savedAnswers = myResponse?.status === "in_progress"
-          ? await surveysService.getAnswers(myResponse.id, activeSurvey.survey_questions)
+          ? await activeService.getAnswers(myResponse.id, activeSurvey.survey_questions)
           : {};
 
         if (cancelled) return;
@@ -217,7 +287,15 @@ export default function SurveyPage() {
         setSurvey(activeSurvey);
         setResponse(myResponse);
         setAnswers(savedAnswers);
-        setEmail(myResponse?.email || "");
+        let prefilledEmail = "";
+        try {
+          const emailKey = `edu-us:survey-prefill-email:${surveyKey}`;
+          prefilledEmail = sessionStorage.getItem(emailKey) || "";
+          if (prefilledEmail) sessionStorage.removeItem(emailKey);
+        } catch {
+          // La precarga mejora el flujo, pero no es necesaria para responder.
+        }
+        setEmail(myResponse?.email || prefilledEmail);
         setConsentResearch(
           myResponse?.consent_text_version === SURVEY_CONSENT_VERSION,
         );
@@ -241,6 +319,18 @@ export default function SurveyPage() {
     };
   }, [surveyKey]);
 
+  const resetDemo = () => {
+    surveyServiceRef.current.resetDemo?.();
+    try {
+      Object.keys(sessionStorage)
+        .filter((key) => key.startsWith("edu-us:survey-prefill-email:"))
+        .forEach((key) => sessionStorage.removeItem(key));
+    } catch {
+      // Limpiar la precarga no es necesario para reiniciar las respuestas demo.
+    }
+    window.location.reload();
+  };
+
   const questions = survey?.survey_questions || [];
   const currentQuestion = questions[step];
   const progress = useMemo(
@@ -251,7 +341,7 @@ export default function SurveyPage() {
   const saveCurrentAnswer = useCallback(
     async (question, value) => {
       if (!response || !question) return;
-      await surveysService.saveAnswer({
+      await surveyServiceRef.current.saveAnswer({
         responseId: response.id,
         questionKey: question.question_key,
         answer: value,
@@ -262,8 +352,12 @@ export default function SurveyPage() {
 
   const scheduleSave = (question, value) => {
     setAnswers((previous) => ({ ...previous, [question.question_key]: value }));
-    setSavingState("saving");
     window.clearTimeout(saveTimerRef.current);
+    if (answerError(question, value)) {
+      setSavingState("idle");
+      return;
+    }
+    setSavingState("saving");
     saveTimerRef.current = window.setTimeout(async () => {
       try {
         await saveCurrentAnswer(question, value);
@@ -296,7 +390,7 @@ export default function SurveyPage() {
 
     setLoadState("starting");
     try {
-      const savedResponse = await surveysService.startResponse({
+      const savedResponse = await surveyServiceRef.current.startResponse({
         surveyId: survey.id,
         email: normalizedEmail,
         consentMarketing,
@@ -319,15 +413,16 @@ export default function SurveyPage() {
   const goNext = async () => {
     if (!currentQuestion || isSubmitting) return;
     const answer = answers[currentQuestion.question_key];
-    if (currentQuestion.required && !hasAnswer(answer)) {
-      setError("Responde esta pregunta para continuar.");
+    const validationError = answerError(currentQuestion, answer);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
     setError("");
     window.clearTimeout(saveTimerRef.current);
-    setSavingState("saving");
     if (Object.hasOwn(answers, currentQuestion.question_key)) {
+      setSavingState("saving");
       try {
         await saveCurrentAnswer(currentQuestion, answer);
         setSavingState("saved");
@@ -336,6 +431,8 @@ export default function SurveyPage() {
         setError("No se pudo guardar esta respuesta. Intenta continuar otra vez.");
         return;
       }
+    } else {
+      setSavingState("idle");
     }
 
     if (step < questions.length - 1) {
@@ -345,7 +442,7 @@ export default function SurveyPage() {
 
     setIsSubmitting(true);
     try {
-      await surveysService.submitResponse(response.id);
+      await surveyServiceRef.current.submitResponse(response.id);
       setResponse((previous) => ({ ...previous, status: "submitted" }));
       setLoadState("complete");
     } catch {
@@ -359,6 +456,10 @@ export default function SurveyPage() {
     setError("");
     window.clearTimeout(saveTimerRef.current);
     if (currentQuestion && Object.hasOwn(answers, currentQuestion.question_key)) {
+      if (answerError(currentQuestion, answers[currentQuestion.question_key])) {
+        setStep((current) => Math.max(0, current - 1));
+        return;
+      }
       setSavingState("saving");
       try {
         await saveCurrentAnswer(
@@ -368,7 +469,8 @@ export default function SurveyPage() {
         setSavingState("saved");
       } catch {
         setSavingState("error");
-        setError("No pudimos guardar esta respuesta; podrás reintentar al volver a esta pregunta.");
+        setError("No pudimos guardar esta respuesta. Inténtalo de nuevo antes de salir.");
+        return;
       }
     }
     setStep((current) => Math.max(0, current - 1));
@@ -415,6 +517,7 @@ export default function SurveyPage() {
     return (
       <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-slate-50 px-4 py-12">
         <SEO title="Gracias por participar | EDU-US" noindex />
+        {isDemoMode && <DemoModeNotice onReset={resetDemo} />}
         <section className="w-full max-w-xl rounded-3xl bg-white p-8 text-center shadow-xl shadow-slate-900/5 sm:p-12">
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-50 text-emerald-600">
             <CheckCircle2 className="h-9 w-9" />
@@ -435,11 +538,12 @@ export default function SurveyPage() {
     return (
       <main className="min-h-[calc(100vh-4rem)] bg-slate-50 px-4 py-10 sm:py-14">
         <SEO title="Encuesta EDU-MENTOR | EDU-US" description="Ayúdanos a diseñar EDU-MENTOR." noindex />
+        {isDemoMode && <DemoModeNotice onReset={resetDemo} />}
         <section className="mx-auto max-w-2xl overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-900/5">
           <div className="bg-slate-950 px-6 py-8 text-white sm:px-10 sm:py-10">
             <span className="text-xs font-extrabold uppercase tracking-[0.2em] text-secondary">EDU-MENTOR</span>
             <h1 className="mt-3 text-3xl font-extrabold sm:text-4xl">{survey.title}</h1>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-300">{survey.intro_text}</p>
+            <p className="mt-4 max-w-xl whitespace-pre-line text-sm leading-relaxed text-slate-300">{survey.intro_text}</p>
             <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs font-semibold text-white/90">
               <Clock3 className="h-4 w-4 text-secondary" />
               Aproximadamente {survey.estimated_minutes} minutos
@@ -535,6 +639,7 @@ export default function SurveyPage() {
   return (
     <main className="min-h-[calc(100vh-4rem)] bg-slate-50 px-4 py-8 sm:py-12">
       <SEO title={`${survey.title} | EDU-US`} noindex />
+      {isDemoMode && <DemoModeNotice onReset={resetDemo} />}
       <section className="mx-auto max-w-3xl overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-900/5">
         <header className="border-b border-slate-100 px-6 pb-5 pt-7 sm:px-10 sm:pt-9">
           <div className="flex flex-wrap items-center justify-between gap-3">

@@ -31,15 +31,15 @@ const DEVELOPMENT_PREVIEW_CAMPAIGN = {
   campaign_key: "edu-mentor-survey",
   version: 1,
   target_paths: ["/"],
-  cta_url: "/encuesta/edu-mentor",
-  cta_label: "Comenzar encuesta",
+  cta_url: "/encuesta/edu-mentor?mockSurvey=edu-mentor",
+  cta_label: "Responder encuesta",
   eyebrow: "EDU-MENTOR",
-  panel_title: "Tu experiencia puede abrir más oportunidades.",
+  panel_title: "Tu experiencia puede cambiar la de muchos.",
   panel_description:
-    "Ayúdanos a diseñar experiencias de empleabilidad más útiles para jóvenes.",
-  title: "Queremos escuchar tu experiencia profesional",
+    "Estamos diseñando un programa gratuito de mentoría para jóvenes de Negocios y Gestión. Queremos construirlo contigo, no solo para ti.",
+  title: "Ayúdanos a crear una mentoría que sí responda a tus retos",
   description:
-    "Completa este breve formulario para ayudarnos a construir EDU-MENTOR. Te tomará solo unos minutos.",
+    "Cuéntanos qué te cuesta al buscar prácticas o empleo y qué apoyo te sería realmente útil. Tus respuestas serán confidenciales.",
   image_url: "/CTA-img.png",
   image_alt: "Joven estudiante preparado para desarrollar su futuro profesional",
   image_fit: "contain",
@@ -47,9 +47,9 @@ const DEVELOPMENT_PREVIEW_CAMPAIGN = {
   duration_label: "Te tomará 3 minutos",
   access_label: "Participación voluntaria",
   email_capture_enabled: false,
-  email_label: "Déjanos tu correo si deseas recibir novedades",
+  email_label: "Recibe la invitación prioritaria",
   email_placeholder: "tu@email.com",
-  consent_copy: "Acepto recibir novedades sobre EDU-MENTOR.",
+  consent_copy: "Acepto que EDU-US use mi correo para contactarme sobre EDU-MENTOR.",
   open_delay_ms: 0,
   dismiss_for_days: 0,
 };
@@ -107,6 +107,12 @@ export default function SiteCampaignModal() {
       setCampaign(null);
       setImageFailed(false);
 
+      const isSurveyMock =
+        import.meta.env.DEV &&
+        pathname.startsWith("/encuesta/") &&
+        new URLSearchParams(search).has("mockSurvey");
+      if (isSurveyMock) return;
+
       const isDevelopmentPreview =
         import.meta.env.DEV &&
         pathname === "/" &&
@@ -118,8 +124,9 @@ export default function SiteCampaignModal() {
       if (
         cancelled ||
         !activeCampaign ||
-        alreadyParticipated(activeCampaign) ||
-        wasRecentlyDismissed(activeCampaign)
+        (!isDevelopmentPreview &&
+          (alreadyParticipated(activeCampaign) ||
+            wasRecentlyDismissed(activeCampaign)))
       ) {
         return;
       }
@@ -176,12 +183,6 @@ export default function SiteCampaignModal() {
     event.preventDefault();
     if (!campaign) return;
 
-    if (campaign.cta_url.startsWith("/") && !campaign.cta_url.startsWith("//")) {
-      setIsOpen(false);
-      navigate(campaign.cta_url);
-      return;
-    }
-
     const normalizedEmail = email.trim().toLowerCase();
 
     if (normalizedEmail && !EMAIL_PATTERN.test(normalizedEmail)) {
@@ -189,16 +190,56 @@ export default function SiteCampaignModal() {
       return;
     }
 
-    if (
-      campaign.email_capture_enabled &&
-      normalizedEmail &&
-      !consent
-    ) {
-      setEmailError("Confirma que podemos contactarte sobre esta iniciativa.");
+    if (campaign.email_capture_enabled && normalizedEmail && !consent) {
+      setEmailError("Confirma que podemos usar tu correo para esta iniciativa.");
       return;
     }
 
     setEmailError("");
+
+    if (campaign.cta_url.startsWith("/") && !campaign.cta_url.startsWith("//")) {
+      if (campaign.email_capture_enabled && normalizedEmail) {
+        try {
+          const targetSurveyKey = new URL(
+            campaign.cta_url,
+            window.location.origin,
+          ).pathname.split("/").filter(Boolean).at(-1);
+          sessionStorage.setItem(
+            `edu-us:survey-prefill-email:${targetSurveyKey}`,
+            normalizedEmail,
+          );
+        } catch {
+          // El correo es opcional; el formulario de encuesta podrá solicitarlo.
+        }
+
+        if (
+          consent &&
+          !website &&
+          campaign.id !== "preview-edu-mentor"
+        ) {
+          try {
+            const result = await siteCampaignsService.registerLead({
+              campaignId: campaign.id,
+              email: normalizedEmail,
+              sourcePath: pathname,
+            });
+            if (!result.success) toast.error(result.error);
+          } catch {
+            toast.error("No pudimos guardar tu consentimiento, pero puedes continuar con la encuesta.");
+          }
+        }
+      }
+
+      try {
+        localStorage.setItem(storageKey("participated", campaign), "true");
+      } catch {
+        // El avance de la encuesta no depende de localStorage.
+      }
+      setIsOpen(false);
+      navigate(campaign.cta_url);
+      return;
+    }
+
     setStatus("loading");
 
     const campaignWindow = window.open(campaign.cta_url, "_blank");
@@ -212,7 +253,8 @@ export default function SiteCampaignModal() {
       if (
         campaign.email_capture_enabled &&
         !website &&
-        normalizedEmail
+        normalizedEmail &&
+        consent
       ) {
         const result = await siteCampaignsService.registerLead({
           campaignId: campaign.id,
@@ -277,7 +319,7 @@ export default function SiteCampaignModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 10 }}
             transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="relative grid w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/10 bg-white shadow-2xl outline-none md:grid-cols-[0.9fr_1.1fr]"
+            className="relative grid w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/10 bg-white shadow-2xl outline-none md:grid-cols-2"
           >
             <button
               type="button"
@@ -304,11 +346,16 @@ export default function SiteCampaignModal() {
                     ].join(" ")}
                     onError={() => setImageFailed(true)}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-slate-950/25" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-slate-950/25" />
                   <span className="absolute left-7 top-7 inline-flex items-center gap-2 rounded-full border border-white/20 bg-slate-950/55 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-white backdrop-blur-md">
                     <HeartHandshake className="h-4 w-4 text-secondary" />
                     {campaign.eyebrow}
                   </span>
+                  {campaign.panel_title && (
+                    <h3 className="absolute inset-x-7 bottom-8 max-w-sm text-2xl font-extrabold leading-tight text-white drop-shadow-lg sm:text-3xl">
+                      {campaign.panel_title}
+                    </h3>
+                  )}
                 </>
               ) : (
                 <div className="relative flex h-full flex-col justify-between p-10">
@@ -471,7 +518,7 @@ export default function SiteCampaignModal() {
                 </button>
                 {campaign.email_capture_enabled && (
                   <p className="mt-3 text-center text-xs text-slate-500">
-                    El correo es opcional. El destino se abre en una nueva pestaña.
+                    El correo es opcional. Puedes continuar sin iniciar sesión.
                   </p>
                 )}
               </form>
