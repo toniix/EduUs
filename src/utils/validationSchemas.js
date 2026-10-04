@@ -172,11 +172,9 @@ export const eventSchema = z
     description: z.string().min(1, "La descripción es obligatoria."),
     location: z.string().optional().nullable().or(z.literal("")),
     banner_url: z
-      .string()
-      .url("La URL del banner no es válida.")
-      .optional()
-      .or(z.literal(""))
-      .or(z.null()),
+      .string({ required_error: "El banner del evento es obligatorio." })
+      .min(1, "El banner del evento es obligatorio.")
+      .url("La URL del banner no es válida."),
     ends_at: z.string().optional(),
     capacity: z
       .number()
@@ -202,6 +200,10 @@ export const eventSchema = z
       .optional()
       .nullable()
       .or(z.literal("")),
+    speaker_ids: z
+      .array(z.string().uuid("Identificador de ponente no válido."))
+      .optional()
+      .default([]),
     directed_to: z.string().min(1, "El campo 'Dirigido a' es obligatorio."),
     extra_details: z.string().optional().nullable().or(z.literal("")),
     brochure_url: z.string().optional().nullable().or(z.literal("")),

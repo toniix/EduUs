@@ -6,6 +6,7 @@ function BannerUpload({
   onDrop,
   onChange,
   onRemove,
+  hasError = false,
 }) {
   if (!bannerPreview) {
     return (
@@ -13,13 +14,19 @@ function BannerUpload({
         onDrop={onDrop}
         onDragOver={(e) => e.preventDefault()}
         onClick={() => fileInputRef.current?.click()}
-        className="border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-xl p-6 flex flex-col items-center gap-2 cursor-pointer hover:border-primary/40 hover:bg-primary/5 dark:hover:bg-primary/5 transition-colors"
+        className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center gap-2 cursor-pointer transition-colors ${
+          hasError
+            ? "border-red-400 dark:border-red-500 bg-red-50/50 dark:bg-red-950/10 hover:border-red-500"
+            : "border-gray-200 dark:border-gray-800 hover:border-primary/40 hover:bg-primary/5 dark:hover:bg-primary/5"
+        }`}
       >
         <ImagePlus className="w-8 h-8 text-gray-300 dark:text-gray-600" />
         <p className="text-sm text-gray-400 dark:text-gray-500">
           Haz clic o arrastra una imagen aquí
         </p>
-        <p className="text-xs text-gray-300 dark:text-gray-600">PNG, JPG, WEBP — máx. 5 MB</p>
+        <p className="text-xs text-gray-300 dark:text-gray-600">
+          PNG, JPG, WEBP — máx. 5 MB
+        </p>
         <input
           ref={fileInputRef}
           type="file"

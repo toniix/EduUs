@@ -37,6 +37,7 @@ serve(async (req) => {
 
     // 📅 Formatear fecha
     const eventDate = new Date(event.starts_at).toLocaleString('es-PE', {
+      timeZone: 'America/Lima',
       weekday: 'long',
       year: 'numeric',
       month: 'long',
