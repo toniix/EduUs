@@ -15,7 +15,6 @@ import {
   getUserCount,
   getOpportunitiesCount,
   getActiveOpportunitiesCount,
-  getExpiredOpportunitiesCount,
   getPreviousUserCount,
   getPreviousOpportunitiesCount,
   getEventsCount,

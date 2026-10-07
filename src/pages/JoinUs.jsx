@@ -388,7 +388,7 @@ const JoinUs = () => {
                 {/* Trust badge */}
                 <div className="flex items-center gap-4 pt-4 border-t border-white/5">
                   <div className="flex -space-x-2.5">
-                    {["A", "M", "C", "J"].map((letter, i) => (
+                    {["A", "M", "C", "J"].map((letter) => (
                       <div
                         key={letter}
                         className="w-8 h-8 rounded-full border-[1.5px] border-[#0c2f2c] bg-gradient-to-br from-secondary/40 to-primary/30 flex items-center justify-center shadow-md shadow-black/10"

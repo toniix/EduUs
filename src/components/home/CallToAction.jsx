@@ -82,7 +82,7 @@ export default function ImprovedCTA() {
                   "Acceso inmediato",
                   "Comunidad activa",
                   "Oportunidades premium",
-                ].map((badge, i) => (
+                ].map((badge) => (
                   <div
                     key={badge}
                     className="flex items-center text-slate-800 text-base font-semibold tracking-wide"

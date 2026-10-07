@@ -80,7 +80,7 @@ const Footer = () => {
             </h3>
 
             <div className="flex gap-4">
-              {socialLinks.map((social, index) => (
+              {socialLinks.map((social) => (
                 <a
                   key={social.href}
                   href={social.href}

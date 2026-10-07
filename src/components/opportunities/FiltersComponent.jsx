@@ -20,7 +20,7 @@ const FiltersComponent = ({
   hideHeader = false,
   hideSort = false,
 }) => {
-  const { modalities = [], categories = [], countries = [] } = filterOptions;
+  const { modalities = [], categories = [] } = filterOptions;
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

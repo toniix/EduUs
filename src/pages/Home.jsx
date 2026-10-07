@@ -13,6 +13,8 @@ const TestimonialsSection = lazy(
   () => import("../components/home/TestimonialsSection"),
 );
 const CallToAction = lazy(() => import("../components/home/CallToAction"));
+const HOME_PROMO_CAMPAIGN =
+  import.meta.env.VITE_HOME_PROMO_CAMPAIGN || "site-campaign";
 
 const Home = () => {
   const heroImageBase =
@@ -46,8 +48,7 @@ const Home = () => {
           },
         }}
       />
-      {/* PromoModal se auto-controla con usePromoModal */}
-      <PromoModal />
+      {HOME_PROMO_CAMPAIGN === "event" && <PromoModal />}
       <div className="flex flex-col min-h-screen">
         <section className="w-full min-h-[calc(100vh-4rem)] bg-center bg-cover flex items-center justify-center relative overflow-hidden">
           <img
