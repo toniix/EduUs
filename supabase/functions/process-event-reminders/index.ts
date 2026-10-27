@@ -32,7 +32,14 @@ interface EventReminderRow {
   reminder_date: string;
   reminder_type: ReminderType;
   status: 'pending' | 'sent' | 'failed';
-  events: EventData;
+  events: {
+    title: string;
+    starts_at: string;
+    location?: string | null;
+    modality: 'virtual' | 'presencial' | 'hibrido' | string;
+    slug: string;
+    event_access?: { zoom_link?: string | null } | { zoom_link?: string | null }[] | null;
+  };
 }
 
 serve(async (req) => {
@@ -74,8 +81,10 @@ serve(async (req) => {
           starts_at,
           location,
           modality,
-          zoom_link,
-          slug
+          slug,
+          event_access (
+            zoom_link
+          )
         )
       `)
       .eq('status', 'pending')
@@ -107,14 +116,26 @@ serve(async (req) => {
 
     for (let i = 0; i < reminders.length; i++) {
       const reminder = reminders[i] as unknown as EventReminderRow;
-      const event = reminder.events;
+      const rawEvent = reminder.events;
 
       try {
         console.log(`📤 [${i + 1}/${reminders.length}] Procesando recordatorio ${reminder.id} (${reminder.reminder_type}) para ${reminder.email}`);
 
-        if (!event) {
+        if (!rawEvent) {
           throw new Error(`Evento ${reminder.event_id} no encontrado`);
         }
+
+        const accessObj = Array.isArray(rawEvent.event_access)
+          ? rawEvent.event_access[0]
+          : rawEvent.event_access;
+        const event: EventData = {
+          title: rawEvent.title,
+          starts_at: rawEvent.starts_at,
+          location: rawEvent.location,
+          modality: rawEvent.modality,
+          slug: rawEvent.slug,
+          zoom_link: accessObj?.zoom_link || null,
+        };
 
         // Determinar asunto según el tipo de recordatorio
         const subjects: Record<ReminderType, string> = {

@@ -115,7 +115,7 @@ export default function EventRegistrationForm({ event, onSuccess }) {
     if (success) {
       setStatus("success");
       toast.success("¡Registro exitoso! Nos vemos en el evento.");
-      if (onSuccess) onSuccess(form.name, data?.zoom_link);
+      if (onSuccess) onSuccess(form.name);
     } else {
       setStatus("error");
       const errorMsg =
@@ -143,7 +143,6 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         </div>
       )}
 
-      {/* 1. Nombres y Apellidos */}
       <div>
         <label
           htmlFor="reg-name"
@@ -166,7 +165,6 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         )}
       </div>
 
-      {/* Correo Electrónico (Requerido implícito para el envío del link) */}
       <div>
         <label
           htmlFor="reg-email"
@@ -189,7 +187,6 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         )}
       </div>
 
-      {/* DNI (Solo presencial) & Edad */}
       <div
         className={`grid ${isPresencial ? "grid-cols-2" : "grid-cols-1"} gap-3`}
       >
@@ -242,7 +239,6 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         </div>
       </div>
 
-      {/* Celular / WhatsApp */}
       <div>
         <label
           htmlFor="reg-phone"
@@ -266,7 +262,6 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         )}
       </div>
 
-      {/* Actualmente eres */}
       <div>
         <label
           htmlFor="reg-occupation"
@@ -294,7 +289,6 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         )}
       </div>
 
-      {/* Carrera o Área de Estudios */}
       <div>
         <label
           htmlFor="reg-career"
@@ -317,7 +311,6 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         )}
       </div>
 
-      {/* ¿Por qué te interesa participar en este taller/charla? */}
       <div>
         <label
           htmlFor="reg-interest"
@@ -341,7 +334,6 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         )}
       </div>
 
-      {/* ¿Cómo te enteraste de este taller? */}
       <div>
         <label
           htmlFor="reg-referral"
@@ -370,7 +362,6 @@ export default function EventRegistrationForm({ event, onSuccess }) {
         )}
       </div>
 
-      {/* ¿Eres estudiante en [Lugar del evento] (Opcional - solo presencial) */}
       {isPresencial && (
         <div className="mt-1 animate-[fadeIn_0.2s_ease]">
           <label className="flex items-center gap-2.5 cursor-pointer p-3 rounded-xl border border-gray-150 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30">

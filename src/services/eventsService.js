@@ -14,11 +14,12 @@ const EVENT_SELECT = `
     display_order,
     speaker:speakers(*)
   ),
+  event_access(zoom_link),
   registrations:event_registrations(count)
 `;
 
 /** Transforma el row de Supabase al shape que usan los componentes */
-function transformEvent(row, { isPublic = false } = {}) {
+function transformEvent(row) {
   if (!row) return null;
 
   const registrationCount = row.registrations?.[0]?.count ?? 0;
@@ -42,15 +43,20 @@ function transformEvent(row, { isPublic = false } = {}) {
         ? [row.speaker]
         : [];
 
+  // zoom_link solo vendrá poblado por PostgREST si el usuario tiene permiso RLS en event_access (admin/editor)
+  const zoomLink =
+    row.event_access?.zoom_link ?? row.event_access?.[0]?.zoom_link ?? null;
+
   return {
     ...row,
     speakers: allSpeakers,
     speaker: allSpeakers[0] || null, // Retrocompatibilidad para vistas heredadas
     speaker_ids: allSpeakers.map((s) => s.id),
     spots_left: spotsLeft,
-    zoom_link: isPublic ? null : row.zoom_link, // Proteger enlace de Zoom en consultas públicas
+    zoom_link: zoomLink,
     registrations: undefined, // limpiar el campo intermedio
     event_speakers: undefined,
+    event_access: undefined,
   };
 }
 
@@ -68,7 +74,7 @@ class EventsService {
 
       if (error) throw error;
 
-      return (data || []).map((row) => transformEvent(row, { isPublic: true }));
+      return (data || []).map((row) => transformEvent(row));
     } catch (err) {
       console.error("Error en getEvents:", err);
       throw err;
@@ -85,7 +91,7 @@ class EventsService {
       .order("starts_at", { ascending: true });
 
     if (error) throw new Error(`Error al obtener eventos: ${error.message}`);
-    return (data || []).map((row) => transformEvent(row, { isPublic: false }));
+    return (data || []).map((row) => transformEvent(row));
   }
 
   /**
@@ -104,7 +110,7 @@ class EventsService {
         .maybeSingle();
 
       if (error) return null;
-      return data ? transformEvent(data, { isPublic: true }) : null;
+      return data ? transformEvent(data) : null;
     } catch {
       return null;
     }
@@ -119,37 +125,41 @@ class EventsService {
   }
 
   /**
-   * Obtiene un evento por ID.
+   * Helper privado para obtener un evento único por cualquier campo (id, slug, etc.).
+   * @private
    */
-  async getEventById(id) {
-    const { data, error } = await supabase
-      .from("events")
-      .select(EVENT_SELECT)
-      .eq("id", id)
-      .maybeSingle();
-
-    if (error) throw new Error(`Error al obtener evento: ${error.message}`);
-    return data ? transformEvent(data, { isPublic: false }) : null;
-  }
-
-  /**
-   * Obtiene un evento por SLUG para vista pública (sin exponer zoom_link).
-   */
-  async getEventBySlug(slug) {
+  async _getEventBy(column, value) {
+    if (!value) return null;
     try {
       const { data, error } = await supabase
         .from("events")
         .select(EVENT_SELECT)
-        .eq("slug", slug)
+        .eq(column, value)
         .maybeSingle();
 
-      if (error) throw error;
-
-      return data ? transformEvent(data, { isPublic: true }) : null;
+      if (error)
+        throw new Error(
+          `Error al obtener evento por ${column}: ${error.message}`,
+        );
+      return data ? transformEvent(data) : null;
     } catch (err) {
-      console.error(`Error al obtener evento por slug (${slug}):`, err);
+      console.error(`Error al obtener evento por ${column} (${value}):`, err);
       throw err;
     }
+  }
+
+  /**
+   * Obtiene un evento por ID.
+   */
+  async getEventById(id) {
+    return this._getEventBy("id", id);
+  }
+
+  /**
+   * Obtiene un evento por SLUG para vista pública.
+   */
+  async getEventBySlug(slug) {
+    return this._getEventBy("slug", slug);
   }
 
   // ─────────────────────────────────────────────
@@ -171,12 +181,14 @@ class EventsService {
 
       const fullPayload = this._buildPayload(formData);
       const speakerIds = fullPayload._speaker_ids || [];
-      const { _speaker_ids, ...eventPayload } = fullPayload;
+      const zoomLink = fullPayload._zoom_link;
+      const { _speaker_ids, _zoom_link, ...eventPayload } = fullPayload;
 
       const payload = {
         ...eventPayload,
         created_by: authUserId,
       };
+      delete payload.zoom_link; // garantizar que nunca vaya a la tabla events
 
       // Validar inconsistencias lógicas
       const validationError = this._validateEvent(payload);
@@ -205,11 +217,18 @@ class EventsService {
         await this._syncEventSpeakers(data.id, speakerIds);
       }
 
+      // Sincronizar enlace de Zoom en la tabla event_access
+      if (data?.id && zoomLink) {
+        await supabase
+          .from("event_access")
+          .upsert({ event_id: data.id, zoom_link: zoomLink });
+      }
+
       const freshEvent = data?.id ? await this.getEventById(data.id) : null;
 
       return {
         success: true,
-        data: freshEvent || transformEvent(data, { isPublic: false }),
+        data: freshEvent || transformEvent(data),
         error: null,
       };
     } catch (err) {
@@ -275,9 +294,11 @@ class EventsService {
         : Array.isArray(formData.speaker_ids)
           ? formData.speaker_ids
           : null;
+      const zoomLink = isFull ? fullPayload._zoom_link : formData.zoom_link;
 
-      const { _speaker_ids, ...cleanPatch } = fullPayload;
+      const { _speaker_ids, _zoom_link, ...cleanPatch } = fullPayload;
       const patch = cleanPatch;
+      delete patch.zoom_link; // garantizar que no vaya a la tabla events
 
       // 5. Crear el payload combinado para validar el estado resultante completo
       const mergedPayload = {
@@ -324,11 +345,22 @@ class EventsService {
         await this._syncEventSpeakers(id, speakerIds);
       }
 
+      // 10. Sincronizar zoom_link en la tabla satélite event_access
+      if (zoomLink !== undefined) {
+        if (zoomLink) {
+          await supabase
+            .from("event_access")
+            .upsert({ event_id: id, zoom_link: zoomLink });
+        } else {
+          await supabase.from("event_access").delete().eq("event_id", id);
+        }
+      }
+
       const freshEvent = await this.getEventById(id);
 
       return {
         success: true,
-        data: freshEvent || transformEvent(data, { isPublic: false }),
+        data: freshEvent || transformEvent(data),
         error: null,
       };
     } catch (err) {
@@ -417,8 +449,7 @@ class EventsService {
   /**
    * Registra a un usuario en un evento.
    * Verifica cupos disponibles antes de insertar.
-   * Retorna zoom_link protegido en el data de respuesta al confirmar inscripción.
-   * @returns {Promise<{success: boolean, data: {zoom_link: string|null}|null, error: string|null}>}
+   * @returns {Promise<{success: boolean, data: null, error: string|null}>}
    */
   async registerForEvent(
     eventId,
@@ -436,12 +467,10 @@ class EventsService {
     },
   ) {
     try {
-      // 1. Obtener datos del evento para cupos y zoom_link
+      // 1. Obtener datos del evento para cupos
       const { data: eventRow, error: eventErr } = await supabase
         .from("events")
-        .select(
-          "id, capacity, zoom_link, registrations:event_registrations(count)",
-        )
+        .select("id, capacity, registrations:event_registrations(count)")
         .eq("id", eventId)
         .single();
 
@@ -496,9 +525,10 @@ class EventsService {
           .eq("id", existing.id);
 
         if (error) throw new Error(error.message);
+
         return {
           success: true,
-          data: { zoom_link: eventRow.zoom_link || null },
+          data: null,
           error: null,
         };
       }
@@ -525,9 +555,10 @@ class EventsService {
       ]);
 
       if (error) throw new Error(error.message);
+
       return {
         success: true,
-        data: { zoom_link: eventRow.zoom_link || null },
+        data: null,
         error: null,
       };
     } catch (err) {
@@ -643,10 +674,13 @@ class EventsService {
       directed_to: directed_to?.trim() || null,
       extra_details: extra_details?.trim() || null,
       brochure_url: brochure_url?.trim() || null,
-      zoom_link: zoom_link?.trim() || null,
       benefits: Array.isArray(benefits) ? benefits : [],
       speaker_id: normalizedSpeakerIds[0] || null,
       _speaker_ids: normalizedSpeakerIds,
+      _zoom_link:
+        modality === "virtual" || modality === "hibrido"
+          ? zoom_link?.trim() || null
+          : null,
     };
   }
 
@@ -755,18 +789,16 @@ class EventsService {
 
   /**
    * Verifica si un usuario está registrado en un evento.
-   * Si está registrado, retorna también el zoom_link del evento.
    * @param {string} eventId
    * @param {string} userId
-   * @returns {Promise<{registered: boolean, name: string|null, zoom_link: string|null}>}
+   * @returns {Promise<{registered: boolean, name: string|null}>}
    */
   async checkUserRegistration(eventId, userId) {
-    if (!eventId || !userId)
-      return { registered: false, name: null, zoom_link: null };
+    if (!eventId || !userId) return { registered: false, name: null };
     try {
       const { data, error } = await supabase
         .from("event_registrations")
-        .select("name, status, event:events(zoom_link)")
+        .select("name, status")
         .eq("event_id", eventId)
         .eq("user_id", userId)
         .eq("status", "registered")
@@ -777,13 +809,12 @@ class EventsService {
         return {
           registered: true,
           name: data[0].name,
-          zoom_link: data[0].event?.zoom_link || null,
         };
       }
-      return { registered: false, name: null, zoom_link: null };
+      return { registered: false, name: null };
     } catch (err) {
       console.error("Error checking user registration:", err);
-      return { registered: false, name: null, zoom_link: null };
+      return { registered: false, name: null };
     }
   }
 }
