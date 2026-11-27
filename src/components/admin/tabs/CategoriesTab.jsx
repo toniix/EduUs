@@ -77,10 +77,11 @@ function modalReducer(state, action) {
   }
 }
 
-const CategoriesTab = () => {
+const CategoriesTab = ({ onCategoriesChange }) => {
   const { isDark } = useContext(ThemeContext);
   const { profile } = useAuth();
-  const role = profile?.role;
+  const normalizedRole = profile?.role?.toLowerCase();
+  const isAdmin = normalizedRole === "admin";
 
   const [dataState, dispatchData] = useReducer(dataReducer, dataInitialState);
   const { categories, loading, error } = dataState;
@@ -110,6 +111,12 @@ const CategoriesTab = () => {
     fetchCategories();
   }, [fetchCategories]);
 
+  useEffect(() => {
+    if (!loading && !error) {
+      onCategoriesChange?.(categories);
+    }
+  }, [categories, loading, error, onCategoriesChange]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     dispatchModal({ type: "FIELD_CHANGE", payload: { [name]: value } });
@@ -127,22 +134,24 @@ const CategoriesTab = () => {
         const updatedCategory = await categoryService.updateCategory(
           currentCategory.id,
           formData,
-          role,
+          normalizedRole,
         );
         dispatchData({ type: "UPDATE", payload: updatedCategory });
         toast.success("Categoría actualizada con éxito");
       } else {
         const newCategory = await categoryService.createCategory(
           formData,
-          role,
+          normalizedRole,
         );
         dispatchData({ type: "ADD", payload: newCategory });
         toast.success("Categoría creada con éxito");
       }
       resetForm();
     } catch (err) {
-      console.error("Error creating category:", err);
-      toast.error("Ocurrió un error. Por favor, inténtalo de nuevo.");
+      console.error("Error saving category:", err);
+      toast.error(
+        err?.message || "Ocurrió un error. Por favor, inténtalo de nuevo.",
+      );
     } finally {
       dispatchModal({ type: "SUBMIT_END" });
     }
@@ -157,12 +166,14 @@ const CategoriesTab = () => {
       window.confirm("¿Estás seguro de que quieres eliminar esta categoría?")
     ) {
       try {
-        // console.log(role);
-        await categoryService.deleteCategory(id, role);
+        await categoryService.deleteCategory(id, normalizedRole);
         dispatchData({ type: "DELETE", payload: id });
         toast.success("Categoría eliminada con éxito");
       } catch (err) {
-        toast.error("No se pudo eliminar la categoría. " + err);
+        toast.error(
+          "No se pudo eliminar la categoría. " +
+            (err?.message || "Error desconocido"),
+        );
       }
     }
   };
@@ -212,11 +223,12 @@ const CategoriesTab = () => {
           </span>
         </h2>
 
-        <button type="button"
+        <button
+          type="button"
           onClick={() => dispatchModal({ type: "OPEN_CREATE" })}
           className="flex items-center px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white transition-colors"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
           Nueva Categoría
         </button>
       </div>
@@ -288,26 +300,34 @@ const CategoriesTab = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
-                      <button type="button"
+                      <button
+                        type="button"
                         onClick={() => handleEdit(category)}
+                        aria-label={`Editar categoría ${category.name}`}
+                        title={`Editar categoría ${category.name}`}
                         className={`p-1.5 rounded-md ${
                           isDark
                             ? "text-blue-400 hover:bg-blue-900/30"
                             : "text-blue-600 hover:bg-blue-50"
                         }`}
                       >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-4 w-4" aria-hidden="true" />
                       </button>
-                      <button type="button"
-                        onClick={() => handleDelete(category.id)}
-                        className={`p-1.5 rounded-md ${
-                          isDark
-                            ? "text-red-400 hover:bg-red-900/30"
-                            : "text-red-600 hover:bg-red-50"
-                        }`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(category.id)}
+                          aria-label={`Eliminar categoría ${category.name}`}
+                          title={`Eliminar categoría ${category.name}`}
+                          className={`p-1.5 rounded-md ${
+                            isDark
+                              ? "text-red-400 hover:bg-red-900/30"
+                              : "text-red-600 hover:bg-red-50"
+                          }`}
+                        >
+                          <Trash2 className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
