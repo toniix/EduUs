@@ -18,10 +18,13 @@ import RegistrationsTab from "../../components/admin/tabs/RegistrationsTab";
 import ProjectsTab from "../../components/admin/tabs/ProjectsTab";
 
 const ITEMS_PER_PAGE = 10;
+const ADMIN_ONLY_TABS = new Set(["users", "registrations", "projects"]);
 
 const AdminPanel = () => {
   const { profile } = useAuth();
-  const isAdmin = profile?.role === "admin";
+  const normalizedRole = profile?.role?.toLowerCase();
+  const isAdmin = normalizedRole === "admin";
+  const isEditor = normalizedRole === "editor";
 
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = localStorage.getItem("adminActiveTab");
@@ -65,6 +68,13 @@ const AdminPanel = () => {
   useEffect(() => {
     localStorage.setItem("adminActiveTab", activeTab);
   }, [activeTab]);
+
+  // Evitar que un usuario sin rol admin permanezca en pestañas exclusivas de admin
+  useEffect(() => {
+    if (profile && !isAdmin && ADMIN_ONLY_TABS.has(activeTab)) {
+      setActiveTab("dashboard");
+    }
+  }, [profile, isAdmin, activeTab]);
 
   // Memoizar las funciones de manejo para evitar recreaciones innecesarias
   const handleUserRoleUpdate = useCallback((userId, newRole) => {
@@ -143,7 +153,7 @@ const AdminPanel = () => {
     let result = opportunities;
 
     // Filtrar por creador si el rol es editor
-    if (profile?.role === "editor") {
+    if (isEditor && profile?.id) {
       result = result.filter((opp) => opp.created_by === profile.id);
     }
 
@@ -221,6 +231,8 @@ const AdminPanel = () => {
     return result;
   }, [
     opportunities,
+    isEditor,
+    profile?.id,
     searchTerm,
     adminCategoryFilter,
     adminModalityFilter,
@@ -298,7 +310,7 @@ const AdminPanel = () => {
           />
         );
       case "categories":
-        return <CategoriesTab />;
+        return <CategoriesTab onCategoriesChange={setCategories} />;
       case "events":
         return <EventsAdminTab />;
       case "registrations":

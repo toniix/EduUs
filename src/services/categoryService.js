@@ -26,7 +26,8 @@ class CategoryService {
    * @returns {Promise<object>} La categoría creada
    */
   async createCategory(categoryData, userRole) {
-    if (userRole !== "admin" && userRole !== "editor") {
+    const normalizedRole = userRole?.toLowerCase();
+    if (normalizedRole !== "admin" && normalizedRole !== "editor") {
       throw new Error(
         "Solo los administradores y editores pueden crear categorías."
       );
@@ -52,8 +53,8 @@ class CategoryService {
    * @returns {Promise<void>}
    */
   async deleteCategory(categoryId, userRole) {
-    if (userRole !== "admin") {
-      // console.error("No tienes permiso para eliminar categorías.");
+    const normalizedRole = userRole?.toLowerCase();
+    if (normalizedRole !== "admin") {
       throw new Error("Solo los administradores pueden eliminar categorías.");
     }
     try {
@@ -76,7 +77,8 @@ class CategoryService {
    * @returns {Promise<object>} La categoría actualizada
    */
   async updateCategory(categoryId, updates, userRole) {
-    if (userRole !== "admin" && userRole !== "editor") {
+    const normalizedRole = userRole?.toLowerCase();
+    if (normalizedRole !== "admin" && normalizedRole !== "editor") {
       throw new Error(
         "Solo los administradores y editores pueden actualizar categorías."
       );

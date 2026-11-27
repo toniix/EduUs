@@ -110,7 +110,8 @@ export default function Sidebar({
       {/* Menú principal */}
       <nav className="p-4 space-y-2">
         {ALL_MENU_ITEMS.filter(
-          (item) => !item.adminOnly || profile?.role === "admin",
+          (item) =>
+            !item.adminOnly || profile?.role?.toLowerCase() === "admin",
         ).map((item) => (
           <div key={item.value}>
             <button
